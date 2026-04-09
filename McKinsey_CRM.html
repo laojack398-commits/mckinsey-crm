@@ -1,0 +1,926 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>McKinsey CRM System</title>
+<style>/* === McKinsey CRM v3 — Professional Dark Theme === */
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#07090f;--bg2:#0d1117;--card:#151c28;--card2:#1a2332;
+  --border:#21293a;--border2:#2a3448;
+  --t1:#e6edf3;--t2:#8b949e;--t3:#484f58;
+  --bl:#388bfd;--bl-g:rgba(56,139,253,.12);
+  --gr:#3fb950;--gr-g:rgba(63,185,80,.12);
+  --am:#d29922;--am-g:rgba(210,153,34,.12);
+  --ro:#f85149;--ro-g:rgba(248,81,73,.12);
+  --pu:#a371f7;--pu-g:rgba(163,113,247,.12);
+  --cy:#39d2c0;--cy-g:rgba(57,210,192,.12);
+  --gd:#e3b341;
+  --rx:8px;--rx2:12px;
+  --shadow:0 4px 24px rgba(0,0,0,.4);
+  --sidebar-w:240px;
+  --font:-apple-system,BlinkMacSystemFont,'Segoe UI','Noto Sans SC',sans-serif;
+}
+html,body{height:100%;font-family:var(--font);background:var(--bg);color:var(--t1);font-size:14px;line-height:1.5;overflow:hidden}
+::-webkit-scrollbar{width:6px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px}
+::-webkit-scrollbar-thumb:hover{background:var(--t3)}
+input,select,textarea,button{font-family:inherit;font-size:13px;outline:none}
+input,select,textarea{background:var(--bg2);border:1px solid var(--border);color:var(--t1);border-radius:var(--rx);padding:7px 10px;width:100%;transition:border .2s}
+input:focus,select:focus,textarea:focus{border-color:var(--bl)}
+select{cursor:pointer;appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='%238b949e'%3E%3Cpath d='M6 8L1 3h10z'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 10px center;padding-right:28px}
+textarea{resize:vertical;min-height:60px}
+button{cursor:pointer;border:1px solid var(--border);background:var(--card);color:var(--t1);border-radius:var(--rx);padding:7px 14px;transition:all .15s}
+button:hover{border-color:var(--border2);background:var(--card2)}
+.btn-primary{background:var(--bl);border-color:var(--bl);color:#fff;font-weight:600}
+.btn-primary:hover{background:#2b7de9;border-color:#2b7de9}
+.btn-danger{color:var(--ro);border-color:rgba(248,81,73,.25)}
+.btn-danger:hover{background:var(--ro-g)}
+.btn-sm{padding:4px 10px;font-size:12px}
+
+/* Layout */
+.app{display:flex;height:100vh}
+.sidebar{width:var(--sidebar-w);background:var(--bg2);border-right:1px solid var(--border);display:flex;flex-direction:column;flex-shrink:0;overflow-y:auto}
+.sidebar-logo{padding:24px 20px 20px;border-bottom:1px solid var(--border)}
+.sidebar-logo .mark{font-size:18px;font-weight:800;letter-spacing:3px;color:var(--t1)}
+.sidebar-logo .crm{font-size:11px;color:var(--t3);letter-spacing:1px;margin-top:2px}
+.nav-sec{padding:16px 12px 8px}
+.nav-sec .lbl{font-size:10px;font-weight:700;letter-spacing:1.5px;color:var(--t3);text-transform:uppercase;padding:0 8px;margin-bottom:6px}
+.nav-item{padding:9px 12px;border-radius:var(--rx);color:var(--t2);cursor:pointer;font-size:13px;transition:all .15s;display:flex;align-items:center;gap:8px;margin-bottom:2px}
+.nav-item:hover{background:var(--card);color:var(--t1)}
+.nav-item.active{background:var(--bl-g);color:var(--bl);font-weight:600}
+.nav-item .badge-count{margin-left:auto;background:var(--border);color:var(--t2);font-size:10px;padding:1px 7px;border-radius:10px;font-weight:600}
+.main{flex:1;display:flex;flex-direction:column;overflow:hidden}
+.topbar{padding:16px 24px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:16px;flex-shrink:0}
+.topbar h2{font-size:16px;font-weight:700;white-space:nowrap}
+.topbar-r{display:flex;align-items:center;gap:10px;margin-left:auto}
+.search-box{display:flex;align-items:center;gap:8px;background:var(--bg2);border:1px solid var(--border);border-radius:var(--rx);padding:0 12px;width:260px;transition:border .2s}
+.search-box:focus-within{border-color:var(--bl)}
+.search-box input{border:none;background:transparent;padding:8px 0;flex:1}
+.search-box input:focus{border:none}
+.search-box span{color:var(--t3)}
+.topbar-btn{width:36px;height:36px;display:flex;align-items:center;justify-content:center;border-radius:var(--rx);font-size:18px;font-weight:300;background:var(--bl);border:none;color:#fff;cursor:pointer;transition:background .15s}
+.topbar-btn:hover{background:#2b7de9}
+
+/* Content */
+.content{flex:1;overflow-y:auto;padding:20px 24px}
+.hidden{display:none!important}
+
+/* Cards */
+.card{background:var(--card);border:1px solid var(--border);border-radius:var(--rx2);overflow:hidden}
+.card-hd{padding:14px 18px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between}
+.card-hd h3{font-size:14px;font-weight:600}
+.card-bd{padding:16px 18px}
+
+/* Stats */
+.stats-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:14px;margin-bottom:20px}
+.stat-card{background:var(--card);border:1px solid var(--border);border-radius:var(--rx2);padding:18px;position:relative;overflow:hidden}
+.stat-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px}
+.stat-card.sc-bl::before{background:var(--bl)}.stat-card.sc-gr::before{background:var(--gr)}.stat-card.sc-am::before{background:var(--am)}.stat-card.sc-pu::before{background:var(--pu)}.stat-card.sc-ro::before{background:var(--ro)}.stat-card.sc-cy::before{background:var(--cy)}
+.st-icon{font-size:22px;margin-bottom:10px}
+.st-val{font-size:28px;font-weight:800;letter-spacing:-1px}
+.st-lbl{font-size:11px;color:var(--t2);margin-top:2px}
+
+/* Pipeline */
+.pipeline{display:flex;gap:8px;margin-bottom:20px;overflow-x:auto;padding-bottom:4px}
+.ps{flex:1;min-width:100px;background:var(--card);border:1px solid var(--border);border-radius:var(--rx);padding:14px;text-align:center;cursor:pointer;transition:all .2s;position:relative}
+.ps:hover{border-color:var(--border2);transform:translateY(-2px);box-shadow:var(--shadow)}
+.ps .pl{font-size:11px;color:var(--t2);margin-bottom:6px}
+.ps .pn{font-size:22px;font-weight:800}
+
+/* Grid */
+.grid-2{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:20px}
+.chart-wrap{height:220px;position:relative}
+
+/* Table */
+.filter-bar{display:flex;align-items:center;gap:10px;margin-bottom:14px;flex-wrap:wrap}
+.filter-bar select{width:auto;min-width:130px;padding:6px 28px 6px 10px}
+.tbl-wrap{overflow-x:auto}
+table{width:100%;border-collapse:collapse}
+thead{position:sticky;top:0;z-index:1}
+th{background:var(--bg2);color:var(--t2);font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.5px;padding:10px 12px;text-align:left;border-bottom:1px solid var(--border);white-space:nowrap;cursor:pointer;user-select:none}
+th:hover{color:var(--t1)}
+td{padding:10px 12px;border-bottom:1px solid var(--border);white-space:nowrap;font-size:13px}
+tr:hover td{background:var(--card)}
+tr{cursor:pointer;transition:background .1s}
+.tag{display:inline-block;background:var(--bg2);color:var(--t2);border:1px solid var(--border);border-radius:4px;padding:1px 8px;font-size:11px}
+.st-badge{display:inline-block;padding:3px 10px;border-radius:12px;font-size:11px;font-weight:600}
+.st-new{background:rgba(56,139,253,.12);color:var(--bl)}
+.st-contacted{background:rgba(63,185,80,.12);color:var(--gr)}
+.st-quote{background:rgba(210,153,34,.12);color:var(--am)}
+.st-negotiate{background:rgba(163,113,247,.12);color:var(--pu)}
+.st-won{background:rgba(57,210,192,.12);color:var(--cy)}
+.st-lost{background:rgba(248,81,73,.12);color:var(--ro)}
+.rating{display:inline-flex;align-items:center;justify-content:center;width:24px;height:24px;border-radius:50%;font-size:11px;font-weight:800}
+.rating-a{background:rgba(248,81,73,.15);color:var(--ro)}
+.rating-b{background:rgba(210,153,34,.15);color:var(--am)}
+.rating-c{background:rgba(139,148,158,.15);color:var(--t2)}
+.prob-wrap{display:flex;align-items:center;gap:6px}
+.prob-bar{width:60px;height:5px;background:var(--bg);border-radius:3px;overflow:hidden}
+.prob-fill{height:100%;border-radius:3px;transition:width .3s}
+.prob-pct{font-size:11px;color:var(--t2);width:32px;text-align:right}
+.pager{display:flex;align-items:center;justify-content:space-between;padding:12px 0;font-size:12px;color:var(--t2)}
+.pager-btns{display:flex;gap:6px}
+.pager-btns button{padding:5px 12px}
+
+/* Kanban */
+.kanban{display:flex;gap:14px;height:calc(100vh - 180px);min-height:400px}
+.kanban-col{flex:1;min-width:200px;background:var(--bg2);border:1px solid var(--border);border-radius:var(--rx2);display:flex;flex-direction:column;overflow:hidden}
+.kanban-hd{padding:12px 14px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;flex-shrink:0}
+.kanban-hd .kc-title{font-size:12px;font-weight:600;display:flex;align-items:center;gap:6px}
+.kanban-hd .kc-dot{width:8px;height:8px;border-radius:50%}
+.kanban-hd .kc-count{font-size:11px;color:var(--t3);background:var(--card);padding:1px 8px;border-radius:8px}
+.kanban-body{flex:1;overflow-y:auto;padding:10px}
+.k-card{background:var(--card);border:1px solid var(--border);border-radius:var(--rx);padding:12px;margin-bottom:8px;cursor:pointer;transition:all .15s}
+.k-card:hover{border-color:var(--bl);transform:translateY(-1px);box-shadow:var(--shadow)}
+.k-card .kc-name{font-size:13px;font-weight:600;margin-bottom:4px}
+.k-card .kc-sub{font-size:11px;color:var(--t2);margin-bottom:6px}
+.k-card .kc-tags{display:flex;gap:4px;flex-wrap:wrap}
+
+/* Timeline */
+.tl-item{display:flex;gap:10px;padding:10px 0;border-bottom:1px solid var(--border)}
+.tl-item:last-child{border-bottom:none}
+.tl-dot{width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0}
+.tl-dot.dc-email{background:rgba(56,139,253,.12)}.tl-dot.dc-call{background:rgba(63,185,80,.12)}.tl-dot.dc-wechat{background:rgba(57,210,192,.12)}.tl-dot.dc-visit{background:rgba(163,113,247,.12)}.tl-dot.dc-other{background:rgba(139,148,158,.12)}
+.tl-body{flex:1;min-width:0}
+.tl-date{font-size:11px;color:var(--t3);margin-bottom:2px}
+.tl-content{font-size:13px;color:var(--t1);word-break:break-word}
+.tl-action{font-size:12px;color:var(--cy);margin-top:3px}
+.tl-del{background:none;border:none;color:var(--t3);cursor:pointer;font-size:11px;padding:2px 4px;border-radius:3px;margin-left:8px;opacity:0;transition:opacity .15s}
+.tl-item:hover .tl-del{opacity:1}
+.tl-del:hover{color:var(--ro);background:var(--ro-g)}
+
+/* Modal */
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.7);backdrop-filter:blur(4px);z-index:100;display:none;align-items:center;justify-content:center}
+.modal-overlay.show{display:flex}
+.modal{width:94vw;max-width:1100px;height:88vh;background:var(--card);border:1px solid var(--border);border-radius:var(--rx2);display:flex;flex-direction:column;box-shadow:0 24px 80px rgba(0,0,0,.5);animation:modalIn .2s ease}
+@keyframes modalIn{from{opacity:0;transform:scale(.97) translateY(10px)}to{opacity:1;transform:none}}
+.modal-head{padding:16px 20px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;flex-shrink:0}
+.modal-head h2{font-size:16px;font-weight:700}
+.modal-head-btns{display:flex;gap:8px}
+.modal-close{width:32px;height:32px;display:flex;align-items:center;justify-content:center;border-radius:var(--rx);font-size:16px;cursor:pointer;border:1px solid var(--border);background:var(--card2);color:var(--t2);transition:all .15s}
+.modal-close:hover{color:var(--ro);border-color:var(--ro);background:var(--ro-g)}
+.modal-body{flex:1;display:flex;overflow:hidden}
+
+/* Split Panel */
+.m-left{width:38%;border-right:1px solid var(--border);overflow-y:auto;padding:16px 20px}
+.m-right{flex:1;display:flex;flex-direction:column;overflow:hidden}
+.info-section{margin-bottom:18px}
+.info-section h4{font-size:12px;font-weight:700;color:var(--t2);letter-spacing:.5px;margin-bottom:10px;display:flex;align-items:center;gap:6px}
+.field{margin-bottom:10px}
+.field label{display:block;font-size:11px;color:var(--t3);margin-bottom:4px;font-weight:500}
+.field input,.field select,.field textarea{width:100%}
+.rating-selector{display:flex;gap:8px}
+.rating-dot{width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:800;cursor:pointer;border:2px solid var(--border);transition:all .15s}
+.rating-dot:hover{transform:scale(1.1)}
+.rating-dot.rd-a{color:var(--ro)}.rating-dot.rd-b{color:var(--am)}.rating-dot.rd-c{color:var(--t3)}
+.rating-dot.on.rd-a{border-color:var(--ro);background:var(--ro-g)}.rating-dot.on.rd-b{border-color:var(--am);background:var(--am-g)}.rating-dot.on.rd-c{border-color:var(--t3);background:rgba(139,148,158,.1)}
+
+/* Follow-up Input */
+.tl-header{padding:12px 16px;border-bottom:1px solid var(--border);font-size:13px;font-weight:600;flex-shrink:0;display:flex;align-items:center;justify-content:space-between}
+.tl-scroll{flex:1;overflow-y:auto;padding:10px 16px}
+.fu-input{padding:12px 16px;border-top:1px solid var(--border);display:flex;gap:8px;align-items:center;flex-shrink:0;background:var(--bg2)}
+.fu-methods{display:flex;gap:4px}
+.fu-method-btn{width:34px;height:34px;display:flex;align-items:center;justify-content:center;border-radius:var(--rx);border:1px solid var(--border);background:var(--card);cursor:pointer;font-size:14px;transition:all .15s}
+.fu-method-btn:hover{border-color:var(--border2)}
+.fu-method-btn.on{border-color:var(--bl);background:var(--bl-g)}
+.fu-input input{flex:1;border-radius:var(--rx)}
+.fu-send{width:36px;height:36px;display:flex;align-items:center;justify-content:center;border-radius:var(--rx);background:var(--bl);border:none;color:#fff;font-size:16px;cursor:pointer;transition:background .15s}
+.fu-send:hover{background:#2b7de9}
+
+/* Toast */
+.toast{position:fixed;bottom:24px;right:24px;background:var(--card2);border:1px solid var(--border);color:var(--t1);padding:10px 18px;border-radius:var(--rx);font-size:13px;box-shadow:var(--shadow);transform:translateY(80px);opacity:0;transition:all .3s;z-index:200}
+.toast.show{transform:translateY(0);opacity:1}
+
+/* Empty State */
+.empty-state{text-align:center;padding:40px 20px;color:var(--t3)}
+.empty-state .es-icon{font-size:36px;margin-bottom:10px}
+.empty-state p{font-size:13px}
+
+/* Responsive */
+@media(max-width:768px){
+  .sidebar{width:56px}.sidebar .lbl,.sidebar-logo .crm,.nav-item span{display:none}
+  .sidebar-logo .mark{font-size:14px;letter-spacing:1px}
+  .nav-item{justify-content:center;padding:10px}
+  .kanban{flex-direction:column;height:auto}
+  .kanban-col{min-height:200px}
+  .modal{width:100vw;height:100vh;max-width:none;border-radius:0}
+  .m-left{width:100%;border-right:none;border-bottom:1px solid var(--border)}
+  .modal-body{flex-direction:column}
+  .stats-row{grid-template-columns:repeat(2,1fr)}
+  .grid-2{grid-template-columns:1fr}
+}
+</style>
+</head>
+<body>
+<div class="app">
+  <!-- Sidebar -->
+  <aside class="sidebar">
+    <div class="sidebar-logo">
+      <div class="mark">McKINSEY</div>
+      <div class="crm">CRM System</div>
+    </div>
+    <div class="nav-sec">
+      <div class="lbl">概览</div>
+      <div class="nav-item active" data-v="dashboard" onclick="switchView('dashboard')"><span>📊</span><span>仪表盘</span></div>
+      <div class="nav-item" data-v="table" onclick="switchView('table')"><span>📋</span><span>客户列表</span></div>
+      <div class="nav-item" data-v="kanban" onclick="switchView('kanban')"><span>📌</span><span>看板视图</span></div>
+    </div>
+    <div class="nav-sec">
+      <div class="lbl">管理</div>
+      <div class="nav-item" data-v="followups" onclick="switchView('followups')"><span>📝</span><span>跟进记录</span></div>
+      <div class="nav-item admin-only" onclick="exportData()"><span>📤</span><span>导出数据</span></div>
+      <div class="nav-item admin-only" onclick="document.getElementById('fileImport').click()"><span>📥</span><span>导入数据</span></div>
+      <div class="nav-item admin-only" onclick="resetData()"><span>🔄</span><span>重置数据</span></div>
+    </div>
+  </aside>
+
+  <!-- Main -->
+  <div class="main">
+    <div class="topbar">
+      <h2 id="pageTitle">McKinsey CRM</h2>
+      <div class="topbar-r">
+        <div class="search-box"><span>🔍</span><input id="globalSearch" placeholder="搜索客户..." oninput="onSearch()"></div>
+        <button class="topbar-btn admin-only" onclick="addCustomer()" title="新增客户">+</button>
+      </div>
+    </div>
+    <div class="content">
+      <div id="vDash"></div>
+      <div id="vTable" class="hidden"></div>
+      <div id="vKanban" class="hidden"></div>
+      <div id="vFollowups" class="hidden"></div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal -->
+<div class="modal-overlay" id="modalOverlay" onclick="if(event.target===this)closeModal()">
+  <div class="modal" onclick="event.stopPropagation()">
+    <div class="modal-head" id="modalHead"></div>
+    <div class="modal-body">
+      <div class="m-left" id="modalLeft"></div>
+      <div class="m-right" id="modalRight"></div>
+    </div>
+  </div>
+</div>
+
+<input type="file" id="fileImport" accept=".json" style="display:none" onchange="importData(event)">
+<div class="toast" id="toast"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+window.onerror = function(msg, u, line, col, err) {
+  document.body.innerHTML = '<div style="padding:40px;color:#f85149;font-family:monospace;font-size:14px;background:#0a0e1a;min-height:100vh"><h2>❌ JavaScript Error</h2><p style="color:#d29922">Line '+line+': '+msg+'</p><pre style="color:#8b949e;font-size:12px;margin-top:16px;white-space:pre-wrap">'+(err&&err.stack?err.stack:'No stack trace')+'</pre></div>';
+};
+var SEED_DATA = [{"id":1,"company":"上海垣信卫星科技有限公司","industry":"卫星通信/商业航天","description":"国内领先的商业卫星科技公司，主营低轨卫星星座建设与运营","name":"余少文","title":"COE","phone":"13524950999","wechat":"","email":"shaowen.yu@gmscosmo.com","need":"未知","region":"","rating":"B","prob":60,"status":"quote","owner":"Jack Lao","lastFollow":"2026-04-05","nextFollow":"2026-04-10","method":"","feedback":"","source":"智享会","tags":["已发邮件"],"created":"2026-03-18","note":"","followUps":[{"date":"2026-03-31","method":"邮件","content":"发送 INS Global 智享会邀请邮件至 shaowen.yu@gmscosmo.com","action":"等待回复"},{"date":"2026-04-03","method":"微信","content":"微信跟进，对方表示感兴趣","action":"约电话会议"},{"date":"2026-04-05","method":"电话","content":"电话沟通30分钟，确认EOR需求","action":"准备报价单"}]},{"id":2,"company":"一道新能源科技股份有限公司","industry":"新能源/光伏","description":"国内头部光伏组件制造商，专注高效太阳能电池及组件","name":"万清南","title":"法国HR","phone":"18672831026","wechat":"","email":"qingnan.wan@das-solar.com","need":"未知","region":"","rating":"B","prob":20,"status":"contacted","owner":"Jack Lao","lastFollow":"2026-03-31","nextFollow":"2026-04-10","method":"","feedback":"","source":"智享会","tags":["已发邮件"],"created":"2026-03-18","note":"","followUps":[{"date":"2026-03-31","method":"邮件","content":"发送 INS Global 智享会邀请邮件至 qingnan.wan@das-solar.com","action":"等待回复"}]},{"id":3,"company":"奥伯尼（Albany）","industry":"工业材料/先进制造","description":"美国Albany International中国子公司，全球工业纺织品制造商","name":"王策","title":"薪酬","phone":"13757165029","wechat":"","email":"kate.wang@albint.com","need":"未知","region":"","rating":"B","prob":20,"status":"contacted","owner":"Jack Lao","lastFollow":"2026-03-31","nextFollow":"2026-04-10","method":"","feedback":"","source":"智享会","tags":["已发邮件"],"created":"2026-03-18","note":"","followUps":[{"date":"2026-03-31","method":"邮件","content":"发送 INS Global 智享会邀请邮件至 kate.wang@albint.com","action":"等待回复"}]},{"id":4,"company":"蓝宸数联","industry":"企业数字化服务","description":"聚焦企业数字化转型，提供数据中台与智能管理解决方案","name":"徐新宇","title":"HRD","phone":"13588449938","wechat":"","email":"415065913@qq.com","need":"未知","region":"","rating":"B","prob":20,"status":"contacted","owner":"Jack Lao","lastFollow":"2026-03-31","nextFollow":"2026-04-10","method":"","feedback":"","source":"智享会","tags":["已发邮件"],"created":"2026-03-18","note":"","followUps":[{"date":"2026-03-31","method":"邮件","content":"发送 INS Global 智享会邀请邮件至 415065913@qq.com","action":"等待回复"}]},{"id":5,"company":"国轩高科（Gotion）","industry":"新能源/动力电池","description":"A股上市动力电池龙头（002074），大众入股，专注动力锂电池","name":"薛女士","title":"HRBP","phone":"15053255793","wechat":"","email":"janetxyc@outlook.com","need":"未知","region":"","rating":"A","prob":20,"status":"contacted","owner":"Jack Lao","lastFollow":"2026-03-31","nextFollow":"2026-04-10","method":"","feedback":"","source":"智享会","tags":["已发邮件"],"created":"2026-03-18","note":"","followUps":[{"date":"2026-03-31","method":"邮件","content":"发送 INS Global 智享会邀请邮件至 janetxyc@outlook.com","action":"等待回复"}]},{"id":6,"company":"上海路明星光智能科技有限公司","industry":"人工智能/智能制造","description":"AI驱动的智能制造解决方案提供商","name":"周静","title":"人事经理","phone":"15102745816","wechat":"","email":"hr@lumin-ai.cn","need":"未知","region":"","rating":"B","prob":60,"status":"quote","owner":"Jack Lao","lastFollow":"2026-04-05","nextFollow":"2026-04-10","method":"","feedback":"","source":"智享会","tags":["已发邮件"],"created":"2026-03-18","note":"","followUps":[{"date":"2026-03-31","method":"邮件","content":"发送 INS Global 智享会邀请邮件至 hr@lumin-ai.cn","action":"等待回复"},{"date":"2026-04-03","method":"微信","content":"微信跟进，对方表示感兴趣","action":"约电话会议"},{"date":"2026-04-05","method":"电话","content":"电话沟通30分钟，确认EOR需求","action":"准备报价单"}]},{"id":7,"company":"上海镁镁合金压铸有限公司","industry":"汽车零部件/压铸","description":"专业从事镁铝合金压铸件研发与生产","name":"张敬平","title":"HRM","phone":"13454596520","wechat":"","email":"jpzhang@meridian-mag.com","need":"未知","region":"","rating":"B","prob":20,"status":"contacted","owner":"Jack Lao","lastFollow":"2026-03-31","nextFollow":"2026-04-10","method":"","feedback":"","source":"智享会","tags":["已发邮件"],"created":"2026-03-18","note":"","followUps":[{"date":"2026-03-31","method":"邮件","content":"发送 INS Global 智享会邀请邮件至 jpzhang@meridian-mag.com","action":"等待回复"}]},{"id":8,"company":"杭州大立过滤设备股份有限公司","industry":"环保设备/过滤","description":"国内过滤设备行业领先企业","name":"赵苗清","title":"HRBP","phone":"15606569720","wechat":"","email":"691462848@qq.com","need":"未知","region":"","rating":"B","prob":20,"status":"contacted","owner":"Jack Lao","lastFollow":"2026-03-31","nextFollow":"2026-04-10","method":"","feedback":"","source":"智享会","tags":["已发邮件"],"created":"2026-03-18","note":"","followUps":[{"date":"2026-03-31","method":"邮件","content":"发送 INS Global 智享会邀请邮件至 691462848@qq.com","action":"等待回复"}]},{"id":9,"company":"浙江迈德斯特医疗器械科技有限公司","industry":"医疗器械","description":"医疗器械研发与生产企业，主营康复设备","name":"吴芳","title":"薪酬绩效专家","phone":"18106536601","wechat":"","email":"fang.wu@maidesite.com","need":"未知","region":"","rating":"B","prob":60,"status":"quote","owner":"Jack Lao","lastFollow":"2026-04-05","nextFollow":"2026-04-10","method":"","feedback":"","source":"智享会","tags":["已发邮件"],"created":"2026-03-18","note":"","followUps":[{"date":"2026-03-31","method":"邮件","content":"发送 INS Global 智享会邀请邮件至 fang.wu@maidesite.com","action":"等待回复"},{"date":"2026-04-03","method":"微信","content":"微信跟进，对方表示感兴趣","action":"约电话会议"},{"date":"2026-04-05","method":"电话","content":"电话沟通30分钟，确认EOR需求","action":"准备报价单"}]},{"id":10,"company":"博西家电中国投资有限公司","industry":"家电/消费品","description":"博世与西门子合资跨国家电巨头中国公司","name":"马卉","title":"Head of C&B","phone":"13813815367","wechat":"","email":"angela.ma@bshg.com","need":"未知","region":"","rating":"A","prob":20,"status":"contacted","owner":"Jack Lao","lastFollow":"2026-03-31","nextFollow":"2026-04-10","method":"","feedback":"","source":"智享会","tags":["已发邮件"],"created":"2026-03-18","note":"","followUps":[{"date":"2026-03-31","method":"邮件","content":"发送 INS Global 智享会邀请邮件至 angela.ma@bshg.com","action":"等待回复"}]},{"id":11,"company":"扬州合众电力工程有限公司","industry":"电力工程","description":"电力工程总承包与电力设施建设","name":"王翠萍","title":"HRD","phone":"18268171257","wechat":"","email":"635249730@qq.com","need":"未知","region":"","rating":"B","prob":20,"status":"contacted","owner":"Jack Lao","lastFollow":"2026-03-31","nextFollow":"2026-04-10","method":"","feedback":"","source":"智享会","tags":["已发邮件"],"created":"2026-03-18","note":"","followUps":[{"date":"2026-03-31","method":"邮件","content":"发送 INS Global 智享会邀请邮件至 635249730@qq.com","action":"等待回复"}]},{"id":12,"company":"浙江黎明智造股份有限公司","industry":"汽车零部件/智能制造","description":"A股上市（603048），汽车精密零部件研发与制造","name":"高山","title":"人力资源经理","phone":"18857053133","wechat":"","email":"gaoshan@zhejiangliming.com","need":"未知","region":"","rating":"B","prob":20,"status":"contacted","owner":"Jack Lao","lastFollow":"2026-03-31","nextFollow":"2026-04-10","method":"","feedback":"","source":"智享会","tags":["已发邮件"],"created":"2026-03-18","note":"","followUps":[{"date":"2026-03-31","method":"邮件","content":"发送 INS Global 智享会邀请邮件至 gaoshan@zhejiangliming.com","action":"等待回复"}]},{"id":13,"company":"宁波诺丁汉大学","industry":"高等教育","description":"中国第一所中外合作大学","name":"王佩琦","title":"薪酬福利主管","phone":"13023168648","wechat":"","email":"peiqi.wang@nottingham.edu.cn","need":"未知","region":"","rating":"B","prob":20,"status":"contacted","owner":"Jack Lao","lastFollow":"2026-03-31","nextFollow":"2026-04-10","method":"","feedback":"","source":"智享会","tags":["已发邮件"],"created":"2026-03-18","note":"","followUps":[{"date":"2026-03-31","method":"邮件","content":"发送 INS Global 智享会邀请邮件至 peiqi.wang@nottingham.edu.cn","action":"等待回复"}]},{"id":14,"company":"九牧厨卫股份有限公司","industry":"厨卫/消费品","description":"中国厨卫行业领军品牌","name":"黄秋英","title":"共享负责人","phone":"18005061908","wechat":"","email":"huangqiuying@jomoo.cn","need":"未知","region":"","rating":"A","prob":60,"status":"quote","owner":"Jack Lao","lastFollow":"2026-04-05","nextFollow":"2026-04-10","method":"","feedback":"","source":"智享会","tags":["已发邮件"],"created":"2026-03-18","note":"","followUps":[{"date":"2026-03-31","method":"邮件","content":"发送 INS Global 智享会邀请邮件至 huangqiuying@jomoo.cn","action":"等待回复"},{"date":"2026-04-03","method":"微信","content":"微信跟进，对方表示感兴趣","action":"约电话会议"},{"date":"2026-04-05","method":"电话","content":"电话沟通30分钟，确认EOR需求","action":"准备报价单"}]},{"id":15,"company":"浙江建安工程管理有限公司","industry":"工程管理","description":"绿城旗下专业工程管理公司","name":"桂莹","title":"人事行政经理","phone":"13777411691","wechat":"","email":"guiying@greentowndec.com","need":"未知","region":"","rating":"B","prob":20,"status":"contacted","owner":"Jack Lao","lastFollow":"2026-03-31","nextFollow":"2026-04-10","method":"","feedback":"","source":"智享会","tags":["已发邮件"],"created":"2026-03-18","note":"","followUps":[{"date":"2026-03-31","method":"邮件","content":"发送 INS Global 智享会邀请邮件至 guiying@greentowndec.com","action":"等待回复"}]},{"id":16,"company":"中储智运科技股份有限公司","industry":"物流科技","description":"央企中国物流集团旗下网络货运平台","name":"张俊杰","title":"人力负责人","phone":"18761887796","wechat":"","email":"zhangjunjie@zczy56.com","need":"未知","region":"","rating":"B","prob":60,"status":"quote","owner":"Jack Lao","lastFollow":"2026-04-05","nextFollow":"2026-04-10","method":"","feedback":"","source":"智享会","tags":["已发邮件"],"created":"2026-03-18","note":"","followUps":[{"date":"2026-03-31","method":"邮件","content":"发送 INS Global 智享会邀请邮件至 zhangjunjie@zczy56.com","action":"等待回复"},{"date":"2026-04-03","method":"微信","content":"微信跟进，对方表示感兴趣","action":"约电话会议"},{"date":"2026-04-05","method":"电话","content":"电话沟通30分钟，确认EOR需求","action":"准备报价单"}]},{"id":17,"company":"九牧集团","industry":"厨卫/消费品","description":"中国厨卫行业龙头集团","name":"李婷婷","title":"人事运营经理","phone":"19959968591","wechat":"","email":"litingting@jomoo.cn","need":"未知","region":"","rating":"A","prob":20,"status":"contacted","owner":"Jack Lao","lastFollow":"2026-03-31","nextFollow":"2026-04-10","method":"","feedback":"","source":"智享会","tags":["已发邮件"],"created":"2026-03-18","note":"","followUps":[{"date":"2026-03-31","method":"邮件","content":"发送 INS Global 智享会邀请邮件至 litingting@jomoo.cn","action":"等待回复"}]},{"id":18,"company":"杭州研趣信息技术有限公司（试研家）","industry":"互联网/教育科技","description":"考研在线教育平台「试研家」","name":"叶乾婵","title":"薪酬绩效","phone":"15068720101","wechat":"","email":"yeqianchan@shiyanjia.com","need":"未知","region":"","rating":"B","prob":20,"status":"contacted","owner":"Jack Lao","lastFollow":"2026-03-31","nextFollow":"2026-04-10","method":"","feedback":"","source":"智享会","tags":["已发邮件"],"created":"2026-03-18","note":"","followUps":[{"date":"2026-03-31","method":"邮件","content":"发送 INS Global 智享会邀请邮件至 yeqianchan@shiyanjia.com","action":"等待回复"}]},{"id":19,"company":"杭州数美科技有限公司","industry":"人工智能/内容安全","description":"国内领先内容安全与反欺诈技术服务商","name":"韩舒婷","title":"HR","phone":"15158191202","wechat":"","email":"hanst@dtsphere.com","need":"未知","region":"","rating":"B","prob":60,"status":"quote","owner":"Jack Lao","lastFollow":"2026-04-05","nextFollow":"2026-04-10","method":"","feedback":"","source":"智享会","tags":["已发邮件"],"created":"2026-03-18","note":"","followUps":[{"date":"2026-03-31","method":"邮件","content":"发送 INS Global 智享会邀请邮件至 hanst@dtsphere.com","action":"等待回复"},{"date":"2026-04-03","method":"微信","content":"微信跟进，对方表示感兴趣","action":"约电话会议"},{"date":"2026-04-05","method":"电话","content":"电话沟通30分钟，确认EOR需求","action":"准备报价单"}]},{"id":20,"company":"太平人寿浙江分公司","industry":"保险/金融服务","description":"中国太平保险集团旗下寿险浙江分支机构","name":"傅迎春","title":"薪酬绩效室负责人","phone":"13429600175","wechat":"","email":"fuyc@tpl.cntaiping.com","need":"未知","region":"","rating":"B","prob":20,"status":"contacted","owner":"Jack Lao","lastFollow":"2026-03-31","nextFollow":"2026-04-10","method":"","feedback":"","source":"智享会","tags":["已发邮件"],"created":"2026-03-18","note":"","followUps":[{"date":"2026-03-31","method":"邮件","content":"发送 INS Global 智享会邀请邮件至 fuyc@tpl.cntaiping.com","action":"等待回复"}]},{"id":21,"company":"威廉姆斯苏州控制系统有限公司（Curtiss-Wright）","industry":"航空/工业控制","description":"美国Curtiss-Wright集团在华子公司","name":"安静","title":"高级人力资源经理","phone":"13771811897","wechat":"","email":"aann@curtisswright.cn","need":"未知","region":"","rating":"B","prob":60,"status":"quote","owner":"Jack Lao","lastFollow":"2026-04-05","nextFollow":"2026-04-10","method":"","feedback":"","source":"智享会","tags":["已发邮件"],"created":"2026-03-18","note":"","followUps":[{"date":"2026-03-31","method":"邮件","content":"发送 INS Global 智享会邀请邮件至 aann@curtisswright.cn","action":"等待回复"},{"date":"2026-04-03","method":"微信","content":"微信跟进，对方表示感兴趣","action":"约电话会议"},{"date":"2026-04-05","method":"电话","content":"电话沟通30分钟，确认EOR需求","action":"准备报价单"}]},{"id":22,"company":"上海瑞鹏宠物医院有限公司（新瑞鹏）","industry":"宠物医疗","description":"中国最大宠物医疗集团新瑞鹏旗下","name":"邓巧","title":"薪酬经理","phone":"18717783561","wechat":"","email":"dengqiao@nrp-pet.cn","need":"未知","region":"","rating":"A","prob":20,"status":"contacted","owner":"Jack Lao","lastFollow":"2026-03-31","nextFollow":"2026-04-10","method":"","feedback":"","source":"智享会","tags":["已发邮件"],"created":"2026-03-18","note":"","followUps":[{"date":"2026-03-31","method":"邮件","content":"发送 INS Global 智享会邀请邮件至 dengqiao@nrp-pet.cn","action":"等待回复"}]},{"id":23,"company":"浙江黎明智造股份有限公司","industry":"汽车零部件/智能制造","description":"A股上市（603048），汽车精密零部件研发与制造","name":"罗晓斐","title":"人事专员","phone":"18767101735","wechat":"","email":"luoxiaofei@zhejiangliming.com","need":"未知","region":"","rating":"B","prob":20,"status":"contacted","owner":"Jack Lao","lastFollow":"2026-03-31","nextFollow":"2026-04-10","method":"","feedback":"","source":"智享会","tags":["已发邮件"],"created":"2026-03-18","note":"","followUps":[{"date":"2026-03-31","method":"邮件","content":"发送 INS Global 智享会邀请邮件至 luoxiaofei@zhejiangliming.com","action":"等待回复"}]},{"id":24,"company":"杭州大地科技有限公司","industry":"科技服务","description":"科技研发与服务型企业","name":"俞群燕","title":"人事经理","phone":"13758136537","wechat":"","email":"2438356084@qq.com","need":"未知","region":"","rating":"B","prob":20,"status":"contacted","owner":"Jack Lao","lastFollow":"2026-03-31","nextFollow":"2026-04-10","method":"","feedback":"","source":"智享会","tags":["已发邮件"],"created":"2026-03-18","note":"","followUps":[{"date":"2026-03-31","method":"邮件","content":"发送 INS Global 智享会邀请邮件至 2438356084@qq.com","action":"等待回复"}]},{"id":25,"company":"正泰安能数字能源（浙江）股份有限公司","industry":"新能源/光伏","description":"正泰集团旗下户用光伏龙头","name":"唐素娟","title":"HRM","phone":"15850597702","wechat":"","email":"sujuan.tang@chintanneng.com","need":"未知","region":"","rating":"A","prob":20,"status":"contacted","owner":"Jack Lao","lastFollow":"2026-03-31","nextFollow":"2026-04-10","method":"","feedback":"","source":"智享会","tags":["已发邮件"],"created":"2026-03-18","note":"","followUps":[{"date":"2026-03-31","method":"邮件","content":"发送 INS Global 智享会邀请邮件至 sujuan.tang@chintanneng.com","action":"等待回复"}]},{"id":26,"company":"明康汇生态农业集团有限公司（海亮集团旗下）","industry":"农业/生鲜供应链","description":"海亮集团旗下生鲜全产业链品牌","name":"沈晔","title":"人事主管","phone":"15257104501","wechat":"","email":"yangshenye@hailiang.com","need":"未知","region":"","rating":"B","prob":60,"status":"quote","owner":"Jack Lao","lastFollow":"2026-04-05","nextFollow":"2026-04-10","method":"","feedback":"","source":"智享会","tags":["已发邮件"],"created":"2026-03-18","note":"","followUps":[{"date":"2026-03-31","method":"邮件","content":"发送 INS Global 智享会邀请邮件至 yangshenye@hailiang.com","action":"等待回复"},{"date":"2026-04-03","method":"微信","content":"微信跟进，对方表示感兴趣","action":"约电话会议"},{"date":"2026-04-05","method":"电话","content":"电话沟通30分钟，确认EOR需求","action":"准备报价单"}]},{"id":27,"company":"杭州大地科技有限公司","industry":"科技服务","description":"科技研发与服务型企业","name":"卢宏宣","title":"行政人事","phone":"18340822067","wechat":"","email":"lhx@hzdaditech.cn","need":"未知","region":"","rating":"B","prob":20,"status":"contacted","owner":"Jack Lao","lastFollow":"2026-03-31","nextFollow":"2026-04-10","method":"","feedback":"","source":"智享会","tags":["已发邮件"],"created":"2026-03-18","note":"","followUps":[{"date":"2026-03-31","method":"邮件","content":"发送 INS Global 智享会邀请邮件至 lhx@hzdaditech.cn","action":"等待回复"}]},{"id":28,"company":"绿城房地产建设管理集团有限公司（绿城管理）","industry":"房地产/代建","description":"港股上市（9979.HK），中国最大房地产代建服务商","name":"史银华","title":"薪酬绩效总监","phone":"13916779623","wechat":"","email":"shiyinhua@chinagreentown.com","need":"未知","region":"","rating":"A","prob":20,"status":"contacted","owner":"Jack Lao","lastFollow":"2026-03-31","nextFollow":"2026-04-10","method":"","feedback":"","source":"智享会","tags":["已发邮件"],"created":"2026-03-18","note":"","followUps":[{"date":"2026-03-31","method":"邮件","content":"发送 INS Global 智享会邀请邮件至 shiyinhua@chinagreentown.com","action":"等待回复"}]},{"id":29,"company":"宁波太平鸟风尚服饰有限公司","industry":"服装/零售","description":"A股上市（603877），国内头部潮流服饰企业","name":"林秋韵","title":"HR","phone":"18768140547","wechat":"","email":"lin.qiuyun@peacebird.com","need":"未知","region":"","rating":"A","prob":20,"status":"contacted","owner":"Jack Lao","lastFollow":"2026-03-31","nextFollow":"2026-04-10","method":"","feedback":"","source":"智享会","tags":["已发邮件"],"created":"2026-03-18","note":"","followUps":[{"date":"2026-03-31","method":"邮件","content":"发送 INS Global 智享会邀请邮件至 lin.qiuyun@peacebird.com","action":"等待回复"}]},{"id":30,"company":"美欣达欣环卫科技有限公司（美欣达集团）","industry":"环保/城市服务","description":"美欣达集团旗下城市环卫服务","name":"孙徐剑","title":"人力资源专员","phone":"15005725905","wechat":"","email":"sunxj@mizuda.net","need":"未知","region":"","rating":"B","prob":20,"status":"contacted","owner":"Jack Lao","lastFollow":"2026-03-31","nextFollow":"2026-04-10","method":"","feedback":"","source":"智享会","tags":["已发邮件"],"created":"2026-03-18","note":"","followUps":[{"date":"2026-03-31","method":"邮件","content":"发送 INS Global 智享会邀请邮件至 sunxj@mizuda.net","action":"等待回复"}]},{"id":31,"company":"杭州朱丽燕网络科技有限公司","industry":"互联网/电商","description":"互联网科技企业","name":"朱蕾","title":"HR","phone":"15868198730","wechat":"","email":"zhulei1@ihappy.net.cn","need":"未知","region":"","rating":"B","prob":20,"status":"contacted","owner":"Jack Lao","lastFollow":"2026-03-31","nextFollow":"2026-04-10","method":"","feedback":"","source":"智享会","tags":["已发邮件"],"created":"2026-03-18","note":"","followUps":[{"date":"2026-03-31","method":"邮件","content":"发送 INS Global 智享会邀请邮件至 zhulei1@ihappy.net.cn","action":"等待回复"}]},{"id":32,"company":"杭州朱丽燕网络科技有限公司","industry":"互联网/电商","description":"互联网科技企业","name":"姚云霞","title":"HRBP","phone":"13655714916","wechat":"","email":"yaoyunxia@ihappy.net.cn","need":"未知","region":"","rating":"B","prob":20,"status":"contacted","owner":"Jack Lao","lastFollow":"2026-03-31","nextFollow":"2026-04-10","method":"","feedback":"","source":"智享会","tags":["已发邮件"],"created":"2026-03-18","note":"","followUps":[{"date":"2026-03-31","method":"邮件","content":"发送 INS Global 智享会邀请邮件至 yaoyunxia@ihappy.net.cn","action":"等待回复"}]},{"id":33,"company":"泰昌集团","industry":"电力设备/基建","description":"电力线路器材和基础设施建设综合性集团","name":"朱蒙蒙","title":"人力资源部主管","phone":"18867837811","wechat":"","email":"1085196237@qq.com","need":"未知","region":"","rating":"B","prob":20,"status":"contacted","owner":"Jack Lao","lastFollow":"2026-03-31","nextFollow":"2026-04-10","method":"","feedback":"","source":"智享会","tags":["已发邮件"],"created":"2026-03-18","note":"","followUps":[{"date":"2026-03-31","method":"邮件","content":"发送 INS Global 智享会邀请邮件至 1085196237@qq.com","action":"等待回复"}]},{"id":34,"company":"杭州智元研究院有限公司","industry":"科研/人工智能","description":"人工智能与前沿技术研究机构","name":"刘尊龙","title":"人力资源部部长","phone":"15158005621","wechat":"","email":"qiulanting@zhiyuan.com","need":"未知","region":"","rating":"B","prob":20,"status":"contacted","owner":"Jack Lao","lastFollow":"2026-03-31","nextFollow":"2026-04-10","method":"","feedback":"","source":"智享会","tags":["已发邮件"],"created":"2026-03-18","note":"","followUps":[{"date":"2026-03-31","method":"邮件","content":"发送 INS Global 智享会邀请邮件至 qiulanting@zhiyuan.com","action":"等待回复"}]},{"id":35,"company":"泰昌科技","industry":"电力设备","description":"泰昌集团旗下科技子公司","name":"程程","title":"人力资源部部长","phone":"19975256692","wechat":"","email":"chengjing@tckjhz.com","need":"未知","region":"","rating":"B","prob":20,"status":"contacted","owner":"Jack Lao","lastFollow":"2026-03-31","nextFollow":"2026-04-10","method":"","feedback":"","source":"智享会","tags":["已发邮件"],"created":"2026-03-18","note":"","followUps":[{"date":"2026-03-31","method":"邮件","content":"发送 INS Global 智享会邀请邮件至 chengjing@tckjhz.com","action":"等待回复"}]},{"id":36,"company":"台达电子（Delta）","industry":"电子/电源管理","description":"全球知名电源管理与散热解决方案提供商","name":"谢嫦","title":"招募经理","phone":"13751259548","wechat":"","email":"chang.xie@deltaww.com","need":"未知","region":"","rating":"A","prob":20,"status":"contacted","owner":"Jack Lao","lastFollow":"2026-03-31","nextFollow":"2026-04-10","method":"","feedback":"","source":"智享会","tags":["已发邮件"],"created":"2026-03-18","note":"","followUps":[{"date":"2026-03-31","method":"邮件","content":"发送 INS Global 智享会邀请邮件至 chang.xie@deltaww.com","action":"等待回复"}]},{"id":37,"company":"云南华新建材投资有限公司（华新水泥）","industry":"建材/水泥","description":"华新水泥（900933）云南投资平台","name":"陈平","title":"HR助理副总监","phone":"13688701616","wechat":"","email":"chenping_dc@huaxincem.com","need":"未知","region":"","rating":"B","prob":20,"status":"contacted","owner":"Jack Lao","lastFollow":"2026-03-31","nextFollow":"2026-04-10","method":"","feedback":"","source":"智享会","tags":["已发邮件"],"created":"2026-03-18","note":"","followUps":[{"date":"2026-03-31","method":"邮件","content":"发送 INS Global 智享会邀请邮件至 chenping_dc@huaxincem.com","action":"等待回复"}]},{"id":38,"company":"重庆长安民生物流股份有限公司","industry":"汽车物流","description":"港股上市（1292.HK），长安汽车旗下专业物流","name":"徐媛","title":"薪酬绩效科经理","phone":"18696668059","wechat":"","email":"xuyuan@camsl.com","need":"未知","region":"","rating":"A","prob":20,"status":"contacted","owner":"Jack Lao","lastFollow":"2026-03-31","nextFollow":"2026-04-10","method":"","feedback":"","source":"智享会","tags":["已发邮件"],"created":"2026-03-18","note":"","followUps":[{"date":"2026-03-31","method":"邮件","content":"发送 INS Global 智享会邀请邮件至 xuyuan@camsl.com","action":"等待回复"}]},{"id":39,"company":"浙江仙琚制药股份有限公司","industry":"医药/制药","description":"A股上市（002332），国内甾体药物龙头","name":"李经理","title":"人力资源专员","phone":"13666476690","wechat":"","email":"lnsw@xjpharma.com","need":"未知","region":"","rating":"B","prob":20,"status":"contacted","owner":"Jack Lao","lastFollow":"2026-03-31","nextFollow":"2026-04-10","method":"","feedback":"","source":"智享会","tags":["已发邮件"],"created":"2026-03-18","note":"","followUps":[{"date":"2026-03-31","method":"邮件","content":"发送 INS Global 智享会邀请邮件至 lnsw@xjpharma.com","action":"等待回复"}]},{"id":40,"company":"安徽水韵环保股份有限公司","industry":"环保/水处理","description":"水处理与环保工程服务","name":"佘莹莹","title":"人力资源部副部长","phone":"18297532670","wechat":"","email":"syhb-hr@shuiyunhb.com","need":"未知","region":"","rating":"B","prob":20,"status":"contacted","owner":"Jack Lao","lastFollow":"2026-03-31","nextFollow":"2026-04-10","method":"","feedback":"","source":"智享会","tags":["已发邮件"],"created":"2026-03-18","note":"","followUps":[{"date":"2026-03-31","method":"邮件","content":"发送 INS Global 智享会邀请邮件至 syhb-hr@shuiyunhb.com","action":"等待回复"}]},{"id":41,"company":"太平鸟服饰","industry":"服装/零售","description":"宁波太平鸟集团旗下时尚服饰品牌","name":"张露","title":"薪酬管理","phone":"15867552300","wechat":"","email":"601833461@qq.com","need":"未知","region":"","rating":"A","prob":20,"status":"contacted","owner":"Jack Lao","lastFollow":"2026-03-31","nextFollow":"2026-04-10","method":"","feedback":"","source":"智享会","tags":["已发邮件"],"created":"2026-03-18","note":"","followUps":[{"date":"2026-03-31","method":"邮件","content":"发送 INS Global 智享会邀请邮件至 601833461@qq.com","action":"等待回复"}]},{"id":42,"company":"浙江浙大网新图灵信息科技有限公司","industry":"信息技术/AI","description":"浙大网新旗下AI与信息技术服务","name":"朱瑾","title":"人力资源部部门经理","phone":"18957119887","wechat":"","email":"jzhu@tuling.com.cn","need":"未知","region":"","rating":"B","prob":20,"status":"contacted","owner":"Jack Lao","lastFollow":"2026-03-31","nextFollow":"2026-04-10","method":"","feedback":"","source":"智享会","tags":["已发邮件"],"created":"2026-03-18","note":"","followUps":[{"date":"2026-03-31","method":"邮件","content":"发送 INS Global 智享会邀请邮件至 jzhu@tuling.com.cn","action":"等待回复"}]},{"id":43,"company":"阳光电源股份有限公司","industry":"新能源/光伏","description":"A股上市（300274），全球光伏逆变器和储能系统龙头","name":"陈巧","title":"招聘专员","phone":"18018250396","wechat":"","email":"o-zpgljf01@sungrowpower.com","need":"未知","region":"","rating":"A","prob":20,"status":"contacted","owner":"Jack Lao","lastFollow":"2026-03-31","nextFollow":"2026-04-10","method":"","feedback":"","source":"智享会","tags":["已发邮件"],"created":"2026-03-18","note":"","followUps":[{"date":"2026-03-31","method":"邮件","content":"发送 INS Global 智享会邀请邮件至 o-zpgljf01@sungrowpower.com","action":"等待回复"}]},{"id":44,"company":"福耀玻璃工业集团股份有限公司","industry":"汽车零部件/玻璃","description":"A股上市（600660），全球最大汽车玻璃制造商","name":"翁小英","title":"薪酬核算分析","phone":"13696826508","wechat":"","email":"xiaoying.weng@fuyaogroup.com","need":"未知","region":"","rating":"A","prob":20,"status":"contacted","owner":"Jack Lao","lastFollow":"2026-03-31","nextFollow":"2026-04-10","method":"","feedback":"","source":"智享会","tags":["已发邮件"],"created":"2026-03-18","note":"","followUps":[{"date":"2026-03-31","method":"邮件","content":"发送 INS Global 智享会邀请邮件至 xiaoying.weng@fuyaogroup.com","action":"等待回复"}]},{"id":45,"company":"福士汽车零部件（济南）有限公司（VOSS）","industry":"汽车零部件","description":"德国VOSS集团在华子公司，全球流体连接系统制造商","name":"于安行","title":"薪酬福利专员","phone":"15951761261","wechat":"","email":"anhang.yu@voss.net","need":"未知","region":"","rating":"B","prob":20,"status":"contacted","owner":"Jack Lao","lastFollow":"2026-03-31","nextFollow":"2026-04-10","method":"","feedback":"","source":"智享会","tags":["已发邮件"],"created":"2026-03-18","note":"","followUps":[{"date":"2026-03-31","method":"邮件","content":"发送 INS Global 智享会邀请邮件至 anhang.yu@voss.net","action":"等待回复"}]},{"id":46,"company":"绿城管理","industry":"房地产/代建","description":"港股上市（9979.HK），中国最大房地产代建服务商","name":"赵南西","title":"人力资源总监","phone":"13817511875","wechat":"","email":"zhaozhe_lg@chinagreentown.com","need":"未知","region":"","rating":"A","prob":60,"status":"quote","owner":"Jack Lao","lastFollow":"2026-04-05","nextFollow":"2026-04-10","method":"","feedback":"","source":"智享会","tags":["已发邮件"],"created":"2026-03-18","note":"","followUps":[{"date":"2026-03-31","method":"邮件","content":"发送 INS Global 智享会邀请邮件至 zhaozhe_lg@chinagreentown.com","action":"等待回复"},{"date":"2026-04-03","method":"微信","content":"微信跟进，对方表示感兴趣","action":"约电话会议"},{"date":"2026-04-05","method":"电话","content":"电话沟通30分钟，确认EOR需求","action":"准备报价单"}]},{"id":47,"company":"极光湾科技有限公司","industry":"汽车/新能源动力","description":"吉利与沃尔沃合资动力总成公司","name":"佘素琳","title":"薪酬激励经理","phone":"15021359063","wechat":"","email":"sulin.she@horse-powertrain.com.cn","need":"未知","region":"","rating":"A","prob":20,"status":"contacted","owner":"Jack Lao","lastFollow":"2026-03-31","nextFollow":"2026-04-10","method":"","feedback":"","source":"智享会","tags":["已发邮件"],"created":"2026-03-18","note":"","followUps":[{"date":"2026-03-31","method":"邮件","content":"发送 INS Global 智享会邀请邮件至 sulin.she@horse-powertrain.com.cn","action":"等待回复"}]},{"id":48,"company":"极光湾中国","industry":"汽车/新能源动力","description":"极光湾科技中国区","name":"代立卉","title":"薪酬激励","phone":"13940587497","wechat":"","email":"307508530@qq.com","need":"未知","region":"","rating":"A","prob":20,"status":"contacted","owner":"Jack Lao","lastFollow":"2026-03-31","nextFollow":"2026-04-10","method":"","feedback":"","source":"智享会","tags":["已发邮件"],"created":"2026-03-18","note":"","followUps":[{"date":"2026-03-31","method":"邮件","content":"发送 INS Global 智享会邀请邮件至 307508530@qq.com","action":"等待回复"}]},{"id":49,"company":"华数传媒控股股份有限公司","industry":"传媒/广电","description":"A股上市（000156），浙江省最大有线数字电视运营商","name":"邵曼露","title":"薪酬绩效","phone":"15868152061","wechat":"","email":"shaomanlu@wasu.com","need":"未知","region":"","rating":"B","prob":60,"status":"quote","owner":"Jack Lao","lastFollow":"2026-04-05","nextFollow":"2026-04-10","method":"","feedback":"","source":"智享会","tags":["已发邮件"],"created":"2026-03-18","note":"","followUps":[{"date":"2026-03-31","method":"邮件","content":"发送 INS Global 智享会邀请邮件至 shaomanlu@wasu.com","action":"等待回复"},{"date":"2026-04-03","method":"微信","content":"微信跟进，对方表示感兴趣","action":"约电话会议"},{"date":"2026-04-05","method":"电话","content":"电话沟通30分钟，确认EOR需求","action":"准备报价单"}]},{"id":50,"company":"杭州云心质力生物科技有限公司","industry":"生物科技/CRO","description":"生物科技研发与技术服务","name":"傅柯依","title":"HR","phone":"15058193798","wechat":"","email":"fukeyi@startbioservice.com","need":"未知","region":"","rating":"B","prob":20,"status":"contacted","owner":"Jack Lao","lastFollow":"2026-03-31","nextFollow":"2026-04-10","method":"","feedback":"","source":"智享会","tags":["已发邮件"],"created":"2026-03-18","note":"","followUps":[{"date":"2026-03-31","method":"邮件","content":"发送 INS Global 智享会邀请邮件至 fukeyi@startbioservice.com","action":"等待回复"}]},{"id":51,"company":"杭州云心质力生物科技有限公司","industry":"生物科技/CRO","description":"生物科技研发与技术服务","name":"朱玲莉","title":"HRD","phone":"13634181054","wechat":"","email":"zhulingli@startbioservices.com","need":"未知","region":"","rating":"B","prob":60,"status":"quote","owner":"Jack Lao","lastFollow":"2026-04-05","nextFollow":"2026-04-10","method":"","feedback":"","source":"智享会","tags":["已发邮件"],"created":"2026-03-18","note":"","followUps":[{"date":"2026-03-31","method":"邮件","content":"发送 INS Global 智享会邀请邮件至 zhulingli@startbioservices.com","action":"等待回复"},{"date":"2026-04-03","method":"微信","content":"微信跟进，对方表示感兴趣","action":"约电话会议"},{"date":"2026-04-05","method":"电话","content":"电话沟通30分钟，确认EOR需求","action":"准备报价单"}]},{"id":52,"company":"弈芯科技（杭州）有限公司","industry":"芯片/半导体","description":"芯片设计与半导体技术公司","name":"吴芷萱","title":"HR","phone":"15858236882","wechat":"","email":"zhixuan.wu@authenarc.com","need":"未知","region":"","rating":"B","prob":20,"status":"contacted","owner":"Jack Lao","lastFollow":"2026-03-31","nextFollow":"2026-04-10","method":"","feedback":"","source":"智享会","tags":["已发邮件"],"created":"2026-03-18","note":"","followUps":[{"date":"2026-03-31","method":"邮件","content":"发送 INS Global 智享会邀请邮件至 zhixuan.wu@authenarc.com","action":"等待回复"}]},{"id":53,"company":"上海丽知品牌管理有限公司","industry":"品牌管理/消费品","description":"品牌管理与营销服务公司","name":"刘影","title":"高级绩效","phone":"18058190633","wechat":"","email":"bess@dreamnavi.cn","need":"未知","region":"","rating":"B","prob":20,"status":"contacted","owner":"Jack Lao","lastFollow":"2026-03-31","nextFollow":"2026-04-10","method":"","feedback":"","source":"智享会","tags":["已发邮件"],"created":"2026-03-18","note":"","followUps":[{"date":"2026-03-31","method":"邮件","content":"发送 INS Global 智享会邀请邮件至 bess@dreamnavi.cn","action":"等待回复"}]},{"id":54,"company":"赛轮集团股份有限公司","industry":"轮胎/橡胶","description":"A股上市（601058），中国首家A股上市民营轮胎企业","name":"张笑","title":"HRBP","phone":"18899596018","wechat":"","email":"xiao.zhang@sailuntire.com","need":"未知","region":"","rating":"A","prob":20,"status":"contacted","owner":"Jack Lao","lastFollow":"2026-03-31","nextFollow":"2026-04-10","method":"","feedback":"","source":"智享会","tags":["已发邮件"],"created":"2026-03-18","note":"","followUps":[{"date":"2026-03-31","method":"邮件","content":"发送 INS Global 智享会邀请邮件至 xiao.zhang@sailuntire.com","action":"等待回复"}]},{"id":55,"company":"科大讯飞股份有限公司","industry":"人工智能","description":"A股上市（002230），中国智能语音与AI领域领军企业","name":"袁圆","title":"薪酬福利管理师","phone":"18947911680","wechat":"","email":"yuanyuan10@iflytek.com","need":"未知","region":"","rating":"A","prob":20,"status":"contacted","owner":"Jack Lao","lastFollow":"2026-03-31","nextFollow":"2026-04-10","method":"","feedback":"","source":"智享会","tags":["已发邮件"],"created":"2026-03-18","note":"","followUps":[{"date":"2026-03-31","method":"邮件","content":"发送 INS Global 智享会邀请邮件至 yuanyuan10@iflytek.com","action":"等待回复"}]},{"id":56,"company":"江苏艾兰得营养品有限公司","industry":"营养品/大健康","description":"全球营养品ODM/OEM领军企业","name":"刘阳","title":"培训经理","phone":"18893481517","wechat":"","email":"liuyang@alandgroup.com","need":"未知","region":"","rating":"B","prob":60,"status":"quote","owner":"Jack Lao","lastFollow":"2026-04-05","nextFollow":"2026-04-10","method":"","feedback":"","source":"智享会","tags":["已发邮件"],"created":"2026-03-18","note":"","followUps":[{"date":"2026-03-31","method":"邮件","content":"发送 INS Global 智享会邀请邮件至 liuyang@alandgroup.com","action":"等待回复"},{"date":"2026-04-03","method":"微信","content":"微信跟进，对方表示感兴趣","action":"约电话会议"},{"date":"2026-04-05","method":"电话","content":"电话沟通30分钟，确认EOR需求","action":"准备报价单"}]},{"id":57,"company":"浙江吉利控股集团有限公司","industry":"汽车","description":"中国最大民营汽车集团，旗下吉利、领克、极氪，控股沃尔沃","name":"郭潇帆","title":"HRBP","phone":"13515710360","wechat":"","email":"xiaofan.guo@geely.com","need":"未知","region":"","rating":"A","prob":60,"status":"quote","owner":"Jack Lao","lastFollow":"2026-04-05","nextFollow":"2026-04-10","method":"","feedback":"","source":"智享会","tags":["已发邮件"],"created":"2026-03-18","note":"","followUps":[{"date":"2026-03-31","method":"邮件","content":"发送 INS Global 智享会邀请邮件至 xiaofan.guo@geely.com","action":"等待回复"},{"date":"2026-04-03","method":"微信","content":"微信跟进，对方表示感兴趣","action":"约电话会议"},{"date":"2026-04-05","method":"电话","content":"电话沟通30分钟，确认EOR需求","action":"准备报价单"}]},{"id":58,"company":"绿城服务海外控股集团（香港）有限公司","industry":"物业管理/房地产服务","description":"港股上市（2869.HK），绿城中国旗下物业服务","name":"谢文佳","title":"部门经理","phone":"18958070189","wechat":"","email":"gemmsxie@greentownservice.com","need":"未知","region":"","rating":"A","prob":20,"status":"contacted","owner":"Jack Lao","lastFollow":"2026-03-31","nextFollow":"2026-04-10","method":"","feedback":"","source":"智享会","tags":["已发邮件"],"created":"2026-03-18","note":"","followUps":[{"date":"2026-03-31","method":"邮件","content":"发送 INS Global 智享会邀请邮件至 gemmsxie@greentownservice.com","action":"等待回复"}]},{"id":59,"company":"杭州贝嘟科技有限公司（衣邦人）","industry":"互联网/服装定制","description":"国内领先服装定制平台「衣邦人」","name":"徐锦锦","title":"HRBP主管","phone":"18142017032","wechat":"","email":"xujinjin@beidukeji.com","need":"未知","region":"","rating":"B","prob":60,"status":"quote","owner":"Jack Lao","lastFollow":"2026-04-05","nextFollow":"2026-04-10","method":"","feedback":"","source":"智享会","tags":["已发邮件"],"created":"2026-03-18","note":"","followUps":[{"date":"2026-03-31","method":"邮件","content":"发送 INS Global 智享会邀请邮件至 xujinjin@beidukeji.com","action":"等待回复"},{"date":"2026-04-03","method":"微信","content":"微信跟进，对方表示感兴趣","action":"约电话会议"},{"date":"2026-04-05","method":"电话","content":"电话沟通30分钟，确认EOR需求","action":"准备报价单"}]},{"id":60,"company":"传化集团有限公司","industry":"化工/物流","description":"中国500强企业集团，覆盖化工、物流、农业、投资","name":"周芳","title":"HR产品经理","phone":"18368147011","wechat":"","email":"19708@etransfar.com","need":"未知","region":"","rating":"B","prob":20,"status":"contacted","owner":"Jack Lao","lastFollow":"2026-03-31","nextFollow":"2026-04-10","method":"","feedback":"","source":"智享会","tags":["已发邮件"],"created":"2026-03-18","note":"","followUps":[{"date":"2026-03-31","method":"邮件","content":"发送 INS Global 智享会邀请邮件至 19708@etransfar.com","action":"等待回复"}]},{"id":61,"company":"杭州海马体摄影有限公司","industry":"摄影/消费服务","description":"国内最大的轻写真摄影连锁品牌","name":"向小钊","title":"SSC","phone":"13185039962","wechat":"","email":"727328155@qq.com","need":"未知","region":"","rating":"B","prob":20,"status":"contacted","owner":"Jack Lao","lastFollow":"2026-03-31","nextFollow":"2026-04-10","method":"","feedback":"","source":"智享会","tags":["已发邮件"],"created":"2026-03-18","note":"","followUps":[{"date":"2026-03-31","method":"邮件","content":"发送 INS Global 智享会邀请邮件至 727328155@qq.com","action":"等待回复"}]},{"id":62,"company":"东江汽车集团","industry":"汽车/经销","description":"汽车经销与服务集团","name":"Carrie（周经理）","title":"HRD","phone":"13370157030","wechat":"","email":"zhourui@zjdjqc.com","need":"未知","region":"","rating":"B","prob":60,"status":"quote","owner":"Jack Lao","lastFollow":"2026-04-05","nextFollow":"2026-04-10","method":"","feedback":"","source":"智享会","tags":["已发邮件"],"created":"2026-03-18","note":"","followUps":[{"date":"2026-03-31","method":"邮件","content":"发送 INS Global 智享会邀请邮件至 zhourui@zjdjqc.com","action":"等待回复"},{"date":"2026-04-03","method":"微信","content":"微信跟进，对方表示感兴趣","action":"约电话会议"},{"date":"2026-04-05","method":"电话","content":"电话沟通30分钟，确认EOR需求","action":"准备报价单"}]},{"id":63,"company":"富邦橡胶（浙江）有限公司","industry":"橡胶/汽车零部件","description":"橡胶制品制造","name":"应知婷","title":"行政人事专员","phone":"17857395025","wechat":"","email":"yingzhiting@fb.com.cn","need":"未知","region":"","rating":"B","prob":20,"status":"contacted","owner":"Jack Lao","lastFollow":"2026-03-31","nextFollow":"2026-04-10","method":"","feedback":"","source":"智享会","tags":["已发邮件"],"created":"2026-03-18","note":"","followUps":[{"date":"2026-03-31","method":"邮件","content":"发送 INS Global 智享会邀请邮件至 yingzhiting@fb.com.cn","action":"等待回复"}]},{"id":64,"company":"浙江高泰昊能科技有限公司","industry":"新能源/储能","description":"新能源与储能技术","name":"曹体杰","title":"行政人事总监","phone":"13645819662","wechat":"","email":"caotijie662@qualtech.com.cn","need":"未知","region":"","rating":"B","prob":60,"status":"quote","owner":"Jack Lao","lastFollow":"2026-04-05","nextFollow":"2026-04-10","method":"","feedback":"","source":"智享会","tags":["已发邮件"],"created":"2026-03-18","note":"","followUps":[{"date":"2026-03-31","method":"邮件","content":"发送 INS Global 智享会邀请邮件至 caotijie662@qualtech.com.cn","action":"等待回复"},{"date":"2026-04-03","method":"微信","content":"微信跟进，对方表示感兴趣","action":"约电话会议"},{"date":"2026-04-05","method":"电话","content":"电话沟通30分钟，确认EOR需求","action":"准备报价单"}]},{"id":65,"company":"浙江晟霖益嘉科技有限公司","industry":"科技服务","description":"科技研发与服务","name":"张晨","title":"人力资源高级经理","phone":"13606800685","wechat":"","email":"zhangchen@semrise.com.cn","need":"未知","region":"","rating":"B","prob":20,"status":"contacted","owner":"Jack Lao","lastFollow":"2026-03-31","nextFollow":"2026-04-10","method":"","feedback":"","source":"智享会","tags":["已发邮件"],"created":"2026-03-18","note":"","followUps":[{"date":"2026-03-31","method":"邮件","content":"发送 INS Global 智享会邀请邮件至 zhangchen@semrise.com.cn","action":"等待回复"}]},{"id":66,"company":"浙江省数据通信有限公司（浙江交换中心）","industry":"通信","description":"浙江省数据通信服务与网络交换平台","name":"吴洁","title":"HRD","phone":"13750830996","wechat":"","email":"hr@ix.cn","need":"未知","region":"","rating":"B","prob":20,"status":"contacted","owner":"Jack Lao","lastFollow":"2026-03-31","nextFollow":"2026-04-10","method":"","feedback":"","source":"智享会","tags":["已发邮件"],"created":"2026-03-18","note":"","followUps":[{"date":"2026-03-31","method":"邮件","content":"发送 INS Global 智享会邀请邮件至 hr@ix.cn","action":"等待回复"}]},{"id":67,"company":"浙江中正智能科技有限公司","industry":"智能科技/安防","description":"智能识别与安防技术","name":"徐璐","title":"HRM","phone":"15906715517","wechat":"","email":"xulu@miaxis.com","need":"未知","region":"","rating":"B","prob":20,"status":"contacted","owner":"Jack Lao","lastFollow":"2026-03-31","nextFollow":"2026-04-10","method":"","feedback":"","source":"智享会","tags":["已发邮件"],"created":"2026-03-18","note":"","followUps":[{"date":"2026-03-31","method":"邮件","content":"发送 INS Global 智享会邀请邮件至 xulu@miaxis.com","action":"等待回复"}]},{"id":68,"company":"浙江布噜文化传媒有限公司","industry":"传媒/MCN","description":"新媒体与文化传媒公司","name":"洪丹","title":"人力资源部经理","phone":"15990148053","wechat":"","email":"hongdan@bulu.tv","need":"未知","region":"","rating":"B","prob":20,"status":"contacted","owner":"Jack Lao","lastFollow":"2026-03-31","nextFollow":"2026-04-10","method":"","feedback":"","source":"智享会","tags":["已发邮件"],"created":"2026-03-18","note":"","followUps":[{"date":"2026-03-31","method":"邮件","content":"发送 INS Global 智享会邀请邮件至 hongdan@bulu.tv","action":"等待回复"}]},{"id":69,"company":"金帝联合能源集团股份有限公司","industry":"能源","description":"能源投资与运营集团","name":"宋莉","title":"综合管理部经理","phone":"13867108956","wechat":"","email":"songl.ny@jduhc.com","need":"未知","region":"","rating":"B","prob":20,"status":"contacted","owner":"Jack Lao","lastFollow":"2026-03-31","nextFollow":"2026-04-10","method":"","feedback":"","source":"智享会","tags":["已发邮件"],"created":"2026-03-18","note":"","followUps":[{"date":"2026-03-31","method":"邮件","content":"发送 INS Global 智享会邀请邮件至 songl.ny@jduhc.com","action":"等待回复"}]},{"id":70,"company":"华立科技股份有限公司","industry":"电力设备/智能电表","description":"A股上市（000607），国内智能电表龙头","name":"王宇鹏","title":"HRBP","phone":"13819662633","wechat":"","email":"yupeng.wang@holley.cn","need":"未知","region":"","rating":"B","prob":20,"status":"contacted","owner":"Jack Lao","lastFollow":"2026-03-31","nextFollow":"2026-04-10","method":"","feedback":"","source":"智享会","tags":["已发邮件"],"created":"2026-03-18","note":"","followUps":[{"date":"2026-03-31","method":"邮件","content":"发送 INS Global 智享会邀请邮件至 yupeng.wang@holley.cn","action":"等待回复"}]},{"id":71,"company":"杭州宇臣户外用品有限公司","industry":"户外用品/消费品","description":"户外运动用品研发与销售","name":"李薇","title":"人事","phone":"13732274559","wechat":"","email":"515608674@qq.com","need":"未知","region":"","rating":"B","prob":60,"status":"quote","owner":"Jack Lao","lastFollow":"2026-04-05","nextFollow":"2026-04-10","method":"","feedback":"","source":"智享会","tags":["已发邮件"],"created":"2026-03-18","note":"","followUps":[{"date":"2026-03-31","method":"邮件","content":"发送 INS Global 智享会邀请邮件至 515608674@qq.com","action":"等待回复"},{"date":"2026-04-03","method":"微信","content":"微信跟进，对方表示感兴趣","action":"约电话会议"},{"date":"2026-04-05","method":"电话","content":"电话沟通30分钟，确认EOR需求","action":"准备报价单"}]},{"id":72,"company":"Nabla（纳布拉）","industry":"科技服务","description":"科技解决方案公司","name":"Tina 经理","title":"HRM","phone":"18857176892","wechat":"","email":"hr.cb@nablasolution.com","need":"未知","region":"","rating":"B","prob":20,"status":"contacted","owner":"Jack Lao","lastFollow":"2026-03-31","nextFollow":"2026-04-10","method":"","feedback":"","source":"智享会","tags":["已发邮件"],"created":"2026-03-18","note":"","followUps":[{"date":"2026-03-31","method":"邮件","content":"发送 INS Global 智享会邀请邮件至 hr.cb@nablasolution.com","action":"等待回复"}]},{"id":73,"company":"杭州海马体摄影有限公司","industry":"摄影/消费服务","description":"国内最大的轻写真摄影连锁品牌","name":"宋婷","title":"人力高级经理","phone":"18667146161","wechat":"","email":"616416846@qq.com","need":"未知","region":"","rating":"B","prob":60,"status":"quote","owner":"Jack Lao","lastFollow":"2026-04-05","nextFollow":"2026-04-10","method":"","feedback":"","source":"智享会","tags":["已发邮件"],"created":"2026-03-18","note":"","followUps":[{"date":"2026-03-31","method":"邮件","content":"发送 INS Global 智享会邀请邮件至 616416846@qq.com","action":"等待回复"},{"date":"2026-04-03","method":"微信","content":"微信跟进，对方表示感兴趣","action":"约电话会议"},{"date":"2026-04-05","method":"电话","content":"电话沟通30分钟，确认EOR需求","action":"准备报价单"}]},{"id":74,"company":"海马体（杭州海马体摄影）","industry":"摄影/消费服务","description":"国内最大的轻写真摄影连锁品牌","name":"桃李","title":"招聘","phone":"17612884796","wechat":"","email":"438167310@qq.com","need":"未知","region":"","rating":"B","prob":20,"status":"contacted","owner":"Jack Lao","lastFollow":"2026-03-31","nextFollow":"2026-04-10","method":"","feedback":"","source":"智享会","tags":["已发邮件"],"created":"2026-03-18","note":"","followUps":[{"date":"2026-03-31","method":"邮件","content":"发送 INS Global 智享会邀请邮件至 438167310@qq.com","action":"等待回复"}]},{"id":75,"company":"农夫山泉股份有限公司","industry":"食品饮料","description":"港股上市（9633.HK），中国软饮料行业领军企业","name":"余宝兰","title":"人事行政","phone":"18968048783","wechat":"","email":"blyu@mail.nfsq.com.cn","need":"未知","region":"","rating":"A","prob":20,"status":"contacted","owner":"Jack Lao","lastFollow":"2026-03-31","nextFollow":"2026-04-10","method":"","feedback":"","source":"智享会","tags":["已发邮件"],"created":"2026-03-18","note":"","followUps":[{"date":"2026-03-31","method":"邮件","content":"发送 INS Global 智享会邀请邮件至 blyu@mail.nfsq.com.cn","action":"等待回复"}]},{"id":76,"company":"浙江华友钴业股份有限公司","industry":"新能源材料/钴","description":"A股上市（603799），全球领先钴产品与新能源锂电材料供应商","name":"陈雪凤","title":"薪酬福利","phone":"15988369465","wechat":"","email":"chenxf@huayou.com","need":"未知","region":"","rating":"A","prob":20,"status":"contacted","owner":"Jack Lao","lastFollow":"2026-03-31","nextFollow":"2026-04-10","method":"","feedback":"","source":"智享会","tags":["已发邮件"],"created":"2026-03-18","note":"","followUps":[{"date":"2026-03-31","method":"邮件","content":"发送 INS Global 智享会邀请邮件至 chenxf@huayou.com","action":"等待回复"}]},{"id":77,"company":"浙江华友钴业股份有限公司","industry":"新能源材料/钴","description":"A股上市（603799），全球领先钴产品与新能源锂电材料供应商","name":"刘文荟","title":"薪酬福利主管","phone":"18602743682","wechat":"","email":"lwh@huayou.com","need":"未知","region":"","rating":"A","prob":20,"status":"contacted","owner":"Jack Lao","lastFollow":"2026-03-31","nextFollow":"2026-04-10","method":"","feedback":"","source":"智享会","tags":["已发邮件"],"created":"2026-03-18","note":"","followUps":[{"date":"2026-03-31","method":"邮件","content":"发送 INS Global 智享会邀请邮件至 lwh@huayou.com","action":"等待回复"}]},{"id":78,"company":"上海安世博能源科技有限公司","industry":"新能源","description":"新能源技术研发与服务","name":"陈婷","title":"HRD","phone":"13671814889","wechat":"","email":"chenting.hr@ace-powertech.com","need":"未知","region":"","rating":"B","prob":20,"status":"contacted","owner":"Jack Lao","lastFollow":"2026-03-31","nextFollow":"2026-04-10","method":"","feedback":"","source":"智享会","tags":["已发邮件"],"created":"2026-03-18","note":"","followUps":[{"date":"2026-03-31","method":"邮件","content":"发送 INS Global 智享会邀请邮件至 chenting.hr@ace-powertech.com","action":"等待回复"}]},{"id":79,"company":"万声音乐科技（深圳）有限公司","industry":"音乐/文化传媒","description":"音乐科技与文化传媒公司","name":"王经理","title":"","phone":"","wechat":"","email":"juan.wang@allsaintsmusic.com","need":"招聘","region":"","rating":"B","prob":20,"status":"contacted","owner":"Jack Lao","lastFollow":"2026-03-31","nextFollow":"2026-04-10","method":"","feedback":"","source":"智享会","tags":["已发邮件"],"created":"2026-03-18","note":"","followUps":[{"date":"2026-03-31","method":"邮件","content":"发送 INS Global 智享会邀请邮件至 juan.wang@allsaintsmusic.com","action":"等待回复"}]},{"id":80,"company":"广州中臣碧阳科技集团有限公司","industry":"科技","description":"综合性科技集团","name":"Cherie","title":"","phone":"17382001475","wechat":"","email":"jiangyi@chonsonbeyond.com","need":"招聘","region":"","rating":"B","prob":60,"status":"quote","owner":"Jack Lao","lastFollow":"2026-04-05","nextFollow":"2026-04-10","method":"","feedback":"","source":"智享会","tags":["已发邮件"],"created":"2026-03-18","note":"","followUps":[{"date":"2026-03-31","method":"邮件","content":"发送 INS Global 智享会邀请邮件至 jiangyi@chonsonbeyond.com","action":"等待回复"},{"date":"2026-04-03","method":"微信","content":"微信跟进，对方表示感兴趣","action":"约电话会议"},{"date":"2026-04-05","method":"电话","content":"电话沟通30分钟，确认EOR需求","action":"准备报价单"}]},{"id":81,"company":"博泽资产管理有限公司","industry":"金融/资产管理","description":"专业资产管理公司","name":"","title":"","phone":"","wechat":"","email":"","need":"招聘","region":"","rating":"B","prob":20,"status":"new","owner":"Jack Lao","lastFollow":"","nextFollow":"","method":"","feedback":"","source":"智享会","tags":[],"created":"2026-03-18","note":"仅留邮箱联系","followUps":[]},{"id":82,"company":"","industry":"","description":"","name":"","title":"","phone":"","wechat":"","email":"672502254@qq.com","need":"招聘","region":"美国（Food R&D）","rating":"C","prob":30,"status":"contacted","owner":"Jack Lao","lastFollow":"2026-03-31","nextFollow":"2026-04-10","method":"","feedback":"","source":"智享会","tags":["已发邮件"],"created":"2026-03-18","note":"US Food R&D manager","followUps":[{"date":"2026-03-31","method":"邮件","content":"发送 INS Global 智享会邀请邮件至 672502254@qq.com","action":"等待回复"}]},{"id":83,"company":"","industry":"","description":"","name":"王总","title":"","phone":"","wechat":"w391622492","email":"","need":"招聘","region":"印尼","rating":"C","prob":30,"status":"new","owner":"Jack Lao","lastFollow":"","nextFollow":"","method":"","feedback":"","source":"智享会","tags":["已加微信"],"created":"2026-03-18","note":"","followUps":[]},{"id":84,"company":"","industry":"","description":"","name":"","title":"","phone":"13439067242","wechat":"sixshenme","email":"","need":"招聘","region":"泰国","rating":"C","prob":30,"status":"new","owner":"Jack Lao","lastFollow":"","nextFollow":"","method":"","feedback":"","source":"智享会","tags":["已加微信"],"created":"2026-03-18","note":"","followUps":[]},{"id":85,"company":"","industry":"","description":"","name":"李小姐","title":"","phone":"18522382012","wechat":"Lynnnnn_Lee","email":"","need":"EOR","region":"美国","rating":"C","prob":50,"status":"new","owner":"Jack Lao","lastFollow":"","nextFollow":"","method":"","feedback":"","source":"智享会","tags":["已加微信"],"created":"2026-03-18","note":"","followUps":[]},{"id":86,"company":"","industry":"","description":"","name":"","title":"","phone":"","wechat":"lidd0324ldd","email":"543709796@qq.com","need":"招聘+EOR","region":"印度","rating":"C","prob":60,"status":"contacted","owner":"Jack Lao","lastFollow":"2026-03-31","nextFollow":"2026-04-10","method":"","feedback":"","source":"智享会","tags":["已发邮件","已加微信"],"created":"2026-03-18","note":"疑似同行","followUps":[{"date":"2026-03-31","method":"邮件","content":"发送 INS Global 智享会邀请邮件至 543709796@qq.com","action":"等待回复"}]},{"id":87,"company":"","industry":"","description":"","name":"叶经理","title":"","phone":"18914984488","wechat":"","email":"qingjun.ye@soe-tech.com","need":"EOR","region":"日本","rating":"C","prob":50,"status":"contacted","owner":"Jack Lao","lastFollow":"2026-03-31","nextFollow":"2026-04-10","method":"","feedback":"","source":"智享会","tags":["已发邮件"],"created":"2026-03-18","note":"","followUps":[{"date":"2026-03-31","method":"邮件","content":"发送 INS Global 智享会邀请邮件至 qingjun.ye@soe-tech.com","action":"等待回复"}]},{"id":88,"company":"","industry":"","description":"","name":"张经理","title":"","phone":"","wechat":"nicocola0223","email":"gustav.zhang@gmx.ch","need":"EOR","region":"德国","rating":"C","prob":60,"status":"quote","owner":"Jack Lao","lastFollow":"2026-04-05","nextFollow":"2026-04-10","method":"","feedback":"","source":"智享会","tags":["已发邮件","已加微信"],"created":"2026-03-18","note":"","followUps":[{"date":"2026-03-31","method":"邮件","content":"发送 INS Global 智享会邀请邮件至 gustav.zhang@gmx.ch","action":"等待回复"},{"date":"2026-04-03","method":"微信","content":"微信跟进，对方表示感兴趣","action":"约电话会议"},{"date":"2026-04-05","method":"电话","content":"电话沟通30分钟，确认EOR需求","action":"准备报价单"}]},{"id":89,"company":"浙江富水智能智造有限公司","industry":"智能制造","description":"智能制造企业","name":"张经理","title":"","phone":"15382325455","wechat":"","email":"6332877@qq.com","need":"招聘","region":"","rating":"B","prob":20,"status":"contacted","owner":"Jack Lao","lastFollow":"2026-03-31","nextFollow":"2026-04-10","method":"","feedback":"","source":"智享会","tags":["已发邮件"],"created":"2026-03-18","note":"","followUps":[{"date":"2026-03-31","method":"邮件","content":"发送 INS Global 智享会邀请邮件至 6332877@qq.com","action":"等待回复"}]},{"id":90,"company":"南京百帕斯","industry":"科技服务","description":"科技服务企业","name":"潘经理","title":"","phone":"15895984192","wechat":"","email":"","need":"EOR","region":"印度（代发薪）","rating":"B","prob":50,"status":"new","owner":"Jack Lao","lastFollow":"","nextFollow":"","method":"","feedback":"","source":"智享会","tags":[],"created":"2026-03-18","note":"","followUps":[]},{"id":91,"company":"华电联网（亚洲）有限公司 / 柯顿技术（亚洲）有限公司","industry":"网络通信","description":"亚洲网络通信技术服务商","name":"毛经理","title":"","phone":"","wechat":"andymao668","email":"andymao@catonhk.com","need":"EOR","region":"全球","rating":"B","prob":50,"status":"contacted","owner":"Jack Lao","lastFollow":"2026-03-31","nextFollow":"2026-04-10","method":"","feedback":"","source":"智享会","tags":["已发邮件","已加微信"],"created":"2026-03-18","note":"","followUps":[{"date":"2026-03-31","method":"邮件","content":"发送 INS Global 智享会邀请邮件至 andymao@catonhk.com","action":"等待回复"}]},{"id":92,"company":"","industry":"","description":"","name":"","title":"","phone":"15005962382","wechat":"cxd1902274456","email":"","need":"EOR","region":"新加坡（中国籍外派）","rating":"C","prob":50,"status":"new","owner":"Jack Lao","lastFollow":"","nextFollow":"","method":"","feedback":"","source":"智享会","tags":["已加微信"],"created":"2026-03-18","note":"","followUps":[]},{"id":93,"company":"","industry":"","description":"","name":"","title":"","phone":"15755078818","wechat":"zhihui518888","email":"","need":"招聘+EOR","region":"Reddit海外运营","rating":"C","prob":60,"status":"new","owner":"Jack Lao","lastFollow":"","nextFollow":"","method":"","feedback":"","source":"智享会","tags":["已加微信"],"created":"2026-03-18","note":"","followUps":[]},{"id":94,"company":"","industry":"","description":"","name":"","title":"","phone":"","wechat":"zzz143571","email":"","need":"招聘","region":"泰国（仓储）","rating":"C","prob":30,"status":"new","owner":"Jack Lao","lastFollow":"","nextFollow":"","method":"","feedback":"","source":"智享会","tags":["已加微信"],"created":"2026-03-18","note":"","followUps":[]},{"id":95,"company":"","industry":"","description":"","name":"Janet","title":"","phone":"","wechat":"20ZNTL20","email":"","need":"招聘","region":"外派仓储","rating":"C","prob":30,"status":"new","owner":"Jack Lao","lastFollow":"","nextFollow":"","method":"","feedback":"","source":"智享会","tags":["已加微信"],"created":"2026-03-18","note":"","followUps":[]},{"id":96,"company":"","industry":"","description":"","name":"","title":"","phone":"13918178453","wechat":"yepjiushiwo","email":"","need":"EOR","region":"美国（PEO）","rating":"C","prob":50,"status":"new","owner":"Jack Lao","lastFollow":"","nextFollow":"","method":"","feedback":"","source":"智享会","tags":["已加微信"],"created":"2026-03-18","note":"","followUps":[]},{"id":97,"company":"","industry":"","description":"","name":"李小姐","title":"","phone":"17611517856","wechat":"YiMoo314826","email":"","need":"EOR","region":"沙特","rating":"C","prob":50,"status":"new","owner":"Jack Lao","lastFollow":"","nextFollow":"","method":"","feedback":"","source":"智享会","tags":["已加微信"],"created":"2026-03-18","note":"","followUps":[]},{"id":98,"company":"","industry":"","description":"","name":"","title":"","phone":"","wechat":"gioialdd","email":"yaofang.hu@ztstech.com","need":"EOR","region":"爱尔兰、德国","rating":"C","prob":50,"status":"contacted","owner":"Jack Lao","lastFollow":"2026-03-31","nextFollow":"2026-04-10","method":"","feedback":"","source":"智享会","tags":["已发邮件","已加微信"],"created":"2026-03-18","note":"","followUps":[{"date":"2026-03-31","method":"邮件","content":"发送 INS Global 智享会邀请邮件至 yaofang.hu@ztstech.com","action":"等待回复"}]},{"id":99,"company":"悦康药业","industry":"医药/制药","description":"A股上市（002585），中国医药百强","name":"","title":"","phone":"18222016905","wechat":"WH878923348","email":"","need":"招聘","region":"","rating":"B","prob":20,"status":"new","owner":"Jack Lao","lastFollow":"","nextFollow":"","method":"","feedback":"","source":"智享会","tags":["已加微信"],"created":"2026-03-18","note":"与北京悦康药业同源","followUps":[]},{"id":100,"company":"","industry":"","description":"","name":"Rita","title":"","phone":"15684059986","wechat":"Yu949125778","email":"","need":"招聘","region":"国际","rating":"C","prob":30,"status":"new","owner":"Jack Lao","lastFollow":"","nextFollow":"","method":"","feedback":"","source":"智享会","tags":["已加微信"],"created":"2026-03-18","note":"","followUps":[]},{"id":101,"company":"","industry":"","description":"","name":"Lily","title":"","phone":"","wechat":"","email":"lily@szcomponents.com","need":"EOR","region":"俄罗斯","rating":"C","prob":50,"status":"contacted","owner":"Jack Lao","lastFollow":"2026-03-31","nextFollow":"2026-04-10","method":"","feedback":"","source":"智享会","tags":["已发邮件"],"created":"2026-03-18","note":"","followUps":[{"date":"2026-03-31","method":"邮件","content":"发送 INS Global 智享会邀请邮件至 lily@szcomponents.com","action":"等待回复"}]},{"id":102,"company":"","industry":"","description":"","name":"王经理","title":"","phone":"18610018041","wechat":"juan890122","email":"wangjuan@im30.net","need":"EOR","region":"中国","rating":"C","prob":50,"status":"contacted","owner":"Jack Lao","lastFollow":"2026-03-31","nextFollow":"2026-04-10","method":"","feedback":"","source":"智享会","tags":["已发邮件","已加微信"],"created":"2026-03-18","note":"","followUps":[{"date":"2026-03-31","method":"邮件","content":"发送 INS Global 智享会邀请邮件至 wangjuan@im30.net","action":"等待回复"}]},{"id":103,"company":"","industry":"","description":"","name":"Josie","title":"","phone":"18522002318","wechat":"","email":"","need":"EOR","region":"美国","rating":"C","prob":50,"status":"new","owner":"Jack Lao","lastFollow":"","nextFollow":"","method":"","feedback":"","source":"智享会","tags":[],"created":"2026-03-18","note":"","followUps":[]},{"id":104,"company":"深圳联友科技有限公司","industry":"汽车IT/软件服务","description":"东风汽车旗下汽车IT解决方案服务商","name":"吴经理","title":"","phone":"15013336125","wechat":"wumh625","email":"wumh@szlanyou.com","need":"招聘+EOR","region":"","rating":"B","prob":50,"status":"contacted","owner":"Jack Lao","lastFollow":"2026-03-31","nextFollow":"2026-04-10","method":"","feedback":"","source":"智享会","tags":["已发邮件","已加微信"],"created":"2026-03-18","note":"","followUps":[{"date":"2026-03-31","method":"邮件","content":"发送 INS Global 智享会邀请邮件至 wumh@szlanyou.com","action":"等待回复"}]},{"id":105,"company":"","industry":"","description":"","name":"石经理","title":"","phone":"18508535275","wechat":"tonnyshine","email":"","need":"招聘","region":"老挝（外派）","rating":"C","prob":30,"status":"new","owner":"Jack Lao","lastFollow":"","nextFollow":"","method":"","feedback":"","source":"智享会","tags":["已加微信"],"created":"2026-03-18","note":"","followUps":[]},{"id":106,"company":"","industry":"","description":"","name":"孙经理","title":"","phone":"18620563906","wechat":"","email":"sunbaige@gzborey.com","need":"EOR","region":"墨西哥","rating":"C","prob":60,"status":"quote","owner":"Jack Lao","lastFollow":"2026-04-05","nextFollow":"2026-04-10","method":"","feedback":"","source":"智享会","tags":["已发邮件"],"created":"2026-03-18","note":"","followUps":[{"date":"2026-03-31","method":"邮件","content":"发送 INS Global 智享会邀请邮件至 sunbaige@gzborey.com","action":"等待回复"},{"date":"2026-04-03","method":"微信","content":"微信跟进，对方表示感兴趣","action":"约电话会议"},{"date":"2026-04-05","method":"电话","content":"电话沟通30分钟，确认EOR需求","action":"准备报价单"}]},{"id":107,"company":"","industry":"","description":"","name":"April","title":"","phone":"","wechat":"x13078155315","email":"april@to-asia.ai","need":"招聘","region":"工签+招聘","rating":"C","prob":60,"status":"quote","owner":"Jack Lao","lastFollow":"2026-04-05","nextFollow":"2026-04-10","method":"","feedback":"","source":"智享会","tags":["已发邮件","已加微信"],"created":"2026-03-18","note":"","followUps":[{"date":"2026-03-31","method":"邮件","content":"发送 INS Global 智享会邀请邮件至 april@to-asia.ai","action":"等待回复"},{"date":"2026-04-03","method":"微信","content":"微信跟进，对方表示感兴趣","action":"约电话会议"},{"date":"2026-04-05","method":"电话","content":"电话沟通30分钟，确认EOR需求","action":"准备报价单"}]},{"id":108,"company":"北京悦康药业集团","industry":"医药/制药","description":"A股上市（002585），中国医药百强","name":"","title":"","phone":"18222016905","wechat":"tina-lucky69","email":"hr07@bjykkc.com","need":"EOR","region":"美国","rating":"B","prob":50,"status":"contacted","owner":"Jack Lao","lastFollow":"2026-03-31","nextFollow":"2026-04-10","method":"","feedback":"","source":"智享会","tags":["已发邮件","已加微信"],"created":"2026-03-18","note":"同悦康药业","followUps":[{"date":"2026-03-31","method":"邮件","content":"发送 INS Global 智享会邀请邮件至 hr07@bjykkc.com","action":"等待回复"}]},{"id":109,"company":"","industry":"","description":"","name":"Michelle","title":"","phone":"13691807445","wechat":"","email":"michelle.tasi@performancehealth.com","need":"EOR","region":"越南","rating":"C","prob":50,"status":"contacted","owner":"Jack Lao","lastFollow":"2026-03-31","nextFollow":"2026-04-10","method":"","feedback":"","source":"智享会","tags":["已发邮件"],"created":"2026-03-18","note":"","followUps":[{"date":"2026-03-31","method":"邮件","content":"发送 INS Global 智享会邀请邮件至 michelle.tasi@performancehealth.com","action":"等待回复"}]},{"id":110,"company":"","industry":"","description":"","name":"张小姐","title":"","phone":"18811014393","wechat":"Smiling1346","email":"3235095818@qq.com","need":"招聘","region":"菲律宾","rating":"C","prob":30,"status":"contacted","owner":"Jack Lao","lastFollow":"2026-03-31","nextFollow":"2026-04-10","method":"","feedback":"","source":"智享会","tags":["已发邮件","已加微信"],"created":"2026-03-18","note":"","followUps":[{"date":"2026-03-31","method":"邮件","content":"发送 INS Global 智享会邀请邮件至 3235095818@qq.com","action":"等待回复"}]},{"id":111,"company":"","industry":"","description":"","name":"Christina","title":"","phone":"13641854547","wechat":"","email":"hrbp01@cnmedplus.com","need":"EOR","region":"墨西哥","rating":"C","prob":50,"status":"contacted","owner":"Jack Lao","lastFollow":"2026-03-31","nextFollow":"2026-04-10","method":"","feedback":"","source":"智享会","tags":["已发邮件"],"created":"2026-03-18","note":"","followUps":[{"date":"2026-03-31","method":"邮件","content":"发送 INS Global 智享会邀请邮件至 hrbp01@cnmedplus.com","action":"等待回复"}]},{"id":112,"company":"","industry":"","description":"","name":"Kris","title":"","phone":"13773406809","wechat":"","email":"yjhr09@21yangjie.com","need":"EOR","region":"多国","rating":"C","prob":50,"status":"contacted","owner":"Jack Lao","lastFollow":"2026-03-31","nextFollow":"2026-04-10","method":"","feedback":"","source":"智享会","tags":["已发邮件"],"created":"2026-03-18","note":"","followUps":[{"date":"2026-03-31","method":"邮件","content":"发送 INS Global 智享会邀请邮件至 yjhr09@21yangjie.com","action":"等待回复"}]},{"id":113,"company":"","industry":"","description":"","name":"","title":"","phone":"15345516634","wechat":"ZoeS-May26","email":"","need":"EOR","region":"匈牙利（中国籍外派）","rating":"C","prob":50,"status":"new","owner":"Jack Lao","lastFollow":"","nextFollow":"","method":"","feedback":"","source":"智享会","tags":["已加微信"],"created":"2026-03-18","note":"","followUps":[]},{"id":114,"company":"深圳联友科技有限公司","industry":"汽车IT/软件服务","description":"东风汽车旗下汽车IT解决方案服务商","name":"Vivi","title":"","phone":"13559773742","wechat":"huiziaaaa","email":"wjhui@szlanyou.com","need":"EOR","region":"东南亚多国","rating":"B","prob":50,"status":"contacted","owner":"Jack Lao","lastFollow":"2026-03-31","nextFollow":"2026-04-10","method":"","feedback":"","source":"智享会","tags":["已发邮件","已加微信"],"created":"2026-03-18","note":"","followUps":[{"date":"2026-03-31","method":"邮件","content":"发送 INS Global 智享会邀请邮件至 wjhui@szlanyou.com","action":"等待回复"}]},{"id":115,"company":"宁波众瀚国际贸易有限公司","industry":"国际贸易","description":"国际贸易公司","name":"","title":"","phone":"","wechat":"smileshuya1314","email":"hr@ego-global.com","need":"招聘+EOR","region":"","rating":"B","prob":50,"status":"contacted","owner":"Jack Lao","lastFollow":"2026-03-31","nextFollow":"2026-04-10","method":"","feedback":"","source":"智享会","tags":["已发邮件","已加微信"],"created":"2026-03-18","note":"","followUps":[{"date":"2026-03-31","method":"邮件","content":"发送 INS Global 智享会邀请邮件至 hr@ego-global.com","action":"等待回复"}]},{"id":116,"company":"","industry":"","description":"","name":"张经理","title":"","phone":"","wechat":"zhangxinxin723","email":"zhangxin@haoyangcloud.com","need":"EOR","region":"泰国","rating":"C","prob":50,"status":"contacted","owner":"Jack Lao","lastFollow":"2026-03-31","nextFollow":"2026-04-10","method":"","feedback":"","source":"智享会","tags":["已发邮件","已加微信"],"created":"2026-03-18","note":"","followUps":[{"date":"2026-03-31","method":"邮件","content":"发送 INS Global 智享会邀请邮件至 zhangxin@haoyangcloud.com","action":"等待回复"}]},{"id":117,"company":"","industry":"","description":"","name":"Shirley","title":"","phone":"15021874149","wechat":"r18685776098","email":"","need":"招聘+EOR","region":"英国","rating":"C","prob":60,"status":"new","owner":"Jack Lao","lastFollow":"","nextFollow":"","method":"","feedback":"","source":"智享会","tags":["已加微信"],"created":"2026-03-18","note":"","followUps":[]},{"id":118,"company":"传音控股（Transsion）","industry":"手机/消费电子","description":"A股上市（688036），非洲最大智能手机品牌商","name":"粟经理","title":"","phone":"13102388989","wechat":"jerry_su0090","email":"zhiyuan.su@transsion.com","need":"EOR","region":"","rating":"A","prob":60,"status":"quote","owner":"Jack Lao","lastFollow":"2026-04-05","nextFollow":"2026-04-10","method":"","feedback":"","source":"智享会","tags":["已发邮件","已加微信"],"created":"2026-03-18","note":"","followUps":[{"date":"2026-03-31","method":"邮件","content":"发送 INS Global 智享会邀请邮件至 zhiyuan.su@transsion.com","action":"等待回复"},{"date":"2026-04-03","method":"微信","content":"微信跟进，对方表示感兴趣","action":"约电话会议"},{"date":"2026-04-05","method":"电话","content":"电话沟通30分钟，确认EOR需求","action":"准备报价单"}]},{"id":119,"company":"裕太微电子（Motor-comm）","industry":"芯片/半导体","description":"A股上市（688515），国内以太网物理层芯片领军","name":"袁小姐（海玲）","title":"","phone":"","wechat":"","email":"hailing.yuan@motor-comm.com","need":"招聘+EOR","region":"","rating":"B","prob":50,"status":"contacted","owner":"Jack Lao","lastFollow":"2026-03-31","nextFollow":"2026-04-10","method":"","feedback":"","source":"智享会","tags":["已发邮件"],"created":"2026-03-18","note":"","followUps":[{"date":"2026-03-31","method":"邮件","content":"发送 INS Global 智享会邀请邮件至 hailing.yuan@motor-comm.com","action":"等待回复"}]},{"id":120,"company":"","industry":"","description":"","name":"Yuri","title":"","phone":"181149000094","wechat":"YXY20130218","email":"","need":"招聘","region":"海外（光伏行业）","rating":"C","prob":30,"status":"new","owner":"Jack Lao","lastFollow":"","nextFollow":"","method":"","feedback":"","source":"智享会","tags":["已加微信"],"created":"2026-03-18","note":"","followUps":[]},{"id":121,"company":"","industry":"","description":"","name":"Helen","title":"","phone":"","wechat":"","email":"","need":"helen@vistechdisplay.com","region":"EOR","rating":"C","prob":30,"status":"new","owner":"Jack Lao","lastFollow":"","nextFollow":"","method":"","feedback":"","source":"智享会","tags":[],"created":"2026-03-18","note":"","followUps":[]},{"id":122,"company":"字节跳动（TikTok）","industry":"科技互联网","description":"","name":"","title":"","phone":"","wechat":"","email":"","need":"EOR","region":"","rating":"A","prob":30,"status":"new","owner":"Jack Lao","lastFollow":"","nextFollow":"","method":"","feedback":"","source":"目标清单","tags":[],"created":"2026-03-18","note":"","followUps":[]},{"id":123,"company":"腾讯","industry":"科技互联网","description":"","name":"","title":"","phone":"","wechat":"","email":"","need":"EOR","region":"","rating":"A","prob":30,"status":"new","owner":"Jack Lao","lastFollow":"","nextFollow":"","method":"","feedback":"","source":"目标清单","tags":[],"created":"2026-03-18","note":"","followUps":[]},{"id":124,"company":"阿里巴巴","industry":"科技互联网","description":"","name":"","title":"","phone":"","wechat":"","email":"","need":"EOR","region":"","rating":"A","prob":30,"status":"new","owner":"Jack Lao","lastFollow":"","nextFollow":"","method":"","feedback":"","source":"目标清单","tags":[],"created":"2026-03-18","note":"","followUps":[]},{"id":125,"company":"蚂蚁集团","industry":"科技互联网","description":"","name":"","title":"","phone":"","wechat":"","email":"","need":"EOR","region":"","rating":"A","prob":30,"status":"new","owner":"Jack Lao","lastFollow":"","nextFollow":"","method":"","feedback":"","source":"目标清单","tags":[],"created":"2026-03-18","note":"","followUps":[]},{"id":126,"company":"PingPong","industry":"科技互联网","description":"","name":"","title":"","phone":"","wechat":"","email":"","need":"EOR","region":"","rating":"A","prob":30,"status":"new","owner":"Jack Lao","lastFollow":"","nextFollow":"","method":"","feedback":"","source":"目标清单","tags":[],"created":"2026-03-18","note":"","followUps":[]},{"id":127,"company":"宁德时代","industry":"新能源电动车","description":"","name":"","title":"","phone":"","wechat":"","email":"","need":"EOR","region":"","rating":"A","prob":30,"status":"new","owner":"Jack Lao","lastFollow":"","nextFollow":"","method":"","feedback":"","source":"目标清单","tags":[],"created":"2026-03-18","note":"","followUps":[]},{"id":128,"company":"比亚迪","industry":"新能源电动车","description":"","name":"","title":"","phone":"","wechat":"","email":"","need":"EOR","region":"","rating":"A","prob":30,"status":"new","owner":"Jack Lao","lastFollow":"","nextFollow":"","method":"","feedback":"","source":"目标清单","tags":[],"created":"2026-03-18","note":"","followUps":[]},{"id":129,"company":"蔚来","industry":"新能源电动车","description":"","name":"","title":"","phone":"","wechat":"","email":"","need":"EOR","region":"","rating":"A","prob":30,"status":"new","owner":"Jack Lao","lastFollow":"","nextFollow":"","method":"","feedback":"","source":"目标清单","tags":[],"created":"2026-03-18","note":"","followUps":[]},{"id":130,"company":"小鹏","industry":"新能源电动车","description":"","name":"","title":"","phone":"","wechat":"","email":"","need":"EOR","region":"","rating":"A","prob":30,"status":"new","owner":"Jack Lao","lastFollow":"","nextFollow":"","method":"","feedback":"","source":"目标清单","tags":[],"created":"2026-03-18","note":"","followUps":[]},{"id":131,"company":"理想汽车","industry":"新能源电动车","description":"","name":"","title":"","phone":"","wechat":"","email":"","need":"EOR","region":"","rating":"A","prob":30,"status":"new","owner":"Jack Lao","lastFollow":"","nextFollow":"","method":"","feedback":"","source":"目标清单","tags":[],"created":"2026-03-18","note":"","followUps":[]},{"id":132,"company":"SHEIN","industry":"跨境电商","description":"","name":"","title":"","phone":"","wechat":"","email":"","need":"EOR","region":"","rating":"A","prob":30,"status":"new","owner":"Jack Lao","lastFollow":"","nextFollow":"","method":"","feedback":"","source":"目标清单","tags":[],"created":"2026-03-18","note":"","followUps":[]},{"id":133,"company":"Temu（拼多多）","industry":"跨境电商","description":"","name":"","title":"","phone":"","wechat":"","email":"","need":"EOR","region":"","rating":"A","prob":30,"status":"new","owner":"Jack Lao","lastFollow":"","nextFollow":"","method":"","feedback":"","source":"目标清单","tags":[],"created":"2026-03-18","note":"","followUps":[]},{"id":134,"company":"安克创新","industry":"跨境电商","description":"","name":"","title":"","phone":"","wechat":"","email":"","need":"EOR","region":"","rating":"A","prob":30,"status":"new","owner":"Jack Lao","lastFollow":"","nextFollow":"","method":"","feedback":"","source":"目标清单","tags":[],"created":"2026-03-18","note":"","followUps":[]},{"id":135,"company":"致欧科技","industry":"跨境电商","description":"","name":"","title":"","phone":"","wechat":"","email":"","need":"EOR","region":"","rating":"A","prob":30,"status":"new","owner":"Jack Lao","lastFollow":"","nextFollow":"","method":"","feedback":"","source":"目标清单","tags":[],"created":"2026-03-18","note":"","followUps":[]},{"id":136,"company":"赛维时代","industry":"跨境电商","description":"","name":"","title":"","phone":"","wechat":"","email":"","need":"EOR","region":"","rating":"A","prob":30,"status":"new","owner":"Jack Lao","lastFollow":"","nextFollow":"","method":"","feedback":"","source":"目标清单","tags":[],"created":"2026-03-18","note":"","followUps":[]},{"id":137,"company":"米哈游","industry":"游戏文娱","description":"","name":"","title":"","phone":"","wechat":"","email":"","need":"EOR","region":"","rating":"A","prob":30,"status":"new","owner":"Jack Lao","lastFollow":"","nextFollow":"","method":"","feedback":"","source":"目标清单","tags":[],"created":"2026-03-18","note":"","followUps":[]},{"id":138,"company":"网易游戏","industry":"游戏文娱","description":"","name":"","title":"","phone":"","wechat":"","email":"","need":"EOR","region":"","rating":"A","prob":30,"status":"new","owner":"Jack Lao","lastFollow":"","nextFollow":"","method":"","feedback":"","source":"目标清单","tags":[],"created":"2026-03-18","note":"","followUps":[]},{"id":139,"company":"莉莉丝","industry":"游戏文娱","description":"","name":"","title":"","phone":"","wechat":"","email":"","need":"EOR","region":"","rating":"A","prob":30,"status":"new","owner":"Jack Lao","lastFollow":"","nextFollow":"","method":"","feedback":"","source":"目标清单","tags":[],"created":"2026-03-18","note":"","followUps":[]},{"id":140,"company":"沐瞳科技","industry":"游戏文娱","description":"","name":"","title":"","phone":"","wechat":"","email":"","need":"EOR","region":"","rating":"A","prob":30,"status":"new","owner":"Jack Lao","lastFollow":"","nextFollow":"","method":"","feedback":"","source":"目标清单","tags":[],"created":"2026-03-18","note":"","followUps":[]},{"id":141,"company":"FunPlus","industry":"游戏文娱","description":"","name":"","title":"","phone":"","wechat":"","email":"","need":"EOR","region":"","rating":"A","prob":30,"status":"new","owner":"Jack Lao","lastFollow":"","nextFollow":"","method":"","feedback":"","source":"目标清单","tags":[],"created":"2026-03-18","note":"","followUps":[]},{"id":142,"company":"大疆创新","industry":"智能制造","description":"","name":"","title":"","phone":"","wechat":"","email":"","need":"EOR","region":"","rating":"A","prob":30,"status":"new","owner":"Jack Lao","lastFollow":"","nextFollow":"","method":"","feedback":"","source":"目标清单","tags":[],"created":"2026-03-18","note":"","followUps":[]},{"id":143,"company":"汇川技术","industry":"智能制造","description":"","name":"","title":"","phone":"","wechat":"","email":"","need":"EOR","region":"","rating":"A","prob":30,"status":"new","owner":"Jack Lao","lastFollow":"","nextFollow":"","method":"","feedback":"","source":"目标清单","tags":[],"created":"2026-03-18","note":"","followUps":[]},{"id":144,"company":"埃斯顿","industry":"智能制造","description":"","name":"","title":"","phone":"","wechat":"","email":"","need":"EOR","region":"","rating":"A","prob":30,"status":"new","owner":"Jack Lao","lastFollow":"","nextFollow":"","method":"","feedback":"","source":"目标清单","tags":[],"created":"2026-03-18","note":"","followUps":[]},{"id":145,"company":"绿的谐波","industry":"智能制造","description":"","name":"","title":"","phone":"","wechat":"","email":"","need":"EOR","region":"","rating":"A","prob":30,"status":"new","owner":"Jack Lao","lastFollow":"","nextFollow":"","method":"","feedback":"","source":"目标清单","tags":[],"created":"2026-03-18","note":"","followUps":[]},{"id":146,"company":"柏楚电子","industry":"智能制造","description":"","name":"","title":"","phone":"","wechat":"","email":"","need":"EOR","region":"","rating":"A","prob":30,"status":"new","owner":"Jack Lao","lastFollow":"","nextFollow":"","method":"","feedback":"","source":"目标清单","tags":[],"created":"2026-03-18","note":"","followUps":[]},{"id":147,"company":"药明康德","industry":"生物医药","description":"","name":"","title":"","phone":"","wechat":"","email":"","need":"EOR","region":"","rating":"A","prob":30,"status":"new","owner":"Jack Lao","lastFollow":"","nextFollow":"","method":"","feedback":"","source":"目标清单","tags":[],"created":"2026-03-18","note":"","followUps":[]},{"id":148,"company":"百济神州","industry":"生物医药","description":"","name":"","title":"","phone":"","wechat":"","email":"","need":"EOR","region":"","rating":"A","prob":30,"status":"new","owner":"Jack Lao","lastFollow":"","nextFollow":"","method":"","feedback":"","source":"目标清单","tags":[],"created":"2026-03-18","note":"","followUps":[]},{"id":149,"company":"迈瑞医疗","industry":"生物医药","description":"","name":"","title":"","phone":"","wechat":"","email":"","need":"EOR","region":"","rating":"A","prob":30,"status":"new","owner":"Jack Lao","lastFollow":"","nextFollow":"","method":"","feedback":"","source":"目标清单","tags":[],"created":"2026-03-18","note":"","followUps":[]},{"id":150,"company":"联影医疗","industry":"生物医药","description":"","name":"","title":"","phone":"","wechat":"","email":"","need":"EOR","region":"","rating":"A","prob":30,"status":"new","owner":"Jack Lao","lastFollow":"","nextFollow":"","method":"","feedback":"","source":"目标清单","tags":[],"created":"2026-03-18","note":"","followUps":[]},{"id":151,"company":"华大基因","industry":"生物医药","description":"","name":"","title":"","phone":"","wechat":"","email":"","need":"EOR","region":"","rating":"A","prob":30,"status":"new","owner":"Jack Lao","lastFollow":"","nextFollow":"","method":"","feedback":"","source":"目标清单","tags":[],"created":"2026-03-18","note":"","followUps":[]},{"id":152,"company":"蚂蚁集团","industry":"金融科技","description":"","name":"","title":"","phone":"","wechat":"","email":"","need":"EOR","region":"","rating":"A","prob":30,"status":"new","owner":"Jack Lao","lastFollow":"","nextFollow":"","method":"","feedback":"","source":"目标清单","tags":[],"created":"2026-03-18","note":"","followUps":[]},{"id":153,"company":"陆金所","industry":"金融科技","description":"","name":"","title":"","phone":"","wechat":"","email":"","need":"EOR","region":"","rating":"A","prob":30,"status":"new","owner":"Jack Lao","lastFollow":"","nextFollow":"","method":"","feedback":"","source":"目标清单","tags":[],"created":"2026-03-18","note":"","followUps":[]},{"id":154,"company":"连连国际","industry":"金融科技","description":"","name":"","title":"","phone":"","wechat":"","email":"","need":"EOR","region":"","rating":"A","prob":30,"status":"new","owner":"Jack Lao","lastFollow":"","nextFollow":"","method":"","feedback":"","source":"目标清单","tags":[],"created":"2026-03-18","note":"","followUps":[]},{"id":155,"company":"乒乓智能","industry":"金融科技","description":"","name":"","title":"","phone":"","wechat":"","email":"","need":"EOR","region":"","rating":"A","prob":30,"status":"new","owner":"Jack Lao","lastFollow":"","nextFollow":"","method":"","feedback":"","source":"目标清单","tags":[],"created":"2026-03-18","note":"","followUps":[]},{"id":156,"company":"空中云汇","industry":"金融科技","description":"","name":"","title":"","phone":"","wechat":"","email":"","need":"EOR","region":"","rating":"A","prob":30,"status":"new","owner":"Jack Lao","lastFollow":"","nextFollow":"","method":"","feedback":"","source":"目标清单","tags":[],"created":"2026-03-18","note":"","followUps":[]},{"id":157,"company":"花西子","industry":"消费品牌","description":"","name":"","title":"","phone":"","wechat":"","email":"","need":"EOR","region":"","rating":"A","prob":30,"status":"new","owner":"Jack Lao","lastFollow":"","nextFollow":"","method":"","feedback":"","source":"目标清单","tags":[],"created":"2026-03-18","note":"","followUps":[]},{"id":158,"company":"完美日记","industry":"消费品牌","description":"","name":"","title":"","phone":"","wechat":"","email":"","need":"EOR","region":"","rating":"A","prob":30,"status":"new","owner":"Jack Lao","lastFollow":"","nextFollow":"","method":"","feedback":"","source":"目标清单","tags":[],"created":"2026-03-18","note":"","followUps":[]},{"id":159,"company":"泡泡玛特","industry":"消费品牌","description":"","name":"","title":"","phone":"","wechat":"","email":"","need":"EOR","region":"","rating":"A","prob":30,"status":"new","owner":"Jack Lao","lastFollow":"","nextFollow":"","method":"","feedback":"","source":"目标清单","tags":[],"created":"2026-03-18","note":"","followUps":[]},{"id":160,"company":"蜜雪冰城","industry":"消费品牌","description":"","name":"","title":"","phone":"","wechat":"","email":"","need":"EOR","region":"","rating":"A","prob":30,"status":"new","owner":"Jack Lao","lastFollow":"","nextFollow":"","method":"","feedback":"","source":"目标清单","tags":[],"created":"2026-03-18","note":"","followUps":[]},{"id":161,"company":"瑞幸咖啡","industry":"消费品牌","description":"","name":"","title":"","phone":"","wechat":"","email":"","need":"EOR","region":"","rating":"A","prob":30,"status":"new","owner":"Jack Lao","lastFollow":"","nextFollow":"","method":"","feedback":"","source":"目标清单","tags":[],"created":"2026-03-18","note":"","followUps":[]},{"id":162,"company":"顺丰国际","industry":"物流供应链","description":"","name":"","title":"","phone":"","wechat":"","email":"","need":"EOR","region":"","rating":"A","prob":30,"status":"new","owner":"Jack Lao","lastFollow":"","nextFollow":"","method":"","feedback":"","source":"目标清单","tags":[],"created":"2026-03-18","note":"","followUps":[]},{"id":163,"company":"菜鸟网络","industry":"物流供应链","description":"","name":"","title":"","phone":"","wechat":"","email":"","need":"EOR","region":"","rating":"A","prob":30,"status":"new","owner":"Jack Lao","lastFollow":"","nextFollow":"","method":"","feedback":"","source":"目标清单","tags":[],"created":"2026-03-18","note":"","followUps":[]},{"id":164,"company":"极兔速递","industry":"物流供应链","description":"","name":"","title":"","phone":"","wechat":"","email":"","need":"EOR","region":"","rating":"A","prob":30,"status":"new","owner":"Jack Lao","lastFollow":"","nextFollow":"","method":"","feedback":"","source":"目标清单","tags":[],"created":"2026-03-18","note":"","followUps":[]},{"id":165,"company":"递四方","industry":"物流供应链","description":"","name":"","title":"","phone":"","wechat":"","email":"","need":"EOR","region":"","rating":"A","prob":30,"status":"new","owner":"Jack Lao","lastFollow":"","nextFollow":"","method":"","feedback":"","source":"目标清单","tags":[],"created":"2026-03-18","note":"","followUps":[]},{"id":166,"company":"纵腾集团","industry":"物流供应链","description":"","name":"","title":"","phone":"","wechat":"","email":"","need":"EOR","region":"","rating":"A","prob":30,"status":"new","owner":"Jack Lao","lastFollow":"","nextFollow":"","method":"","feedback":"","source":"目标清单","tags":[],"created":"2026-03-18","note":"","followUps":[]},{"id":167,"company":"VIPKID","industry":"教育科技","description":"","name":"","title":"","phone":"","wechat":"","email":"","need":"EOR","region":"","rating":"A","prob":30,"status":"new","owner":"Jack Lao","lastFollow":"","nextFollow":"","method":"","feedback":"","source":"目标清单","tags":[],"created":"2026-03-18","note":"","followUps":[]},{"id":168,"company":"猿辅导","industry":"教育科技","description":"","name":"","title":"","phone":"","wechat":"","email":"","need":"EOR","region":"","rating":"A","prob":30,"status":"new","owner":"Jack Lao","lastFollow":"","nextFollow":"","method":"","feedback":"","source":"目标清单","tags":[],"created":"2026-03-18","note":"","followUps":[]},{"id":169,"company":"作业帮","industry":"教育科技","description":"","name":"","title":"","phone":"","wechat":"","email":"","need":"EOR","region":"","rating":"A","prob":30,"status":"new","owner":"Jack Lao","lastFollow":"","nextFollow":"","method":"","feedback":"","source":"目标清单","tags":[],"created":"2026-03-18","note":"","followUps":[]},{"id":170,"company":"新东方","industry":"教育科技","description":"","name":"","title":"","phone":"","wechat":"","email":"","need":"EOR","region":"","rating":"A","prob":30,"status":"new","owner":"Jack Lao","lastFollow":"","nextFollow":"","method":"","feedback":"","source":"目标清单","tags":[],"created":"2026-03-18","note":"","followUps":[]},{"id":171,"company":"Coursera","industry":"教育科技","description":"","name":"","title":"","phone":"","wechat":"","email":"","need":"EOR","region":"","rating":"A","prob":30,"status":"new","owner":"Jack Lao","lastFollow":"","nextFollow":"","method":"","feedback":"","source":"目标清单","tags":[],"created":"2026-03-18","note":"","followUps":[]}];
+/* === McKinsey CRM v3 — Cloud Edition === */
+var SM = {
+  new:      {l:'新线索', c:'bl'},
+  contacted:{l:'已联系', c:'gr'},
+  quote:    {l:'报价中', c:'am'},
+  negotiate:{l:'谈判中', c:'pu'},
+  won:      {l:'已成交', c:'cy'},
+  lost:     {l:'已流失', c:'ro'}
+};
+
+var D, SEED = (typeof SEED_DATA !== 'undefined') ? SEED_DATA : [];
+var curView = 'dashboard', curPage = 1, editId = null, pageSize = 20, sortCol = null, sortDir = 1;
+var fuMethod = '邮件';
+var SUPABASE_URL = 'https://krqrherweuijambhrhfn.supabase.co';
+var SUPABASE_KEY = 'sb_publishable_ZJTwv-bmCYCuNmvgVqCU0w_GWjT0nws';
+var supabase = window.supabase ? window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY) : null;
+var _saving = false;
+var isAdmin = false;
+var ADMIN_PWD = 'mckinsey2826';
+
+/* ---- Auth ---- */
+function checkAuth() {
+  var hash = window.location.hash;
+  if (hash === '#admin') {
+    var pwd = prompt('🔐 请输入管理员密码:');
+    if (pwd === ADMIN_PWD) {
+      isAdmin = true;
+      sessionStorage.setItem('crm_admin', '1');
+    } else {
+      alert('❌ 密码错误，将以只读模式查看');
+    }
+  }
+  if (sessionStorage.getItem('crm_admin') === '1') isAdmin = true;
+}
+
+/* ---- Data (Cloud) ---- */
+async function loadData() {
+  if (!supabase) return null; // signal: no cloud
+  try {
+    var res = await supabase.from('crm_data').select('data').eq('key','main').single();
+    if (res.data && res.data.data && res.data.data.length > 0) return res.data.data;
+  } catch(e) { console.warn('Cloud load failed:', e); }
+  return null; // signal: cloud empty
+}
+function saveData() {
+  if (!isAdmin || _saving) return;
+  _saving = true;
+  (async function() {
+    try { await supabase.from('crm_data').upsert({key:'main', data:D}); } catch(e) { console.warn('Save failed:', e); }
+    _saving = false;
+  })();
+}
+
+/* ---- Toast ---- */
+function toast(msg) {
+  var t = document.getElementById('toast');
+  t.textContent = msg; t.className = 'toast show';
+  clearTimeout(t._t);
+  t._t = setTimeout(function(){ t.className = 'toast'; }, 2500);
+}
+
+/* ---- Esc ---- */
+function esc(s) {
+  if (!s) return '';
+  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');
+}
+
+/* ---- Search ---- */
+function filtered() {
+  var q = (document.getElementById('globalSearch').value || '').toLowerCase();
+  var list = D.filter(function(r) {
+    if (!q) return true;
+    var hay = (r.company+r.name+r.industry+r.email+r.region+r.title+r.phone+r.wechat+r.need).toLowerCase();
+    return hay.indexOf(q) >= 0;
+  });
+  var rt = document.getElementById('fRating');
+  var st = document.getElementById('fStatus');
+  var rv = rt ? rt.value : '';
+  var sv = st ? st.value : '';
+  list = list.filter(function(x) {
+    if (rv && x.rating !== rv) return false;
+    if (sv && x.status !== sv) return false;
+    return true;
+  });
+  if (sortCol) {
+    list.sort(function(a,b) {
+      var va = (a[sortCol]||''), vb = (b[sortCol]||'');
+      if (typeof va === 'number') return (va - vb) * sortDir;
+      return String(va).localeCompare(String(vb)) * sortDir;
+    });
+  }
+  return list;
+}
+function onSearch() { curPage = 1; render(); }
+function onFilter() { curPage = 1; render(); }
+function toggleSort(col) {
+  if (sortCol === col) sortDir *= -1; else { sortCol = col; sortDir = 1; }
+  curPage = 1; render();
+}
+
+/* ---- Navigation ---- */
+function switchView(v) {
+  curView = v; curPage = 1; editId = null;
+  document.querySelectorAll('.nav-item[data-v]').forEach(function(n){
+    n.classList.toggle('active', n.dataset.v === v);
+  });
+  ['vDash','vTable','vKanban','vFollowups'].forEach(function(id){
+    document.getElementById(id).classList.add('hidden');
+  });
+  var map = {dashboard:'vDash', table:'vTable', kanban:'vKanban', followups:'vFollowups'};
+  document.getElementById(map[v]).classList.remove('hidden');
+  var titles = {dashboard:'仪表盘', table:'客户列表', kanban:'看板视图', followups:'跟进记录'};
+  document.getElementById('pageTitle').textContent = 'McKinsey CRM — ' + titles[v];
+  render();
+}
+function render() {
+  if (curView === 'dashboard') renderDash();
+  else if (curView === 'table') renderTable();
+  else if (curView === 'kanban') renderKanban();
+  else if (curView === 'followups') renderFollowups();
+}
+
+/* ============ DASHBOARD ============ */
+function renderDash() {
+  var el = document.getElementById('vDash');
+  var total = D.length;
+  var counts = {};
+  var keys = Object.keys(SM);
+  keys.forEach(function(k){ counts[k] = 0; });
+  D.forEach(function(r){ if(counts[r.status]!==undefined) counts[r.status]++; });
+
+  var pipelineVal = 0;
+  D.forEach(function(r){ pipelineVal += (r.prob||0); });
+  var avgProb = total ? Math.round(pipelineVal/total) : 0;
+  var wonCount = counts.won || 0;
+  var newCount = counts.new || 0;
+
+  var h = '';
+  // Stats
+  h += '<div class="stats-row">';
+  h += sc('sc-bl','👥', total, '总客户');
+  h += sc('sc-ro','🔥', newCount, '新线索');
+  h += sc('sc-gr','✅', counts.contacted||0, '已联系');
+  h += sc('sc-am','💰', counts.quote||0, '报价中');
+  h += sc('sc-pu','🏆', wonCount, '已成交');
+  h += sc('sc-cy','📊', avgProb+'%', '平均概率');
+  h += '</div>';
+
+  // Pipeline
+  h += '<div class="pipeline">';
+  keys.forEach(function(k){
+    h += '<div class="ps" onclick="filterByStatus(\''+k+'\')">';
+    h += '<div class="pl" style="color:var(--'+SM[k].c+')">'+SM[k].l+'</div>';
+    h += '<div class="pn" style="color:var(--'+SM[k].c+')">'+counts[k]+'</div>';
+    h += '</div>';
+  });
+  h += '</div>';
+
+  // Charts
+  h += '<div class="grid-2">';
+  h += '<div class="card"><div class="card-hd"><h3>📈 行业分布</h3></div><div class="card-bd"><div class="chart-wrap"><canvas id="chartIndustry"></canvas></div></div></div>';
+  h += '<div class="card"><div class="card-hd"><h3>📊 评级分布</h3></div><div class="card-bd"><div class="chart-wrap"><canvas id="chartRating"></canvas></div></div></div>';
+  h += '</div>';
+
+  // Recent followups
+  h += '<div class="card"><div class="card-hd"><h3>📝 最近跟进</h3><span style="font-size:11px;color:var(--t3)">点击查看详情</span></div><div class="card-bd" style="max-height:300px;overflow-y:auto">';
+  var fu = getAllFollowups().slice(0, 12);
+  if (!fu.length) h += '<div class="empty-state"><div class="es-icon">📭</div><p>暂无跟进记录</p></div>';
+  fu.forEach(function(f){
+    h += '<div class="tl-item" style="cursor:pointer" onclick="openDetail('+f.id+')">';
+    h += tlDot(f.method);
+    h += '<div class="tl-body"><div class="tl-date">'+esc(f.date)+' — <b>'+esc(f.name)+'</b> · '+esc(f.company)+'</div>';
+    h += '<div class="tl-content">'+esc(f.content)+'</div>';
+    if (f.action) h += '<div class="tl-action">→ '+esc(f.action)+'</div>';
+    h += '</div></div>';
+  });
+  h += '</div></div>';
+
+  el.innerHTML = h;
+  setTimeout(drawCharts, 150);
+}
+
+function sc(cls, icon, val, label) {
+  return '<div class="stat-card '+cls+'"><div class="st-icon">'+icon+'</div><div class="st-val">'+val+'</div><div class="st-lbl">'+label+'</div></div>';
+}
+
+function drawCharts() {
+  if (typeof Chart === 'undefined') return;
+  var colors = ['#388bfd','#3fb950','#a371f7','#d29922','#39d2c0','#f85149','#ec4899','#6366f1'];
+
+  // Industry pie
+  var ind = {};
+  D.forEach(function(r){ var k = (r.industry||'').split('/')[0].trim(); if(k) ind[k]=(ind[k]||0)+1; });
+  var indArr = Object.keys(ind).map(function(k){return [k,ind[k]];}).sort(function(a,b){return b[1]-a[1];}).slice(0,8);
+  var other = D.length - indArr.reduce(function(s,x){return s+x[1];},0);
+  var e1 = document.getElementById('chartIndustry');
+  if (e1) {
+    if (window._cPie) window._cPie.destroy();
+    window._cPie = new Chart(e1, {
+      type: 'doughnut',
+      data: {
+        labels: indArr.map(function(x){return x[0];}).concat(['其他']),
+        datasets: [{data: indArr.map(function(x){return x[1];}).concat([other]), backgroundColor: colors.concat(['#2a3448']), borderWidth: 0}]
+      },
+      options: {responsive:true, maintainAspectRatio:false, cutout:'60%', plugins:{legend:{position:'right', labels:{color:'#8b949e', font:{size:10}, padding:6, usePointStyle:true}}}}
+    });
+  }
+
+  // Rating bar
+  var rt = {A:0, B:0, C:0};
+  D.forEach(function(r){ rt[r.rating||'B'] = (rt[r.rating||'B']||0)+1; });
+  var e2 = document.getElementById('chartRating');
+  if (e2) {
+    if (window._cBar) window._cBar.destroy();
+    window._cBar = new Chart(e2, {
+      type: 'bar',
+      data: {
+        labels: ['A级 战略','B级 重点','C级 一般'],
+        datasets: [{data:[rt.A,rt.B,rt.C], backgroundColor:['#f85149','#d29922','#484f58'], borderWidth:0, borderRadius:6, barPercentage:.5}]
+      },
+      options: {responsive:true, maintainAspectRatio:false, indexAxis:'y', scales:{x:{grid:{color:'rgba(33,41,58,.5)'},ticks:{color:'#8b949e'}},y:{grid:{display:false},ticks:{color:'#8b949e',font:{size:11}}}}, plugins:{legend:{display:false}}}
+    });
+  }
+}
+
+function filterByStatus(s) {
+  document.getElementById('globalSearch').value = '';
+  switchView('table');
+  setTimeout(function(){
+    var el = document.getElementById('fStatus');
+    if (el) { el.value = s; onFilter(); }
+  }, 50);
+}
+
+/* ============ TABLE ============ */
+function renderTable() {
+  var el = document.getElementById('vTable');
+  var f = filtered();
+  var tp = Math.ceil(f.length / pageSize) || 1;
+  if (curPage > tp) curPage = tp;
+  var pg = f.slice((curPage-1)*pageSize, curPage*pageSize);
+
+  var h = '<div class="filter-bar">';
+  h += '<select id="fRating" onchange="onFilter()"><option value="">全部评级</option><option value="A">A级 战略</option><option value="B">B级 重点</option><option value="C">C级 一般</option></select>';
+  h += '<select id="fStatus" onchange="onFilter()"><option value="">全部状态</option>';
+  Object.keys(SM).forEach(function(k){ h += '<option value="'+k+'">'+SM[k].l+'</option>'; });
+  h += '</select>';
+  h += '<span style="margin-left:auto;font-size:11px;color:var(--t3)">共 <b style="color:var(--t1)">'+f.length+'</b> 条</span>';
+  h += '<button class="btn-primary admin-only" onclick="addCustomer()">➕ 新增客户</button>';
+  h += '</div>';
+
+  h += '<div class="tbl-wrap"><table><thead><tr>';
+  var cols = [
+    ['id','#'],['company','公司'],['name','联系人'],['phone','电话'],['email','邮箱'],
+    ['industry','行业'],['rating','评级'],['status','状态'],['prob','概率'],['lastFollow','跟进']
+  ];
+  cols.forEach(function(c){
+    var arrow = sortCol===c[0] ? (sortDir===1?' ↑':' ↓') : '';
+    h += '<th onclick="toggleSort(\''+c[0]+'\')">'+c[1]+arrow+'</th>';
+  });
+  h += '<th></th></tr></thead><tbody>';
+
+  pg.forEach(function(r, i){
+    h += '<tr onclick="openDetail('+r.id+')">';
+    h += '<td style="color:var(--t3)">'+((curPage-1)*pageSize+i+1)+'</td>';
+    h += '<td><b>'+esc(r.company)+'</b></td>';
+    h += '<td>'+esc(r.name)+'</td>';
+    h += '<td>'+esc(r.phone)+'</td>';
+    h += '<td>'+esc(r.email)+'</td>';
+    h += '<td><span class="tag">'+esc(r.industry)+'</span></td>';
+    h += '<td><span class="rating rating-'+(r.rating||'b').toLowerCase()+'">'+(r.rating||'')+'</span></td>';
+    h += '<td><span class="st-badge st-'+r.status+'">'+SM[r.status].l+'</span></td>';
+    h += '<td><div class="prob-wrap"><div class="prob-bar"><div class="prob-fill" style="width:'+(r.prob||0)+'%;background:'+(r.prob>=60?'var(--am)':'var(--bl)')+'"></div></div><span class="prob-pct">'+(r.prob||0)+'%</span></div></td>';
+    h += '<td style="color:var(--t3);font-size:12px">'+esc(r.lastFollow)+'</td>';
+    h += '</tr>';
+  });
+  h += '</tbody></table></div>';
+
+  h += '<div class="pager"><span>第 '+curPage+'/'+tp+' 页</span><div class="pager-btns">';
+  h += '<button onclick="curPage=1;renderTable()" '+(curPage<=1?'disabled':'')+'>首页</button>';
+  h += '<button onclick="curPage=Math.max(1,curPage-1);renderTable()" '+(curPage<=1?'disabled':'')+'>上一页</button>';
+  h += '<button onclick="curPage=Math.min('+tp+',curPage+1);renderTable()" '+(curPage>=tp?'disabled':'')+'>下一页</button>';
+  h += '<button onclick="curPage='+tp+';renderTable()" '+(curPage>=tp?'disabled':'')+'>末页</button>';
+  h += '</div></div>';
+
+  h += '<div style="text-align:center;padding:8px;color:var(--t3);font-size:11px">💡 点击客户行 → 查看详情 / 编辑 / 添加跟进</div>';
+  el.innerHTML = h;
+
+  // Restore filter values
+  var rtEl = document.getElementById('fRating');
+  var stEl = document.getElementById('fStatus');
+  if (rtEl && window._filterRating) rtEl.value = window._filterRating;
+  if (stEl && window._filterStatus) stEl.value = window._filterStatus;
+}
+
+/* ============ KANBAN ============ */
+function renderKanban() {
+  var el = document.getElementById('vKanban');
+  var f = filtered();
+  var h = '<div class="kanban">';
+  Object.keys(SM).forEach(function(k){
+    var items = f.filter(function(r){ return r.status===k; });
+    h += '<div class="kanban-col">';
+    h += '<div class="kanban-hd"><span class="kc-title"><span class="kc-dot" style="background:var(--'+SM[k].c+')"></span>'+SM[k].l+'</span><span class="kc-count">'+items.length+'</span></div>';
+    h += '<div class="kanban-body">';
+    if (!items.length) {
+      h += '<div class="empty-state"><p style="font-size:11px">暂无</p></div>';
+    }
+    items.forEach(function(r){
+      h += '<div class="k-card" onclick="openDetail('+r.id+')">';
+      h += '<div class="kc-name">'+esc(r.company||'(未命名)')+'</div>';
+      h += '<div class="kc-sub">'+esc(r.name)+(r.title?' · '+esc(r.title):'')+'</div>';
+      h += '<div class="kc-tags">';
+      h += '<span class="rating rating-'+(r.rating||'b').toLowerCase()+'" style="width:20px;height:20px;font-size:10px">'+(r.rating||'')+'</span>';
+      if (r.need) h += '<span class="tag">'+esc(r.need)+'</span>';
+      if (r.region) h += '<span class="tag">'+esc(r.region)+'</span>';
+      h += '</div>';
+      h += '<div style="margin-top:6px"><div class="prob-wrap"><div class="prob-bar" style="width:100%"><div class="prob-fill" style="width:'+(r.prob||0)+'%;background:var(--'+SM[k].c+')"></div></div><span class="prob-pct" style="width:auto">'+(r.prob||0)+'%</span></div></div>';
+      h += '</div>';
+    });
+    h += '</div></div>';
+  });
+  h += '</div>';
+  el.innerHTML = h;
+}
+
+/* ============ FOLLOWUPS ============ */
+function renderFollowups() {
+  var el = document.getElementById('vFollowups');
+  var fu = getAllFollowups();
+  var h = '<div class="card"><div class="card-hd"><h3>📝 全部跟进记录</h3><span style="font-size:11px;color:var(--t3)">'+fu.length+' 条</span></div>';
+  h += '<div class="card-bd" style="max-height:calc(100vh - 200px);overflow-y:auto">';
+  if (!fu.length) h += '<div class="empty-state"><div class="es-icon">📭</div><p>暂无跟进记录</p></div>';
+  fu.forEach(function(f){
+    h += '<div class="tl-item" style="cursor:pointer" onclick="openDetail('+f.id+')">';
+    h += tlDot(f.method);
+    h += '<div class="tl-body"><div class="tl-date">'+esc(f.date)+' — <b>'+esc(f.name)+'</b> · '+esc(f.company)+'</div>';
+    h += '<div class="tl-content">'+esc(f.content)+'</div>';
+    if (f.action) h += '<div class="tl-action">→ '+esc(f.action)+'</div>';
+    h += '</div></div>';
+  });
+  h += '</div></div>';
+  el.innerHTML = h;
+}
+
+/* ---- Helpers ---- */
+function getAllFollowups() {
+  var fu = [];
+  D.forEach(function(r){
+    if (r.followUps) {
+      r.followUps.forEach(function(f){
+        fu.push({date:f.date, method:f.method, content:f.content, action:f.action, name:r.name||r.company, company:r.company, id:r.id});
+      });
+    }
+  });
+  fu.sort(function(a,b){ return (b.date||'').localeCompare(a.date||''); });
+  return fu;
+}
+
+function tlDot(method) {
+  var cls = 'dc-other', icon = '📋';
+  if (method==='电话'){ cls='dc-call'; icon='📞'; }
+  else if (method==='微信'){ cls='dc-wechat'; icon='💬'; }
+  else if (method==='线下'){ cls='dc-visit'; icon='🤝'; }
+  else if (method==='邮件'){ cls='dc-email'; icon='📧'; }
+  return '<div class="tl-dot '+cls+'">'+icon+'</div>';
+}
+
+/* ============ MODAL / DETAIL ============ */
+function openDetail(id) {
+  editId = id;
+  var r = D.find(function(x){ return x.id===id; });
+  if (!r) return;
+  fuMethod = '邮件';
+  renderModal(r);
+  document.getElementById('modalOverlay').classList.add('show');
+}
+
+function closeModal() {
+  document.getElementById('modalOverlay').classList.remove('show');
+  editId = null;
+}
+
+function renderModal(r) {
+  var ro = !isAdmin; // read-only flag
+  var statusOpts = '';
+  Object.keys(SM).forEach(function(k){
+    statusOpts += '<option value="'+k+'" '+(r.status===k?'selected':'')+'>'+SM[k].l+'</option>';
+  });
+
+  var h = '';
+  // Head
+  h += '<button class="modal-close" onclick="closeModal()">✕</button>';
+  h += '<h2>'+esc(r.company||'(未命名)')+'</h2>';
+  h += '<div style="font-size:12px;color:var(--t2)">'+esc(r.industry)+(r.description?' · '+esc(r.description):'')+'</div>';
+  h += '<div class="modal-head-btns">';
+  if (ro) {
+    h += '<span style="font-size:11px;color:var(--t3);background:var(--bg2);padding:4px 10px;border-radius:var(--rx)">🔒 只读模式</span>';
+  } else {
+    h += '<button class="btn-primary" onclick="saveDetail()">💾 保存</button>';
+    h += '<button class="btn-danger" onclick="deleteCustomer('+r.id+')">🗑️ 删除</button>';
+  }
+  h += '</div>';
+
+  document.getElementById('modalHead').innerHTML = h;
+
+  // Left - editable info
+  var left = '';
+  // Contact
+  left += '<div class="info-section"><h4>👤 联系信息</h4>';
+  left += field('联系人','e_name', r.name);
+  left += field('职位','e_title', r.title);
+  left += field('电话','e_phone', r.phone);
+  left += field('微信','e_wechat', r.wechat);
+  left += field('邮箱','e_email', r.email);
+  left += '</div>';
+  // Business
+  left += '<div class="info-section"><h4>🏢 业务信息</h4>';
+  left += field('行业','e_industry', r.industry);
+  left += field('需求','e_need', r.need);
+  left += field('地区','e_region', r.region);
+  left += field('来源','e_source', r.source);
+  left += field('描述','e_desc', r.description);
+  left += '</div>';
+  // Sales
+  left += '<div class="info-section"><h4>📊 销售漏斗</h4>';
+  left += '<div class="field"><label>评级</label><div class="rating-selector">';
+  ['A','B','C'].forEach(function(v){
+    var active = r.rating===v ? ' on' : '';
+    var click = isAdmin ? ' onclick="pickRating(\''+v+'\')"' : ' style="pointer-events:none;opacity:0.6"';
+    left += '<div class="rating-dot rd-'+v.toLowerCase()+active+'"'+click+'>'+v+'</div>';
+  });
+  left += '</div></div>';
+  left += '<div class="field"><label>状态</label><select id="e_status"'+(ro?' disabled':'')+'>'+statusOpts+'</select></div>';
+  left += '<div class="field"><label>成交概率 <span id="probVal" style="color:var(--am);font-weight:700">'+(r.prob||0)+'%</span></label><input type="range" id="e_prob" min="0" max="100" value="'+(r.prob||0)+'" oninput="document.getElementById(\'probVal\').textContent=this.value+\'%\'" style="padding:0"'+(ro?' disabled':'')+'></div>';
+  left += field('负责人','e_owner', r.owner);
+  left += '<div class="field"><label>最后跟进</label><input type="date" id="e_lastFollow" value="'+(r.lastFollow||'')+'"'+(ro?' readonly':'')+'></div>';
+  left += '<div class="field"><label>下次跟进</label><input type="date" id="e_nextFollow" value="'+(r.nextFollow||'')+'"'+(ro?' readonly':'')+'></div>';
+  left += '</div>';
+  // Note
+  left += '<div class="info-section"><h4>📝 备注</h4>';
+  left += '<div class="field"><textarea id="e_note" placeholder="添加备注..."'+(ro?' readonly style="opacity:0.7"':'')+'>'+esc(r.note||'')+'</textarea></div>';
+  left += '</div>';
+
+  document.getElementById('modalLeft').innerHTML = left;
+
+  // Right - timeline
+  var fuc = (r.followUps||[]).length;
+  var right = '<div class="tl-header"><span>📋 跟进时间线 ('+fuc+')</span></div>';
+  right += '<div class="tl-scroll" id="tlScroll">';
+  if (fuc > 0) {
+    for (var i = fuc-1; i >= 0; i--) {
+      var f = r.followUps[i];
+      right += '<div class="tl-item">';
+      right += tlDot(f.method);
+      right += '<div class="tl-body">';
+      right += '<div class="tl-date">'+esc(f.date||'')+' · '+esc(f.method||'')+' <button class="tl-del" onclick="event.stopPropagation();delFollowup('+r.id+','+i+')">✕</button></div>';
+      right += '<div class="tl-content">'+esc(f.content)+'</div>';
+      if (f.action) right += '<div class="tl-action">→ '+esc(f.action)+'</div>';
+      right += '</div></div>';
+    }
+  } else {
+    right += '<div class="empty-state"><div class="es-icon">💬</div><p>暂无跟进记录<br>在下方添加第一条跟进</p></div>';
+  }
+  right += '</div>';
+
+  // Follow-up input
+  var today = new Date().toISOString().slice(0,10);
+  if (!ro) {
+  right += '<div class="fu-input">';
+  right += '<input type="date" id="fuDate" value="'+today+'" style="width:140px;flex:none">';
+  right += '<div class="fu-methods">';
+  var methods = [['邮件','📧'],['电话','📞'],['微信','💬'],['线下','🤝']];
+  methods.forEach(function(m){
+    var active = m[0]===fuMethod ? ' on' : '';
+    right += '<div class="fu-method-btn'+active+'" data-m="'+m[0]+'" onclick="pickFuMethod(this)" title="'+m[0]+'">'+m[1]+'</div>';
+  });
+  right += '</div>';
+  right += '<input type="text" id="fuContent" placeholder="输入跟进内容..." onkeydown="if(event.key===\'Enter\')sendFollowup()">';
+  right += '<div class="fu-send" onclick="sendFollowup()">➤</div>';
+  right += '</div>';
+  }
+
+  document.getElementById('modalRight').innerHTML = right;
+}
+
+function field(label, id, val) {
+  var disabled = !isAdmin ? ' readonly style="opacity:0.7;cursor:default"' : '';
+  return '<div class="field"><label>'+label+'</label><input id="'+id+'" value="'+esc(val||'')+'"'+disabled+'></div>';
+}
+
+function pickRating(v) {
+  document.querySelectorAll('.rating-dot').forEach(function(d){ d.classList.remove('on'); });
+  var el = document.querySelector('.rating-dot.rd-'+v.toLowerCase());
+  if (el) el.classList.add('on');
+}
+
+function pickFuMethod(btn) {
+  fuMethod = btn.dataset.m;
+  document.querySelectorAll('.fu-method-btn').forEach(function(b){ b.classList.remove('on'); });
+  btn.classList.add('on');
+}
+
+function saveDetail() {
+  if (!isAdmin) { toast('🔒 只读模式，无法编辑'); return; }
+  var r = D.find(function(x){ return x.id===editId; });
+  if (!r) return;
+  var keys = ['name','title','phone','wechat','email','industry','need','region','source','owner','note','description'];
+  keys.forEach(function(k){
+    var el = document.getElementById('e_'+k);
+    if (el) r[k] = el.value;
+  });
+  var activeDot = document.querySelector('.rating-dot.on');
+  r.rating = activeDot ? activeDot.textContent.trim() : r.rating;
+  r.status = document.getElementById('e_status').value;
+  r.prob = parseInt(document.getElementById('e_prob').value) || 0;
+  r.lastFollow = document.getElementById('e_lastFollow').value;
+  r.nextFollow = document.getElementById('e_nextFollow').value;
+  saveData();
+  toast('✅ 已保存');
+  render();
+  renderModal(r);
+}
+
+function sendFollowup() {
+  if (!isAdmin) { toast('🔒 只读模式，无法添加跟进'); return; }
+  var r = D.find(function(x){ return x.id===editId; });
+  if (!r) return;
+  var content = document.getElementById('fuContent').value.trim();
+  if (!content) { toast('请输入跟进内容'); return; }
+  if (!r.followUps) r.followUps = [];
+  r.followUps.push({
+    date: document.getElementById('fuDate').value,
+    method: fuMethod,
+    content: content,
+    action: ''
+  });
+  r.lastFollow = document.getElementById('fuDate').value;
+  saveData();
+  toast('✅ 跟进已添加');
+  document.getElementById('fuContent').value = '';
+  render();
+  renderModal(r);
+  // Scroll to bottom of timeline
+  var scroll = document.getElementById('tlScroll');
+  if (scroll) scroll.scrollTop = 0;
+}
+
+function delFollowup(id, idx) {
+  if (!isAdmin) { toast('🔒 只读模式'); return; }
+  var r = D.find(function(x){ return x.id===id; });
+  if (!r || !r.followUps) return;
+  if (!confirm('确定删除此跟进记录？')) return;
+  r.followUps.splice(idx, 1);
+  saveData();
+  toast('已删除');
+  renderModal(r);
+  render();
+}
+
+function deleteCustomer(id) {
+  if (!isAdmin) { toast('🔒 只读模式，无法删除'); return; }
+  if (!confirm('⚠️ 确定删除此客户？此操作不可恢复。')) return;
+  D = D.filter(function(x){ return x.id !== id; });
+  saveData();
+  closeModal();
+  toast('🗑️ 已删除');
+  render();
+}
+
+function addCustomer() {
+  if (!isAdmin) { toast('🔒 只读模式，无法新增'); return; }
+  var maxId = D.reduce(function(m,x){ return Math.max(m,x.id); }, 0);
+  var r = {
+    id: maxId + 1, company:'', name:'', title:'', phone:'', wechat:'', email:'',
+    industry:'', description:'', need:'', region:'', rating:'B', prob:20,
+    status:'new', owner:'Jack Lao', lastFollow:'', nextFollow:'', method:'',
+    feedback:'', source:'', tags:[], created:new Date().toISOString().slice(0,10),
+    note:'', followUps:[]
+  };
+  D.push(r);
+  saveData();
+  openDetail(r.id);
+  toast('✅ 已创建新客户');
+  render();
+}
+
+/* ---- Export / Import / Reset ---- */
+function exportData() {
+  var blob = new Blob([JSON.stringify(D, null, 2)], {type:'application/json'});
+  var a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'McKinsey_CRM_'+new Date().toISOString().slice(0,10)+'.json';
+  a.click();
+  toast('📤 数据已导出');
+}
+
+function importData(e) {
+  var f = e.target.files[0];
+  if (!f) return;
+  var reader = new FileReader();
+  reader.onload = function(ev) {
+    try {
+      var data = JSON.parse(ev.target.result);
+      if (!Array.isArray(data)) throw new Error('Invalid');
+      D = data;
+      saveData();
+      render();
+      toast('📥 已导入 ('+D.length+' 条)');
+    } catch(err) {
+      toast('❌ 导入失败：文件格式错误');
+    }
+  };
+  reader.readAsText(f);
+  e.target.value = '';
+}
+
+function resetData() {
+  if (!isAdmin) { toast('🔒 只读模式'); return; }
+  if (!confirm('⚠️ 确定重置为初始数据？所有修改将丢失。')) return;
+  D = JSON.parse(JSON.stringify(SEED));
+  curPage = 1;
+  saveData();
+  render();
+  toast('🔄 已重置为初始数据');
+}
+
+/* ---- Init ---- */
+(async function(){
+  checkAuth();
+  document.getElementById('vDash').innerHTML = '<div style="text-align:center;padding:60px;color:var(--t3)"><div style="font-size:32px;margin-bottom:12px">⏳</div><div>正在从云端加载数据...</div></div>';
+  var cloudData = await loadData();
+  if (cloudData) {
+    D = cloudData;
+  } else {
+    D = JSON.parse(JSON.stringify(SEED));
+    saveData();
+  }
+  // Hide admin-only sidebar items for read-only users
+  if (!isAdmin) {
+    document.querySelectorAll('.admin-only').forEach(function(el){ el.style.display='none'; });
+  }
+  switchView('dashboard');
+})();
+
+</script>
+</body>
+</html>
