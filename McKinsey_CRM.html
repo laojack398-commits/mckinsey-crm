@@ -231,7 +231,8 @@ tr{cursor:pointer;transition:background .1s}
     <div class="nav-sec">
       <div class="lbl">管理</div>
       <div class="nav-item" data-v="followups" onclick="switchView('followups')"><span>📝</span><span>跟进记录</span></div>
-      <div class="nav-item admin-only" onclick="exportData()"><span>📤</span><span>导出数据</span></div>
+      <div class="nav-item admin-only" onclick="exportCSV()"><span>📄</span><span>导出CSV（分享用）</span></div>
+      <div class="nav-item admin-only" onclick="exportData()"><span>📤</span><span>导出完整数据</span></div>
       <div class="nav-item admin-only" onclick="document.getElementById('fileImport').click()"><span>📥</span><span>导入数据</span></div>
       <div class="nav-item admin-only" onclick="resetData()"><span>🔄</span><span>重置数据</span></div>
     </div>
@@ -885,13 +886,34 @@ function addCustomer() {
 }
 
 /* ---- Export / Import / Reset ---- */
+function exportCSV() {
+  var headers = ['公司','联系人','职位','电话','微信','邮箱','行业','需求','地区','来源','评级','状态','概率','负责人','最后跟进'];
+  var rows = [headers.join(',')];
+  D.forEach(function(r) {
+    rows.push([
+      '"'+(r.company||'')+'"','"'+(r.name||'')+'"','"'+(r.title||'')+'"',
+      '"'+(r.phone||'')+'"','"'+(r.wechat||'')+'"','"'+(r.email||'')+'"',
+      '"'+(r.industry||'')+'"','"'+(r.need||'')+'"','"'+(r.region||'')+'"',
+      '"'+(r.source||'')+'"','"'+(r.rating||'')+'"','"'+(SM[r.status]?SM[r.status].l:r.status)+'"',
+      (r.prob||0)+'%','"'+(r.owner||'')+'"','"'+(r.lastFollow||'')+'"'
+    ].join(','));
+  });
+  var bom = '\uFEFF';
+  var blob = new Blob([bom + rows.join('\n')], {type:'text/csv;charset=utf-8'});
+  var a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'McKinsey_CRM_Export_'+new Date().toISOString().slice(0,10)+'.csv';
+  a.click();
+  toast('📤 CSV 已导出（仅客户基础信息）');
+}
+
 function exportData() {
   var blob = new Blob([JSON.stringify(D, null, 2)], {type:'application/json'});
   var a = document.createElement('a');
   a.href = URL.createObjectURL(blob);
   a.download = 'McKinsey_CRM_'+new Date().toISOString().slice(0,10)+'.json';
   a.click();
-  toast('📤 数据已导出');
+  toast('📤 完整数据已导出（含跟进记录）');
 }
 
 function importData(e) {
