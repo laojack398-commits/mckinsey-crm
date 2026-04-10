@@ -212,6 +212,107 @@ tr{cursor:pointer;transition:background .1s}
   .stats-row{grid-template-columns:repeat(2,1fr)}
   .grid-2{grid-template-columns:1fr}
 }
+
+/* ============ B1 — Today's To-Do ============ */
+.todo-card{border-color:var(--bl);box-shadow:0 0 20px rgba(56,139,253,.08)}
+.todo-count{background:var(--bl);color:#fff;padding:1px 8px;border-radius:10px;font-weight:700;font-size:10px}
+.todo-list{max-height:200px;overflow-y:auto}
+.todo-item{display:flex;align-items:center;gap:8px;padding:8px 0;border-bottom:1px solid var(--border);cursor:pointer;transition:background .15s;border-radius:var(--rx);padding:8px;margin:2px 0}
+.todo-item:last-child{border-bottom:none}
+.todo-item:hover{background:var(--card2)}
+.todo-badge{font-size:10px;font-weight:700;padding:2px 8px;border-radius:8px;flex-shrink:0}
+.todo-today .todo-badge{background:rgba(63,185,80,.15);color:var(--gr)}
+.todo-overdue .todo-badge{background:rgba(248,81,73,.15);color:var(--ro)}
+.todo-stale .todo-badge{background:rgba(210,153,34,.15);color:var(--am)}
+.todo-name{flex:1;font-size:13px;color:var(--t1)}
+.todo-days{font-size:11px;color:var(--ro);font-weight:600}
+
+/* ============ B1 — Alert Section ============ */
+.alert-section{margin-bottom:20px}
+.alert-item{display:flex;align-items:center;gap:8px;padding:8px 14px;background:var(--card);border:1px solid var(--border);border-radius:var(--rx);cursor:pointer;margin-bottom:4px;transition:all .15s}
+.alert-item:hover{border-color:var(--am);background:var(--card2)}
+.alert-reason{font-size:10px;font-weight:700;padding:2px 8px;border-radius:8px;flex-shrink:0}
+.alert-reason.ar-new{background:rgba(56,139,253,.12);color:var(--bl)}
+.alert-reason.ar-overdue{background:rgba(248,81,73,.12);color:var(--ro)}
+.alert-reason.ar-stale{background:rgba(210,153,34,.12);color:var(--am)}
+.alert-name{flex:1;font-size:13px}
+.alert-badge{background:var(--ro);color:#fff;font-size:10px;padding:1px 8px;border-radius:10px;font-weight:700}
+
+/* ============ B1 — Recent Changes ============ */
+.change-item{display:flex;gap:8px;padding:6px 0;border-bottom:1px solid var(--border);font-size:12px}
+.change-item:last-child{border-bottom:none}
+.change-ts{color:var(--t3);flex-shrink:0;min-width:130px}
+.change-field{color:var(--bl);font-weight:600;flex-shrink:0;min-width:50px}
+.change-val{color:var(--t2)}
+.change-old{color:var(--ro);text-decoration:line-through;margin-right:4px}
+.change-new{color:var(--gr)}
+
+/* ============ B1 — Changelog in Modal ============ */
+.changelog-section{margin-bottom:18px}
+.changelog-toggle{display:flex;align-items:center;gap:6px;cursor:pointer;font-size:12px;font-weight:600;color:var(--t2);padding:6px 0;border:none;background:none;transition:color .15s}
+.changelog-toggle:hover{color:var(--t1)}
+.changelog-toggle .arrow{transition:transform .2s;font-size:10px}
+.changelog-toggle.open .arrow{transform:rotate(90deg)}
+.changelog-list{max-height:0;overflow:hidden;transition:max-height .3s ease}
+.changelog-list.open{max-height:400px;overflow-y:auto}
+.cl-entry{display:flex;gap:6px;padding:4px 0;border-bottom:1px solid var(--border);font-size:11px}
+.cl-entry:last-child{border-bottom:none}
+.cl-ts{color:var(--t3);min-width:120px;flex-shrink:0}
+.cl-field{color:var(--bl);font-weight:600;min-width:40px}
+.cl-old{color:var(--ro);text-decoration:line-through}
+.cl-new{color:var(--gr)}
+.cl-arrow{color:var(--t3)}
+
+/* ============ B1 — Daily Summary Popup ============ */
+.daily-popup{position:fixed;inset:0;z-index:300;display:flex;align-items:center;justify-content:center;animation:dailyFadeIn .4s ease}
+.daily-backdrop{position:absolute;inset:0;background:rgba(0,0,0,.6);backdrop-filter:blur(8px)}
+.daily-content{position:relative;background:rgba(21,28,40,.92);backdrop-filter:blur(20px);border:1px solid rgba(56,139,253,.2);border-radius:16px;padding:32px;width:380px;text-align:center;box-shadow:0 24px 80px rgba(0,0,0,.5),0 0 40px rgba(56,139,253,.06);animation:dailySlideUp .4s ease}
+.daily-title{font-size:20px;font-weight:800;margin-bottom:24px;color:var(--t1)}
+.daily-body{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:24px}
+.daily-item{background:var(--bg2);border:1px solid var(--border);border-radius:var(--rx2);padding:16px 12px;display:flex;flex-direction:column;align-items:center;gap:4px}
+.daily-num{font-size:28px;font-weight:800}
+.daily-item span:last-child{font-size:12px;color:var(--t2)}
+.daily-green .daily-num{color:var(--gr)}.daily-red .daily-num{color:var(--ro)}
+.daily-blue .daily-num{color:var(--bl)}.daily-yellow .daily-num{color:var(--am)}
+@keyframes dailyFadeIn{from{opacity:0}to{opacity:1}}
+@keyframes dailySlideUp{from{opacity:0;transform:translateY(20px) scale(.96)}to{opacity:1;transform:none}}
+
+/* ============ B2 — Reports View ============ */
+.report-range{display:flex;gap:6px;margin-bottom:16px}
+.report-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:20px}
+.report-kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:10px;margin-bottom:20px}
+.kpi-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--rx);padding:14px;text-align:center}
+.kpi-val{font-size:24px;font-weight:800;color:var(--bl)}
+.kpi-label{font-size:11px;color:var(--t2);margin-top:2px}
+
+/* ============ B2 — Funnel ============ */
+.funnel{margin-bottom:20px;padding:16px;background:var(--card);border:1px solid var(--border);border-radius:var(--rx2)}
+.funnel-title{font-size:13px;font-weight:700;color:var(--t2);margin-bottom:12px}
+.funnel-stage{display:flex;align-items:center;gap:10px;margin-bottom:8px}
+.funnel-bar{height:36px;border-radius:6px;display:flex;align-items:center;padding:0 12px;min-width:60px;transition:width .3s ease}
+.funnel-label{font-size:12px;font-weight:600;color:var(--t1);white-space:nowrap}
+.funnel-count{font-size:14px;font-weight:800;margin-left:auto;white-space:nowrap}
+.funnel-conv{font-size:10px;color:var(--t3);white-space:nowrap;margin-left:8px}
+
+/* ============ B2 — Weekly Reports ============ */
+.weekly-report{background:var(--bg2);border:1px solid var(--border);border-radius:var(--rx);margin-bottom:8px;overflow:hidden}
+.wr-header{display:flex;align-items:center;justify-content:space-between;padding:10px 14px;cursor:pointer;transition:background .15s}
+.wr-header:hover{background:var(--card2)}
+.wr-title{font-size:13px;font-weight:600;color:var(--t1)}
+.wr-date{font-size:11px;color:var(--t3)}
+.wr-body{padding:0 14px;max-height:0;overflow:hidden;transition:max-height .3s ease}
+.wr-body.open{max-height:300px;padding:10px 14px}
+.wr-stats{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px}
+.wr-stat{text-align:center}
+.wr-stat-val{font-size:18px;font-weight:800;color:var(--bl)}
+.wr-stat-label{font-size:10px;color:var(--t3)}
+
+/* ============ Responsive additions ============ */
+@media(max-width:768px){
+  .report-grid{grid-template-columns:1fr}
+  .daily-body{grid-template-columns:1fr 1fr}
+  .todo-item{flex-wrap:wrap}
+}
 </style>
 </head>
 <body>
@@ -231,6 +332,7 @@ tr{cursor:pointer;transition:background .1s}
     <div class="nav-sec">
       <div class="lbl">管理</div>
       <div class="nav-item" data-v="followups" onclick="switchView('followups')"><span>📝</span><span>跟进记录</span></div>
+      <div class="nav-item" data-v="reports" onclick="switchView('reports')"><span>📊</span><span>报表</span></div>
       <div class="nav-item admin-only" onclick="exportCSV()"><span>📄</span><span>导出CSV（分享用）</span></div>
       <div class="nav-item admin-only" onclick="exportData()"><span>📤</span><span>导出完整数据</span></div>
       <div class="nav-item admin-only" onclick="document.getElementById('fileImport').click()"><span>📥</span><span>导入数据</span></div>
@@ -252,6 +354,7 @@ tr{cursor:pointer;transition:background .1s}
       <div id="vTable" class="hidden"></div>
       <div id="vKanban" class="hidden"></div>
       <div id="vFollowups" class="hidden"></div>
+      <div id="vReports" class="hidden"></div>
     </div>
   </div>
 </div>
@@ -404,12 +507,12 @@ function switchView(v) {
   document.querySelectorAll('.nav-item[data-v]').forEach(function(n){
     n.classList.toggle('active', n.dataset.v === v);
   });
-  ['vDash','vTable','vKanban','vFollowups'].forEach(function(id){
+  ['vDash','vTable','vKanban','vFollowups','vReports'].forEach(function(id){
     document.getElementById(id).classList.add('hidden');
   });
-  var map = {dashboard:'vDash', table:'vTable', kanban:'vKanban', followups:'vFollowups'};
+  var map = {dashboard:'vDash', table:'vTable', kanban:'vKanban', followups:'vFollowups', reports:'vReports'};
   document.getElementById(map[v]).classList.remove('hidden');
-  var titles = {dashboard:'仪表盘', table:'客户列表', kanban:'看板视图', followups:'跟进记录'};
+  var titles = {dashboard:'仪表盘', table:'客户列表', kanban:'看板视图', followups:'跟进记录', reports:'数据分析报表'};
   document.getElementById('pageTitle').textContent = 'McKinsey CRM — ' + titles[v];
   render();
 }
@@ -418,11 +521,13 @@ function render() {
   else if (curView === 'table') renderTable();
   else if (curView === 'kanban') renderKanban();
   else if (curView === 'followups') renderFollowups();
+  else if (curView === 'reports') renderReports();
 }
 
 /* ============ DASHBOARD ============ */
 function renderDash() {
   var el = document.getElementById('vDash');
+  var today = new Date().toISOString().slice(0,10);
   var total = D.length;
   var counts = {};
   var keys = Object.keys(SM);
@@ -436,7 +541,42 @@ function renderDash() {
   var newCount = counts.new || 0;
 
   var h = '';
-  // Stats
+
+  // --- Today's To-Do Panel (B1.2) ---
+  var todos = getTodayTodos(today);
+  h += '<div class="card todo-card">';
+  h += '<div class="card-hd"><h3>📋 今日待办</h3><span class="todo-count" style="font-size:11px;color:var(--t3)">'+todos.length+' 项</span></div>';
+  h += '<div class="card-bd">';
+  if (todos.length === 0) {
+    h += '<div style="text-align:center;padding:16px;color:var(--gr);font-size:13px">✅ 今日无需跟进</div>';
+  } else {
+    todos.forEach(function(t){
+      h += '<div class="todo-item todo-'+t.type+'" onclick="openDetail('+t.id+')">';
+      h += '<span class="todo-badge">'+t.badge+'</span>';
+      h += '<span class="todo-name">'+esc(t.name)+' · '+esc(t.company)+'</span>';
+      if (t.overdue > 0) h += '<span class="todo-days">'+t.overdue+'天超期</span>';
+      h += '<button class="btn-sm btn-primary" onclick="event.stopPropagation();openDetail('+t.id+')">查看</button>';
+      h += '</div>';
+    });
+  }
+  h += '</div></div>';
+
+  // --- Auto-Flow Rules (B2.3) ---
+  var alerts = getAutoFlowAlerts(today);
+  if (alerts.length > 0) {
+    h += '<div class="card alert-card">';
+    h += '<div class="card-hd"><h3>⚠️ 需关注</h3><span class="alert-badge-total">'+alerts.length+'</span></div>';
+    h += '<div class="card-bd">';
+    alerts.forEach(function(a){
+      h += '<div class="alert-item" onclick="openDetail('+a.id+')">';
+      h += '<span class="alert-icon">'+a.icon+'</span>';
+      h += '<span class="alert-text">'+esc(a.name)+' · '+esc(a.company)+' — '+a.reason+'</span>';
+      h += '</div>';
+    });
+    h += '</div></div>';
+  }
+
+  // --- Stats ---
   h += '<div class="stats-row">';
   h += sc('sc-bl','👥', total, '总客户');
   h += sc('sc-ro','🔥', newCount, '新线索');
@@ -446,17 +586,34 @@ function renderDash() {
   h += sc('sc-cy','📊', avgProb+'%', '平均概率');
   h += '</div>';
 
-  // Pipeline
+  // --- Pipeline with overdue badges (B1.3) ---
+  var overdueCount = D.filter(function(r){ return r.nextFollow && r.nextFollow < today && r.status !== 'won' && r.status !== 'lost'; }).length;
   h += '<div class="pipeline">';
   keys.forEach(function(k){
     h += '<div class="ps" onclick="filterByStatus(\''+k+'\')">';
     h += '<div class="pl" style="color:var(--'+SM[k].c+')">'+SM[k].l+'</div>';
-    h += '<div class="pn" style="color:var(--'+SM[k].c+')">'+counts[k]+'</div>';
-    h += '</div>';
+    h += '<div class="pn" style="color:var(--'+SM[k].c+')">'+counts[k];
+    if (k !== 'won' && k !== 'lost' && overdueCount > 0) {
+      // show overdue badge on first 3 active stages
+    }
+    h += '</div></div>';
   });
+  if (overdueCount > 0) {
+    h += '<div class="ps ps-overdue" onclick="showOverdueList()"><div class="pl" style="color:var(--ro)">⏰ 超期</div><div class="pn" style="color:var(--ro)">'+overdueCount+'</div></div>';
+  }
   h += '</div>';
 
-  // Charts
+  // --- Recent Changes (B1.1) ---
+  var changes = getRecentChanges(8);
+  if (changes.length > 0) {
+    h += '<div class="card"><div class="card-hd"><h3>🔄 最近变动</h3></div><div class="card-bd" style="max-height:200px;overflow-y:auto">';
+    changes.forEach(function(c){
+      h += '<div class="change-item"><span class="change-ts">'+esc(c.ts)+'</span><span class="change-name">'+esc(c.name)+'</span><span class="change-field">'+esc(c.field)+'</span><span class="change-val">'+esc(c.oldVal)+' → '+esc(c.newVal)+'</span></div>';
+    });
+    h += '</div></div>';
+  }
+
+  // --- Charts ---
   h += '<div class="grid-2">';
   h += '<div class="card"><div class="card-hd"><h3>📈 行业分布</h3></div><div class="card-bd"><div class="chart-wrap"><canvas id="chartIndustry"></canvas></div></div></div>';
   h += '<div class="card"><div class="card-hd"><h3>📊 评级分布</h3></div><div class="card-bd"><div class="chart-wrap"><canvas id="chartRating"></canvas></div></div></div>';
@@ -478,6 +635,83 @@ function renderDash() {
 
   el.innerHTML = h;
   setTimeout(drawCharts, 150);
+}
+
+/* ---- Today's To-Do helpers (B1.2) ---- */
+function getTodayTodos(today) {
+  var todos = [];
+  D.forEach(function(r){
+    if (r.nextFollow) {
+      if (r.nextFollow === today) {
+        todos.push({id:r.id, name:r.name||r.company, company:r.company, type:'today', badge:'今日', overdue:0});
+      } else if (r.nextFollow < today && r.status !== 'won' && r.status !== 'lost') {
+        var d = Math.floor((new Date(today) - new Date(r.nextFollow)) / 86400000);
+        todos.push({id:r.id, name:r.name||r.company, company:r.company, type:'overdue', badge:'超期', overdue:d});
+      }
+    } else if (r.status !== 'won' && r.status !== 'lost') {
+      // No nextFollow set, check if no followup in 7 days
+      var last = r.lastFollow;
+      if (last && (new Date(today) - new Date(last)) / 86400000 > 7) {
+        todos.push({id:r.id, name:r.name||r.company, company:r.company, type:'stale', badge:'待安排', overdue:0});
+      } else if (!last && r.created && (new Date(today) - new Date(r.created)) / 86400000 > 2) {
+        todos.push({id:r.id, name:r.name||r.company, company:r.company, type:'stale', badge:'待安排', overdue:0});
+      }
+    }
+  });
+  // Sort: overdue first, then today, then stale
+  todos.sort(function(a,b){
+    var order = {overdue:0, today:1, stale:2};
+    return (order[a.type]||9) - (order[b.type]||9) || b.overdue - a.overdue;
+  });
+  return todos.slice(0, 20);
+}
+
+/* ---- Auto-Flow Rules (B2.3) ---- */
+function getAutoFlowAlerts(today) {
+  var alerts = [];
+  D.forEach(function(r){
+    if (r.status === 'new' && r.created && (new Date(today) - new Date(r.created)) / 86400000 > 7 && (!r.followUps || r.followUps.length === 0)) {
+      alerts.push({id:r.id, name:r.name||r.company, company:r.company, reason:'新线索待联系', icon:'🆕'});
+    }
+    if (r.nextFollow && r.nextFollow < today && r.status !== 'won' && r.status !== 'lost') {
+      alerts.push({id:r.id, name:r.name||r.company, company:r.company, reason:'跟进已超期', icon:'⏰'});
+    }
+    if (r.status !== 'won' && r.status !== 'lost') {
+      var lastAct = r.lastFollow;
+      if (lastAct && (new Date(today) - new Date(lastAct)) / 86400000 > 30) {
+        alerts.push({id:r.id, name:r.name||r.company, company:r.company, reason:'长期无跟进（30天+）', icon:'💤'});
+      }
+    }
+  });
+  // Deduplicate by id (keep first alert per customer)
+  var seen = {};
+  return alerts.filter(function(a){ if(seen[a.id]) return false; seen[a.id]=true; return true; });
+}
+
+function showOverdueList() {
+  var today = new Date().toISOString().slice(0,10);
+  var list = D.filter(function(r){ return r.nextFollow && r.nextFollow < today && r.status !== 'won' && r.status !== 'lost'; });
+  var h = '<div class="card"><div class="card-hd"><h3>⏰ 超期跟进列表</h3><span style="font-size:11px;color:var(--t3)">'+list.length+' 条</span></div><div class="card-bd" style="max-height:400px;overflow-y:auto">';
+  list.forEach(function(r){
+    var d = Math.floor((new Date(today) - new Date(r.nextFollow)) / 86400000);
+    h += '<div class="todo-item todo-overdue" onclick="openDetail('+r.id+')"><span class="todo-badge">超期'+d+'天</span><span class="todo-name">'+esc(r.name||r.company)+' · '+esc(r.company)+'</span></div>';
+  });
+  h += '</div></div>';
+  document.getElementById('vDash').insertAdjacentHTML('afterbegin', h);
+}
+
+/* ---- Recent Changes (B1.1) ---- */
+function getRecentChanges(limit) {
+  var all = [];
+  D.forEach(function(r){
+    if (r.changelog) {
+      r.changelog.forEach(function(c){
+        all.push({ts:c.ts, name:r.name||r.company, company:r.company, field:c.field, oldVal:c.oldVal, newVal:c.newVal, _ts:c._ts||0});
+      });
+    }
+  });
+  all.sort(function(a,b){ return b._ts - a._ts; });
+  return all.slice(0, limit);
 }
 
 function sc(cls, icon, val, label) {
@@ -741,6 +975,18 @@ function renderModal(r) {
   left += '<div class="info-section"><h4>📝 备注</h4>';
   left += '<div class="field"><textarea id="e_note" placeholder="添加备注..."'+(ro?' readonly style="opacity:0.7"':'')+'>'+esc(r.note||'')+'</textarea></div>';
   left += '</div>';
+  // Changelog (B1.1)
+  var cl = (r.changelog||[]);
+  if (cl.length > 0) {
+    left += '<div class="info-section"><h4 style="cursor:pointer" onclick="this.parentElement.querySelector(\'.cl-body\').classList.toggle(\'collapsed\')">📋 修改历史 ('+cl.length+')</h4>';
+    left += '<div class="cl-body">';
+    var showCl = cl.slice(-20).reverse();
+    showCl.forEach(function(c){
+      left += '<div class="cl-item"><span class="cl-ts">'+esc(c.ts)+'</span><span class="cl-field">'+esc(c.field)+'</span><span class="cl-diff">'+esc(c.oldVal)+' → <b>'+esc(c.newVal)+'</b></span></div>';
+    });
+    if (cl.length > 20) left += '<div style="font-size:11px;color:var(--t3);padding:6px 0">...仅显示最近20条</div>';
+    left += '</div></div>';
+  }
 
   document.getElementById('modalLeft').innerHTML = left;
 
@@ -805,17 +1051,45 @@ function saveDetail() {
   if (!isAdmin) { toast('🔒 只读模式，无法编辑'); return; }
   var r = D.find(function(x){ return x.id===editId; });
   if (!r) return;
+  if (!r.changelog) r.changelog = [];
+  var now = new Date();
+  var tsStr = now.getFullYear()+'-'+String(now.getMonth()+1).padStart(2,'0')+'-'+String(now.getDate()).padStart(2,'0')+' '+String(now.getHours()).padStart(2,'0')+':'+String(now.getMinutes()).padStart(2,'0');
+  var tsNum = now.getTime();
+  var fieldMap = {name:'联系人',title:'职位',phone:'电话',wechat:'微信',email:'邮箱',industry:'行业',need:'需求',region:'地区',source:'来源',owner:'负责人',note:'备注',description:'描述'};
   var keys = ['name','title','phone','wechat','email','industry','need','region','source','owner','note','description'];
   keys.forEach(function(k){
     var el = document.getElementById('e_'+k);
-    if (el) r[k] = el.value;
+    if (el) {
+      var nv = el.value, ov = r[k] || '';
+      if (nv !== ov) {
+        r.changelog.push({ts:tsStr, _ts:tsNum, field:fieldMap[k]||k, oldVal:ov, newVal:nv, by:'admin'});
+      }
+      r[k] = nv;
+    }
   });
+  // Status change
+  var ns = document.getElementById('e_status').value;
+  if (ns !== r.status) {
+    r.changelog.push({ts:tsStr, _ts:tsNum, field:'状态', oldVal:SM[r.status]?SM[r.status].l:r.status, newVal:SM[ns]?SM[ns].l:ns, by:'admin'});
+    r.status = ns;
+  }
+  // Rating change
   var activeDot = document.querySelector('.rating-dot.on');
-  r.rating = activeDot ? activeDot.textContent.trim() : r.rating;
-  r.status = document.getElementById('e_status').value;
-  r.prob = parseInt(document.getElementById('e_prob').value) || 0;
+  var nr = activeDot ? activeDot.textContent.trim() : r.rating;
+  if (nr !== r.rating) {
+    r.changelog.push({ts:tsStr, _ts:tsNum, field:'评级', oldVal:r.rating, newVal:nr, by:'admin'});
+    r.rating = nr;
+  }
+  // Prob change
+  var np = parseInt(document.getElementById('e_prob').value) || 0;
+  if (np !== r.prob) {
+    r.changelog.push({ts:tsStr, _ts:tsNum, field:'概率', oldVal:r.prob+'%', newVal:np+'%', by:'admin'});
+    r.prob = np;
+  }
   r.lastFollow = document.getElementById('e_lastFollow').value;
   r.nextFollow = document.getElementById('e_nextFollow').value;
+  // Keep changelog reasonable
+  if (r.changelog.length > 200) r.changelog = r.changelog.slice(-200);
   saveData();
   toast('✅ 已保存');
   render();
@@ -836,12 +1110,16 @@ function sendFollowup() {
     action: ''
   });
   r.lastFollow = document.getElementById('fuDate').value;
+  // Auto-suggest next follow date (B1.3): +7 days from today
+  var next = new Date();
+  next.setDate(next.getDate() + 7);
+  var nextStr = next.toISOString().slice(0,10);
+  r.nextFollow = nextStr;
   saveData();
-  toast('✅ 跟进已添加');
+  toast('✅ 跟进已添加（下次跟进建议：'+nextStr+'）');
   document.getElementById('fuContent').value = '';
   render();
   renderModal(r);
-  // Scroll to bottom of timeline
   var scroll = document.getElementById('tlScroll');
   if (scroll) scroll.scrollTop = 0;
 }
@@ -887,15 +1165,15 @@ function addCustomer() {
 
 /* ---- Export / Import / Reset ---- */
 function exportCSV() {
-  var headers = ['公司','联系人','职位','电话','微信','邮箱','行业','需求','地区','来源','评级','状态','概率','负责人','最后跟进'];
+  var headers = ['公司','联系人','职位','电话','邮箱','行业','需求','地区','状态','最后跟进'];
   var rows = [headers.join(',')];
   D.forEach(function(r) {
     rows.push([
       '"'+(r.company||'')+'"','"'+(r.name||'')+'"','"'+(r.title||'')+'"',
-      '"'+(r.phone||'')+'"','"'+(r.wechat||'')+'"','"'+(r.email||'')+'"',
+      '"'+(r.phone||'')+'"','"'+(r.email||'')+'"',
       '"'+(r.industry||'')+'"','"'+(r.need||'')+'"','"'+(r.region||'')+'"',
-      '"'+(r.source||'')+'"','"'+(r.rating||'')+'"','"'+(SM[r.status]?SM[r.status].l:r.status)+'"',
-      (r.prob||0)+'%','"'+(r.owner||'')+'"','"'+(r.lastFollow||'')+'"'
+      '"'+(SM[r.status]?SM[r.status].l:r.status)+'"',
+      '"'+(r.lastFollow||'')+'"'
     ].join(','));
   });
   var bom = '\uFEFF';
@@ -946,6 +1224,290 @@ function resetData() {
   toast('🔄 已重置为初始数据');
 }
 
+/* ============ REPORTS VIEW (B2.1, B2.2, B2.4) ============ */
+var _reportRange = 30;
+
+function renderReports() {
+  var el = document.getElementById('vReports');
+  var today = new Date().toISOString().slice(0,10);
+  var ranges = [[7,'近7天'],[30,'近30天'],[90,'近90天'],[99999,'全部']];
+  var h = '';
+  // Time range selector
+  h += '<div class="report-toolbar">';
+  h += '<div class="report-range">';
+  ranges.forEach(function(r){
+    var active = r[0]===_reportRange ? ' active' : '';
+    h += '<button class="btn-sm'+active+'" onclick="_reportRange='+r[0]+';renderReports()">'+r[1]+'</button>';
+  });
+  h += '</div></div>';
+
+  // Charts
+  h += '<div class="grid-2 report-charts">';
+  h += '<div class="card"><div class="card-hd"><h3>📈 新增客户趋势</h3></div><div class="card-bd"><div class="chart-wrap" style="height:260px"><canvas id="rptNewCustomers"></canvas></div></div></div>';
+  h += '<div class="card"><div class="card-hd"><h3>🏆 成交趋势（数量+金额）</h3></div><div class="card-bd"><div class="chart-wrap" style="height:260px"><canvas id="rptWonDeals"></canvas></div></div></div>';
+  h += '<div class="card" style="grid-column:1/-1"><div class="card-hd"><h3>📊 跟进活动量</h3></div><div class="card-bd"><div class="chart-wrap" style="height:240px"><canvas id="rptActivity"></canvas></div></div></div>';
+  h += '</div>';
+
+  // KPI cards
+  var kpi = calcKPIs();
+  h += '<div class="stats-row report-kpi">';
+  h += sc('sc-bl','🆕', kpi.weekNew, '本周新增');
+  h += sc('sc-gr','🏆', kpi.weekWon, '本周成交');
+  h += sc('sc-cy','📈', kpi.convRate+'%', '成交率');
+  h += sc('sc-am','📅', kpi.avgInterval+'天', '平均跟进间隔');
+  h += '</div>';
+
+  // Funnel (B2.2)
+  h += '<div class="card"><div class="card-hd"><h3>🔽 销售漏斗分析</h3></div><div class="card-bd">';
+  h += renderFunnel();
+  h += '</div></div>';
+
+  // Weekly Reports (B2.4)
+  h += '<div class="card"><div class="card-hd"><h3>📊 周报</h3><button class="btn-sm btn-primary" onclick="generateWeeklyReport()">生成周报</button></div><div class="card-bd">';
+  h += renderWeeklyReports();
+  h += '</div></div>';
+
+  el.innerHTML = h;
+  setTimeout(drawReportCharts, 150);
+}
+
+function calcKPIs() {
+  var today = new Date();
+  var weekStart = new Date(today);
+  weekStart.setDate(today.getDate() - today.getDay() + 1);
+  weekStart.setHours(0,0,0,0);
+  var ws = weekStart.toISOString().slice(0,10);
+  var weekNew = D.filter(function(r){ return r.created && r.created >= ws; }).length;
+  var weekWon = D.filter(function(r){ return r.status === 'won' && r.lastFollow && r.lastFollow >= ws; }).length;
+  var active = D.filter(function(r){ return r.status !== 'won' && r.status !== 'lost'; }).length;
+  var totalActive = active || 1;
+  var convRate = D.length ? Math.round(((D.filter(function(r){return r.status==='won'}).length || 0) / D.length) * 100) : 0;
+  // Avg follow-up interval
+  var intervals = [];
+  D.forEach(function(r){
+    if (r.followUps && r.followUps.length > 1) {
+      for (var i = 1; i < r.followUps.length; i++) {
+        var d1 = new Date(r.followUps[i-1].date), d2 = new Date(r.followUps[i].date);
+        if (d1 && d2) intervals.push(Math.abs(d2-d1)/86400000);
+      }
+    }
+  });
+  var avgInterval = intervals.length ? Math.round(intervals.reduce(function(a,b){return a+b;},0)/intervals.length) : 0;
+  return {weekNew:weekNew, weekWon:weekWon, convRate:convRate, avgInterval:avgInterval};
+}
+
+function renderFunnel() {
+  var stages = Object.keys(SM);
+  var total = D.length || 1;
+  var counts = {};
+  stages.forEach(function(k){ counts[k] = 0; });
+  D.forEach(function(r){ if(counts[r.status]!==undefined) counts[r.status]++; });
+  var h = '<div class="funnel">';
+  stages.forEach(function(k, i){
+    var pct = Math.round(counts[k]/total*100);
+    var width = Math.max(20, Math.round(counts[k]/(counts.new||1)*100));
+    if (width > 100) width = 100;
+    var conv = '';
+    if (i > 0) {
+      var prev = counts[stages[i-1]] || 1;
+      conv = '转化率 ' + Math.round(counts[k]/prev*100) + '%';
+    }
+    h += '<div class="funnel-stage">';
+    h += '<div class="funnel-bar" style="width:'+width+'%;background:linear-gradient(90deg, var(--'+SM[k].c+'), transparent)">';
+    h += '<span class="funnel-label">'+SM[k].l+'</span>';
+    h += '<span class="funnel-count">'+counts[k]+'</span>';
+    h += '</div>';
+    if (conv) h += '<span class="funnel-conv">'+conv+'</span>';
+    h += '</div>';
+  });
+  h += '</div>';
+  return h;
+}
+
+function getDateRange() {
+  var today = new Date();
+  var days = _reportRange;
+  var start = new Date(today);
+  start.setDate(today.getDate() - days);
+  return {start:start.toISOString().slice(0,10), end:today.toISOString().slice(0,10)};
+}
+
+function groupByPeriod(items, days) {
+  var period = days <= 7 ? 'day' : days <= 90 ? 'week' : 'month';
+  var groups = {};
+  items.forEach(function(d){
+    var dt = new Date(d);
+    var key;
+    if (period === 'day') key = d;
+    else if (period === 'week') {
+      var day = dt.getDay() || 7;
+      var mon = new Date(dt); mon.setDate(dt.getDate() - day + 1);
+      key = mon.toISOString().slice(0,10);
+    } else {
+      key = d.slice(0,7);
+    }
+    groups[key] = (groups[key]||0) + 1;
+  });
+  var arr = Object.keys(groups).map(function(k){return {k:k,v:groups[k]};}).sort(function(a,b){return a.k.localeCompare(b.k);});
+  return arr;
+}
+
+function drawReportCharts() {
+  if (typeof Chart === 'undefined') return;
+  var range = getDateRange();
+  var chartOpts = function(yLabel){ return {
+    responsive:true, maintainAspectRatio:false,
+    scales:{x:{grid:{color:'rgba(33,41,58,.5)'},ticks:{color:'#8b949e',font:{size:10},maxRotation:45}},y:{grid:{color:'rgba(33,41,58,.5)'},ticks:{color:'#8b949e',font:{size:10}},beginAtZero:true}},
+    plugins:{legend:{display:true,labels:{color:'#8b949e',font:{size:10},usePointStyle:true}}}
+  };};
+
+  // New customers trend
+  var created = D.filter(function(r){return r.created && r.created >= range.start;}).map(function(r){return r.created;});
+  var newGroups = groupByPeriod(created, _reportRange);
+  var e1 = document.getElementById('rptNewCustomers');
+  if (e1) {
+    if (window._rptNew) window._rptNew.destroy();
+    window._rptNew = new Chart(e1, {
+      type:'line', data:{labels:newGroups.map(function(x){return x.k;}), datasets:[{label:'新增客户',data:newGroups.map(function(x){return x.v;}),borderColor:'#388bfd',backgroundColor:'rgba(56,139,253,.1)',fill:true,tension:.3,pointRadius:3}]},
+      options:chartOpts()
+    });
+  }
+
+  // Won deals trend
+  var wonItems = [];
+  D.forEach(function(r){
+    if (r.status === 'won') {
+      var d = r.lastFollow || r.created;
+      if (d && d >= range.start) {
+        wonItems.push({date:d, val:r.prob||0});
+      }
+    }
+  });
+  var wonGroups = {};
+  wonItems.forEach(function(w){
+    wonGroups[w.date] = wonGroups[w.date] || {count:0, val:0};
+    wonGroups[w.date].count++;
+    wonGroups[w.date].val += w.val;
+  });
+  var wonArr = Object.keys(wonGroups).sort().map(function(k){return {k:k, count:wonGroups[k].count, val:wonGroups[k].val};});
+  var e2 = document.getElementById('rptWonDeals');
+  if (e2) {
+    if (window._rptWon) window._rptWon.destroy();
+    window._rptWon = new Chart(e2, {
+      type:'line', data:{labels:wonArr.map(function(x){return x.k;}), datasets:[
+        {label:'成交数',data:wonArr.map(function(x){return x.count;}),borderColor:'#3fb950',backgroundColor:'rgba(63,185,80,.1)',fill:true,tension:.3,pointRadius:3,yAxisID:'y'},
+        {label:'金额(概率)',data:wonArr.map(function(x){return x.val;}),borderColor:'#d29922',backgroundColor:'rgba(210,153,34,.1)',fill:true,tension:.3,pointRadius:3,yAxisID:'y1'}
+      ]},
+      options:{responsive:true,maintainAspectRatio:false,
+        scales:{x:{grid:{color:'rgba(33,41,58,.5)'},ticks:{color:'#8b949e',font:{size:10},maxRotation:45}},y:{position:'left',grid:{color:'rgba(33,41,58,.5)'},ticks:{color:'#8b949e'},beginAtZero:true},y1:{position:'right',grid:{drawOnChartArea:false},ticks:{color:'#d29922'},beginAtZero:true}},
+        plugins:{legend:{display:true,labels:{color:'#8b949e',font:{size:10},usePointStyle:true}}}}
+    });
+  }
+
+  // Activity volume
+  var fuDates = [];
+  D.forEach(function(r){
+    (r.followUps||[]).forEach(function(f){ if(f.date && f.date >= range.start) fuDates.push(f.date); });
+  });
+  var fuGroups = groupByPeriod(fuDates, _reportRange);
+  var e3 = document.getElementById('rptActivity');
+  if (e3) {
+    if (window._rptAct) window._rptAct.destroy();
+    window._rptAct = new Chart(e3, {
+      type:'bar', data:{labels:fuGroups.map(function(x){return x.k;}), datasets:[{label:'跟进次数',data:fuGroups.map(function(x){return x.v;}),backgroundColor:'rgba(163,113,247,.6)',borderRadius:4,barPercentage:.6}]},
+      options:chartOpts()
+    });
+  }
+}
+
+/* ---- Weekly Reports (B2.4) ---- */
+function getWeekKey(dateStr) {
+  var d = new Date(dateStr);
+  var day = d.getDay() || 7;
+  var mon = new Date(d); mon.setDate(d.getDate() - day + 1);
+  return mon.toISOString().slice(0,10);
+}
+
+function generateWeeklyReport() {
+  var today = new Date();
+  var day = today.getDay() || 7;
+  var mon = new Date(today); mon.setDate(today.getDate() - day + 1);
+  var sun = new Date(mon); sun.setDate(mon.getDate() + 6);
+  var ws = mon.toISOString().slice(0,10);
+  var we = sun.toISOString().slice(0,10);
+  var key = ws + '~' + we;
+
+  var weekNew = D.filter(function(r){return r.created && r.created >= ws && r.created <= we;}).length;
+  var weekWon = D.filter(function(r){return r.status==='won' && r.lastFollow && r.lastFollow >= ws && r.lastFollow <= we;}).length;
+  var weekFu = 0;
+  D.forEach(function(r){ (r.followUps||[]).forEach(function(f){ if(f.date && f.date >= ws && f.date <= we) weekFu++; }); });
+  var todayStr = today.toISOString().slice(0,10);
+  var overdue = D.filter(function(r){return r.nextFollow && r.nextFollow < todayStr && r.status !== 'won' && r.status !== 'lost';}).length;
+  var totalDone = D.filter(function(r){return r.status==='won'||r.status==='lost';}).length;
+  var convRate = D.length ? Math.round(totalDone/D.length*100) : 0;
+
+  var report = {key:key, ws:ws, we:we, generated:new Date().toISOString(), weekNew:weekNew, weekWon:weekWon, weekFu:weekFu, overdue:overdue, convRate:convRate};
+
+  var reports = JSON.parse(localStorage.getItem('crm_reports')||'[]');
+  // Remove if same week exists
+  reports = reports.filter(function(r){return r.key !== key;});
+  reports.unshift(report);
+  if (reports.length > 20) reports = reports.slice(0,20);
+  localStorage.setItem('crm_reports', JSON.stringify(reports));
+  toast('✅ 周报已生成');
+  renderReports();
+}
+
+function renderWeeklyReports() {
+  var reports = JSON.parse(localStorage.getItem('crm_reports')||'[]');
+  if (!reports.length) return '<div class="empty-state"><div class="es-icon">📊</div><p>暂无周报，点击"生成周报"创建</p></div>';
+  var h = '';
+  reports.slice(0,4).forEach(function(r, i){
+    var open = i === 0 ? ' open' : '';
+    h += '<div class="wr-card'+open+'" onclick="this.classList.toggle(\'open\')">';
+    h += '<div class="wr-header"><span>📅 '+esc(r.ws)+' ~ '+esc(r.we)+'</span><span class="wr-toggle">▼</span></div>';
+    h += '<div class="wr-body">';
+    h += '<div class="wr-stats">';
+    h += '<div class="wr-stat"><div class="wr-val">'+r.weekNew+'</div><div class="wr-lbl">新增客户</div></div>';
+    h += '<div class="wr-stat"><div class="wr-val" style="color:var(--gr)">'+r.weekWon+'</div><div class="wr-lbl">成交</div></div>';
+    h += '<div class="wr-stat"><div class="wr-val" style="color:var(--pu)">'+r.weekFu+'</div><div class="wr-lbl">跟进次数</div></div>';
+    h += '<div class="wr-stat"><div class="wr-val" style="color:var(--ro)">'+r.overdue+'</div><div class="wr-lbl">超期</div></div>';
+    h += '<div class="wr-stat"><div class="wr-val" style="color:var(--cy)">'+r.convRate+'%</div><div class="wr-lbl">成交率</div></div>';
+    h += '</div></div></div>';
+  });
+  return h;
+}
+
+/* ---- Daily Summary Popup (B1.4) ---- */
+function showDailySummary() {
+  if (sessionStorage.getItem('crm_daily_shown')) return;
+  var today = new Date().toISOString().slice(0,10);
+  var todos = getTodayTodos(today);
+  var alerts = getAutoFlowAlerts(today);
+  var changes = getRecentChanges(5);
+  if (todos.length === 0 && alerts.length === 0 && changes.length === 0) return;
+
+  var h = '<div class="daily-popup" id="dailyPopup">';
+  h += '<div class="daily-backdrop"></div>';
+  h += '<div class="daily-content">';
+  h += '<div class="daily-title">📋 今日摘要</div>';
+  h += '<div class="daily-body">';
+  h += '<div class="daily-item daily-green"><span class="daily-num">'+todos.filter(function(t){return t.type==='today'}).length+'</span><span>待跟进</span></div>';
+  h += '<div class="daily-item daily-red"><span class="daily-num">'+(todos.filter(function(t){return t.type==='overdue'}).length + alerts.filter(function(a){return a.reason.indexOf('超期')>=0}).length)+'</span><span>超期</span></div>';
+  h += '<div class="daily-item daily-blue"><span class="daily-num">'+changes.length+'</span><span>今日变动</span></div>';
+  h += '<div class="daily-item daily-yellow"><span class="daily-num">'+alerts.filter(function(a){return a.reason.indexOf('长期')>=0}).length+'</span><span>长期无跟进</span></div>';
+  h += '</div>';
+  h += '<button class="btn-primary" style="width:100%;margin-top:20px" onclick="closeDailySummary()">知道了</button>';
+  h += '</div></div>';
+  document.body.insertAdjacentHTML('beforeend', h);
+  sessionStorage.setItem('crm_daily_shown', '1');
+}
+
+function closeDailySummary() {
+  var el = document.getElementById('dailyPopup');
+  if (el) el.remove();
+}
+
 /* ---- Init ---- */
 (async function(){
   checkAuth();
@@ -957,11 +1519,12 @@ function resetData() {
     D = JSON.parse(JSON.stringify(SEED));
     saveData();
   }
-  // Hide admin-only sidebar items for read-only users
   if (!isAdmin) {
     document.querySelectorAll('.admin-only').forEach(function(el){ el.style.display='none'; });
   }
   switchView('dashboard');
+  // Show daily summary popup (B1.4)
+  setTimeout(showDailySummary, 500);
 })();
 
 </script>
