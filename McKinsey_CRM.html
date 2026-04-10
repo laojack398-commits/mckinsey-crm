@@ -307,6 +307,39 @@ tr{cursor:pointer;transition:background .1s}
 .wr-stat-val{font-size:18px;font-weight:800;color:var(--bl)}
 .wr-stat-label{font-size:10px;color:var(--t3)}
 
+/* ============ B3 — Timezone Clock ============ */
+.tz-bar{display:flex;gap:0;overflow-x:auto;padding:10px 14px;margin-bottom:14px;background:var(--card);border:1px solid var(--border);border-radius:var(--rx2);scrollbar-width:none}
+.tz-bar::-webkit-scrollbar{height:0}
+.tz-bar .tz-item{display:flex;align-items:center;gap:8px;padding:6px 14px;border-right:1px solid var(--border);white-space:nowrap;flex-shrink:0}
+.tz-bar .tz-item:last-child{border-right:none}
+.tz-flag{font-size:16px}
+.tz-city{font-size:12px;font-weight:600;color:var(--t1);min-width:40px}
+.tz-time{font-size:14px;font-weight:700;color:var(--bl);font-variant-numeric:tabular-nums;min-width:60px}
+.tz-date{font-size:10px;color:var(--t3)}
+
+/* ============ B3 — Exchange Rates ============ */
+.fx-card{position:absolute;top:10px;right:260px;width:200px;z-index:5}
+.fx-grid{display:flex;flex-direction:column;gap:4px}
+.fx-item{display:flex;align-items:center;gap:8px;font-size:12px}
+.fx-flag{font-size:14px}
+.fx-name{color:var(--t2);min-width:30px}
+.fx-rate{margin-left:auto;font-weight:700;color:var(--bl);font-variant-numeric:tabular-nums}
+
+/* ============ B3 — Activity list ============ */
+.tz-list{max-height:200px;overflow-y:auto}
+.tz-list .tz-item{display:flex;align-items:center;gap:8px;padding:6px 0;border-bottom:1px solid var(--border);cursor:pointer;transition:background .15s}
+.tz-list .tz-item:hover{background:var(--card2)}
+.tz-list .tz-city{font-size:12px;font-weight:600;color:var(--bl);white-space:nowrap;min-width:80px}
+.tz-list .tz-time{font-size:11px;color:var(--t3);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+
+/* ============ B3 — Mini stats ============ */
+.stat-mini{text-align:center;padding:8px 4px}
+.stat-mini-num{font-size:22px;font-weight:800;line-height:1.2}
+.stat-mini-label{font-size:10px;color:var(--t3);margin-top:2px}
+
+/* ============ B3 — Dashboard position ============ */
+#vDash{position:relative;padding-top:8px}
+
 /* ============ Responsive additions ============ */
 @media(max-width:768px){
   .report-grid{grid-template-columns:1fr}
@@ -542,6 +575,75 @@ function renderDash() {
 
   var h = '';
 
+  // --- B3: Timezone Clock Bar ---
+  h += '<div id="tzBar" class="tz-bar"></div>';
+
+  // --- B3: Exchange Rates Widget ---
+  h += '<div class="card fx-card"><div class="card-hd"><h3>💱 汇率</h3><span style="font-size:10px;color:var(--t3)">仅供参考 | 17:00更新</span></div><div class="card-bd"><div class="fx-grid">';
+  var fxRates = [{f:'🇺🇸',n:'USD',r:'7.25'},{f:'🇪🇺',n:'EUR',r:'7.82'},{f:'🇬🇧',n:'GBP',r:'9.15'},{f:'🇯🇵',n:'JPY',r:'0.048'},{f:'🇭🇰',n:'HKD',r:'0.93'}];
+  fxRates.forEach(function(fx){
+    h += '<div class="fx-item"><span class="fx-flag">'+fx.f+'</span><span class="fx-name">'+fx.n+'</span><span class="fx-rate">'+fx.r+'</span></div>';
+  });
+  h += '</div></div>';
+
+  // --- B3: Enhanced Stats Row ---
+  var thisMonth = today.substring(0,7);
+  var monthNew = D.filter(function(r){ return r.created && r.created.startsWith(thisMonth); }).length;
+  var monthWon = D.filter(function(r){ return r.status === 'won' && r.lastFollow && r.lastFollow.startsWith(thisMonth); }).length;
+  var kaCount = D.filter(function(r){ return r.tags && r.tags.indexOf('KA') >= 0; }).length;
+  var lostCount = counts.lost || 0;
+
+  h += '<div class="stats-row">';
+  h += sc('sc-bl','👥', total, '总客户');
+  h += sc('sc-gr','✅', counts.won||0, '已成交');
+  h += sc('sc-ro','❌', lostCount, '已流失');
+  h += sc('sc-pu','⭐', kaCount, 'Key Account');
+  h += sc('sc-am','🆕', monthNew, '本月新增');
+  h += sc('sc-cy','🏆', monthWon, '本月成交');
+  h += '</div>';
+
+  // --- B3: Status Breakdown ---
+  h += '<div class="stats-row" style="margin-top:8px">';
+  var statusLabels = [{k:'new',l:'新线索'},{k:'contacted',l:'已联系'},{k:'quote',l:'报价中'},{k:'negotiate',l:'谈判中'},{k:'won',l:'已成交'},{k:'lost',l:'已流失'}];
+  statusLabels.forEach(function(s){
+    var pct = total ? Math.round(counts[s.k]/total*100) : 0;
+    h += '<div class="stat-mini"><div class="stat-mini-num" style="color:var(--'+SM[s.k].c+')">'+(counts[s.k]||0)+'</div><div class="stat-mini-label">'+s.l+' '+pct+'%</div></div>';
+  });
+  h += '</div>';
+
+  // --- B3: Activity Section ---
+  var weekAgo = new Date(); weekAgo.setDate(weekAgo.getDate()-7); var weekStr = weekAgo.toISOString().slice(0,10);
+  var monthAgo = new Date(); monthAgo.setDate(monthAgo.getDate()-30); var monthStr = monthAgo.toISOString().slice(0,10);
+  var activeWeek = []; var recentContract = []; var recentOnboard = [];
+  D.forEach(function(r){
+    if (r.lastFollow && r.lastFollow >= weekStr) activeWeek.push(r);
+    if (r.followUps) r.followUps.forEach(function(fu){
+      if (fu.date >= monthStr) {
+        var fl = (fu.content||'').toLowerCase();
+        if (fl.match(/contract|合同|agreement|msa|签约/)) { if(recentContract.indexOf(r)<0) recentContract.push(r); }
+        if (fl.match(/入职|onboard|visa|work.?permit|派遣|外派/)) { if(recentOnboard.indexOf(r)<0) recentOnboard.push(r); }
+      }
+    });
+  });
+  
+  h += '<div class="grid-2">';
+  h += '<div class="card"><div class="card-hd"><h3>🔥 本周活跃</h3><span class="todo-count">'+activeWeek.length+'</span></div><div class="card-bd tz-list">';
+  if (!activeWeek.length) h += '<div style="text-align:center;color:var(--t3);padding:12px">暂无</div>';
+  activeWeek.slice(0,8).forEach(function(r){
+    h += '<div class="tz-item" onclick="openDetail('+r.id+')"><span class="tz-city">'+esc(r.company)+'</span><span class="tz-time">'+esc(r.lastFollow)+'</span></div>';
+  });
+  h += '</div></div>';
+  h += '<div class="card"><div class="card-hd"><h3>📝 近期签约 / 入职能</h3></div><div class="card-bd tz-list">';
+  var recentBiz = recentContract.concat(recentOnboard);
+  if (!recentBiz.length) h += '<div style="text-align:center;color:var(--t3);padding:12px">暂无</div>';
+  recentBiz.slice(0,8).forEach(function(r){
+    var lastFU = r.followUps && r.followUps.length ? r.followUps[r.followUps.length-1] : null;
+    var preview = lastFU ? (lastFU.content||'').substring(0,50) : '';
+    h += '<div class="tz-item" onclick="openDetail('+r.id+')"><span class="tz-city">'+esc(r.company)+'</span><span class="tz-time">'+preview+'</span></div>';
+  });
+  h += '</div></div>';
+  h += '</div>';
+
   // --- Today's To-Do Panel (B1.2) ---
   var todos = getTodayTodos(today);
   h += '<div class="card todo-card">';
@@ -575,16 +677,6 @@ function renderDash() {
     });
     h += '</div></div>';
   }
-
-  // --- Stats ---
-  h += '<div class="stats-row">';
-  h += sc('sc-bl','👥', total, '总客户');
-  h += sc('sc-ro','🔥', newCount, '新线索');
-  h += sc('sc-gr','✅', counts.contacted||0, '已联系');
-  h += sc('sc-am','💰', counts.quote||0, '报价中');
-  h += sc('sc-pu','🏆', wonCount, '已成交');
-  h += sc('sc-cy','📊', avgProb+'%', '平均概率');
-  h += '</div>';
 
   // --- Pipeline with overdue badges (B1.3) ---
   var overdueCount = D.filter(function(r){ return r.nextFollow && r.nextFollow < today && r.status !== 'won' && r.status !== 'lost'; }).length;
@@ -635,6 +727,34 @@ function renderDash() {
 
   el.innerHTML = h;
   setTimeout(drawCharts, 150);
+  // B3: Start timezone clock
+  updateTzClock();
+}
+
+/* ---- B3: Timezone Clock ---- */
+function updateTzClock() {
+  var bar = document.getElementById('tzBar');
+  if (!bar) return;
+  var zones = [
+    {city:'上海', flag:'🇨🇳', tz:'Asia/Shanghai'},
+    {city:'巴黎', flag:'🇫🇷', tz:'Europe/Paris'},
+    {city:'纽约', flag:'🇺🇸', tz:'America/New_York'},
+    {city:'圣保罗', flag:'🇧🇷', tz:'America/Sao_Paulo'},
+    {city:'迪拜', flag:'🇦🇪', tz:'Asia/Dubai'},
+    {city:'东京', flag:'🇯🇵', tz:'Asia/Tokyo'},
+    {city:'伦敦', flag:'🇬🇧', tz:'Europe/London'}
+  ];
+  var now = new Date();
+  var h = '';
+  zones.forEach(function(z){
+    var opts = {timeZone:z.tz, hour:'2-digit', minute:'2-digit', second:'2-digit', hour12:false};
+    var time = now.toLocaleTimeString('zh-CN', opts);
+    var dOpts = {timeZone:z.tz, month:'short', day:'numeric'};
+    var date = now.toLocaleDateString('zh-CN', dOpts);
+    h += '<div class="tz-item"><span class="tz-flag">'+z.flag+'</span><span class="tz-city">'+z.city+'</span><span class="tz-time">'+time+'</span><span class="tz-date">'+date+'</span></div>';
+  });
+  bar.innerHTML = h;
+  setTimeout(updateTzClock, 1000);
 }
 
 /* ---- Today's To-Do helpers (B1.2) ---- */
