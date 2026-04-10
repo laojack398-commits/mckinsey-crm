@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>McKinsey CRM System</title>
-<style>/* === McKinsey CRM v3 — Pipedrive Professional Light Theme === */
+<style>/* === McKinsey CRM v3 — Pipedrive Professional Theme === */
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 :root{
   --bg:#f4f6f9;--bg2:#ffffff;--card:#ffffff;--card2:#f8f9fb;
@@ -22,6 +22,22 @@
   --shadow-lg:0 4px 16px rgba(0,0,0,.1);
   --sidebar-w:240px;
   --font:-apple-system,BlinkMacSystemFont,'Inter','Segoe UI','Noto Sans SC',sans-serif;
+  --modal-bg:rgba(0,0,0,.4);
+}
+/* ===== Dark Mode ===== */
+body.dark{
+  --bg:#0f1117;--bg2:#1a1d2e;--card:#1e2235;--card2:#252a3e;
+  --border:#2a2f45;--border2:#363c55;
+  --t1:#e4e7ed;--t2:#8b92a5;--t3:#5a6178;
+  --bl:#6366f1;--bl-g:rgba(99,102,241,.12);
+  --gr:#34d399;--gr-g:rgba(52,211,153,.12);
+  --am:#fbbf24;--am-g:rgba(251,191,36,.12);
+  --ro:#f87171;--ro-g:rgba(248,113,113,.12);
+  --pu:#a78bfa;--pu-g:rgba(167,139,250,.12);
+  --cy:#22d3ee;--cy-g:rgba(34,211,238,.12);
+  --shadow:0 1px 3px rgba(0,0,0,.3);
+  --shadow-lg:0 4px 16px rgba(0,0,0,.4);
+  --modal-bg:rgba(0,0,0,.7);
 }
 html,body{height:100%;font-family:var(--font);background:var(--bg);color:var(--t1);font-size:14px;line-height:1.5;overflow:hidden}
 a{color:var(--bl);text-decoration:none}
@@ -159,7 +175,7 @@ tr{cursor:pointer;transition:background .1s}
 .tl-del:hover{color:var(--ro);background:var(--ro-g)}
 
 /* ===== MODAL ===== */
-.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.4);backdrop-filter:blur(4px);z-index:100;display:none;align-items:center;justify-content:center}
+.modal-overlay{position:fixed;inset:0;background:var(--modal-bg);backdrop-filter:blur(4px);z-index:100;display:none;align-items:center;justify-content:center}
 .modal-overlay.show{display:flex}
 .modal{width:94vw;max-width:1100px;height:88vh;background:var(--bg2);border:1px solid var(--border);border-radius:var(--rx2);display:flex;flex-direction:column;box-shadow:0 24px 80px rgba(0,0,0,.15);animation:modalIn .2s ease}
 @keyframes modalIn{from{opacity:0;transform:scale(.97) translateY(10px)}to{opacity:1;transform:none}}
@@ -270,7 +286,7 @@ tr{cursor:pointer;transition:background .1s}
 
 /* ===== B1 — Daily Summary Popup ===== */
 .daily-popup{position:fixed;inset:0;z-index:300;display:flex;align-items:center;justify-content:center;animation:dailyFadeIn .4s ease}
-.daily-backdrop{position:absolute;inset:0;background:rgba(0,0,0,.4);backdrop-filter:blur(8px)}
+.daily-backdrop{position:absolute;inset:0;background:var(--modal-bg);backdrop-filter:blur(8px)}
 .daily-content{position:relative;background:rgba(255,255,255,.95);backdrop-filter:blur(20px);border:1px solid var(--border);border-radius:20px;padding:36px;width:400px;text-align:center;box-shadow:0 24px 80px rgba(0,0,0,.12);animation:dailySlideUp .4s ease}
 .daily-title{font-size:22px;font-weight:800;margin-bottom:28px;color:var(--t1)}
 .daily-body{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:28px}
@@ -352,6 +368,56 @@ tr{cursor:pointer;transition:background .1s}
   .todo-item{flex-wrap:wrap}
   .stats-row{grid-template-columns:repeat(2,1fr)}
 }
+
+/* ===== Company Avatar ===== */
+.avatar{display:inline-flex;align-items:center;justify-content:center;border-radius:10px;font-weight:700;font-size:13px;color:#fff;flex-shrink:0;text-transform:uppercase;letter-spacing:.5px}
+.avatar-sm{width:32px;height:32px;border-radius:8px;font-size:11px}
+.avatar-md{width:40px;height:40px;font-size:14px}
+.avatar-lg{width:56px;height:56px;font-size:20px;border-radius:14px}
+.avatar-1{background:linear-gradient(135deg,#4f46e5,#818cf8)}.avatar-2{background:linear-gradient(135deg,#059669,#34d399)}
+.avatar-3{background:linear-gradient(135deg,#d97706,#fbbf24)}.avatar-4{background:linear-gradient(135deg,#dc2626,#f87171)}
+.avatar-5{background:linear-gradient(135deg,#7c3aed,#a78bfa)}.avatar-6{background:linear-gradient(135deg,#0891b2,#22d3ee)}
+.avatar-7{background:linear-gradient(135deg,#e11d48,#fb7185)}.avatar-8{background:linear-gradient(135deg,#ea580c,#fb923c)}
+.avatar-9{background:linear-gradient(135deg,#0284c7,#38bdf8)}.avatar-10{background:linear-gradient(135deg,#4338ca,#6366f1)}
+
+/* ===== Sparkline ===== */
+.sparkline{display:inline-block;vertical-align:middle;margin-left:8px}
+.sparkline-bar{display:inline-block;width:3px;margin-right:1px;border-radius:1.5px;vertical-align:bottom;opacity:.5;transition:opacity .2s}
+.stat-card:hover .sparkline-bar{opacity:1}
+
+/* ===== Dark Mode Toggle ===== */
+.theme-toggle{width:36px;height:36px;display:flex;align-items:center;justify-content:center;border-radius:var(--rx);cursor:pointer;border:1px solid var(--border);background:var(--bg2);color:var(--t2);font-size:16px;transition:all .2s}
+.theme-toggle:hover{border-color:var(--bl);color:var(--bl);background:var(--bl-g)}
+
+/* ===== Micro Animations ===== */
+@keyframes fadeInUp{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
+@keyframes countUp{from{opacity:0;transform:scale(.8)}to{opacity:1;transform:none}}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.6}}
+.stat-card{animation:fadeInUp .4s ease both}
+.stat-card:nth-child(1){animation-delay:.05s}.stat-card:nth-child(2){animation-delay:.1s}
+.stat-card:nth-child(3){animation-delay:.15s}.stat-card:nth-child(4){animation-delay:.2s}
+.stat-card:nth-child(5){animation-delay:.25s}.stat-card:nth-child(6){animation-delay:.3s}
+.st-val{animation:countUp .5s ease .3s both}
+.k-card{animation:fadeInUp .3s ease both}
+.card{animation:fadeInUp .35s ease both}
+
+/* ===== Table Avatar ===== */
+.tbl-company{display:flex;align-items:center;gap:10px}
+.tbl-company .avatar{flex-shrink:0}
+.tbl-company .cname{font-weight:600;color:var(--t1)}
+
+/* ===== Toast improvement ===== */
+.toast{position:fixed;bottom:24px;right:24px;background:var(--t1);color:var(--bg);padding:12px 20px;border-radius:var(--rx);font-size:13px;box-shadow:var(--shadow-lg);transform:translateY(80px);opacity:0;transition:all .3s cubic-bezier(.4,0,.2,1);z-index:200}
+body.dark .toast{background:var(--bl);color:#fff}
+.toast.show{transform:translateY(0);opacity:1}
+
+/* ===== Login overlay ===== */
+body.dark #loginOverlay>div{background:var(--card)!important;border-color:var(--border)!important}
+
+/* ===== Kanban card avatar ===== */
+.k-card-head{display:flex;align-items:center;gap:10px;margin-bottom:8px}
+.k-card-head .avatar{flex-shrink:0}
+.k-card-head .kc-name{font-size:13px;font-weight:600;color:var(--t1)}
 </style>
 </head>
 <body>
@@ -386,6 +452,7 @@ tr{cursor:pointer;transition:background .1s}
       <div class="topbar-r">
         <div class="search-box"><span>🔍</span><input id="globalSearch" placeholder="搜索客户..." oninput="onSearch()"></div>
         <button class="topbar-btn admin-only" onclick="addCustomer()" title="新增客户">+</button>
+        <div class="theme-toggle" onclick="toggleTheme()" title="切换深色/浅色" id="themeBtn">🌙</div>
       </div>
     </div>
     <div class="content">
@@ -847,7 +914,16 @@ function getRecentChanges(limit) {
 }
 
 function sc(cls, icon, val, label) {
-  return '<div class="stat-card '+cls+'"><div class="st-icon">'+icon+'</div><div class="st-val">'+val+'</div><div class="st-lbl">'+label+'</div></div>';
+  // Generate fake sparkline data for visual effect (based on val hash)
+  var spark = '';
+  if (val > 0) {
+    var seed = Math.abs(hashStr(String(val) + label));
+    var vals = [];
+    for (var i = 0; i < 7; i++) vals.push(Math.max(1, Math.round(val * (0.3 + 0.7 * Math.abs(Math.sin(seed + i * 1.3))))));
+    var colorMap = {'sc-bl':'var(--bl)','sc-gr':'var(--gr)','sc-ro':'var(--ro)','sc-pu':'var(--pu)','sc-am':'var(--am)','sc-cy':'var(--cy)'};
+    spark = sparklineHtml(vals, colorMap[cls] || 'var(--bl)');
+  }
+  return '<div class="stat-card '+cls+'"><div class="st-icon">'+icon+'</div><div class="st-val">'+val+spark+'</div><div class="st-lbl">'+label+'</div></div>';
 }
 
 function drawCharts() {
@@ -929,7 +1005,7 @@ function renderTable() {
   pg.forEach(function(r, i){
     h += '<tr onclick="openDetail('+r.id+')">';
     h += '<td style="color:var(--t3)">'+((curPage-1)*pageSize+i+1)+'</td>';
-    h += '<td><b>'+esc(r.company)+'</b></td>';
+    h += '<td><div class="tbl-company">'+avatarHtml(r.company,'sm')+'<span class="cname">'+esc(r.company)+'</span></div></td>';
     h += '<td>'+esc(r.name)+'</td>';
     h += '<td>'+esc(r.phone)+'</td>';
     h += '<td>'+esc(r.email)+'</td>';
@@ -974,7 +1050,7 @@ function renderKanban() {
     }
     items.forEach(function(r){
       h += '<div class="k-card" onclick="openDetail('+r.id+')">';
-      h += '<div class="kc-name">'+esc(r.company||'(未命名)')+'</div>';
+      h += '<div class="k-card-head">'+avatarHtml(r.company,'sm')+'<span class="kc-name">'+esc(r.company||'(未命名)')+'</span></div>';
       h += '<div class="kc-sub">'+esc(r.name)+(r.title?' · '+esc(r.title):'')+'</div>';
       h += '<div class="kc-tags">';
       h += '<span class="rating rating-'+(r.rating||'b').toLowerCase()+'" style="width:20px;height:20px;font-size:10px">'+(r.rating||'')+'</span>';
@@ -1640,6 +1716,50 @@ function closeDailySummary() {
   if (el) el.remove();
 }
 
+/* ---- Theme Toggle ---- */
+function toggleTheme() {
+  document.body.classList.toggle('dark');
+  var isDark = document.body.classList.contains('dark');
+  localStorage.setItem('crm_theme', isDark ? 'dark' : 'light');
+  document.getElementById('themeBtn').textContent = isDark ? '☀️' : '🌙';
+  // Re-render charts with new colors
+  render();
+}
+(function(){
+  var saved = localStorage.getItem('crm_theme');
+  if (saved === 'dark' || (!saved && window.matchMedia('(prefers-color-scheme:dark)').matches)) {
+    document.body.classList.add('dark');
+  }
+})();
+
+/* ---- Avatar Generator ---- */
+function avatarHtml(company, size) {
+  if (!company) company = '?';
+  // Extract first meaningful chars (skip common Chinese suffixes)
+  var name = company.replace(/[（(].*?[）)]/g, '').replace(/有限公司|集团|股份|科技|有限|控股|中国|国际/g, '').trim();
+  var ch = name.charAt(0);
+  var idx = Math.abs(hashStr(company)) % 10 + 1;
+  return '<span class="avatar avatar-' + (size||'sm') + ' avatar-' + idx + '">' + ch + '</span>';
+}
+function hashStr(s) {
+  var h = 0;
+  for (var i = 0; i < s.length; i++) h = ((h << 5) - h) + s.charCodeAt(i);
+  return h;
+}
+
+/* ---- Sparkline Generator ---- */
+function sparklineHtml(values, color) {
+  if (!values || values.length === 0) return '';
+  var max = Math.max.apply(null, values);
+  if (max === 0) max = 1;
+  var html = '<span class="sparkline">';
+  values.forEach(function(v) {
+    var h = Math.max(4, Math.round((v / max) * 24));
+    html += '<span class="sparkline-bar" style="height:' + h + 'px;background:' + (color||'var(--bl)') + '"></span>';
+  });
+  return html + '</span>';
+}
+
 /* ---- Init ---- */
 (async function(){
   checkAuth();
@@ -1654,6 +1774,7 @@ function closeDailySummary() {
   if (!isAdmin) {
     document.querySelectorAll('.admin-only').forEach(function(el){ el.style.display='none'; });
   }
+  document.getElementById('themeBtn').textContent = document.body.classList.contains('dark') ? '☀️' : '🌙';
   switchView('dashboard');
   // Show daily summary popup (B1.4)
   setTimeout(showDailySummary, 500);
