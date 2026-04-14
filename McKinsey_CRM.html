@@ -1194,11 +1194,10 @@ function renderModal(r) {
   // Contract Files
   var cf = (r.contract_files||[]);
   if (cf.length > 0) {
-    left += '<div class="info-section"><h4>📎 合同文件 ('+cf.length+')</h4><div class="cl-body">';
+    left += '<div class="info-section"><h4>📎 合同文件 ('+cf.length+')</h4><div class="cl-body"><div style="font-size:11px;color:#d29922;margin-bottom:6px">⚠️ 文件存储在Supabase私有空间，需登录 <a href="https://supabase.com/dashboard/project/krqrherweuijambhrhfn/storage" target="_blank" style="color:var(--gd)">Supabase Dashboard</a> 手动下载</div>';
     cf.forEach(function(f){
       var fname = (f.name || f);
-      var furl = (f.url || f);
-      left += '<div class="cl-item" style="padding:6px 0"><a href="'+esc(furl)+'" target="_blank" style="color:var(--gd);text-decoration:none;font-size:12px;display:block">📄 '+esc(fname)+'</a></div>';
+      left += '<div class="cl-item" style="padding:4px 0;font-size:12px;color:var(--t2)">📄 '+esc(fname)+'</div>';
     });
     left += '</div></div>';
   }
