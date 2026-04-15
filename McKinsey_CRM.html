@@ -552,17 +552,18 @@ function doLogin() {
 
 /* ---- Data (Cloud) ---- */
 async function loadData() {
-  // Priority: 1. SEED_DATA (embedded, always latest) 2. localStorage 3. Supabase cloud
-  if (typeof SEED_DATA !== 'undefined' && SEED_DATA && SEED_DATA.length > 0) return SEED_DATA;
+  // Priority: 1. Supabase cloud 2. localStorage 3. SEED_DATA
+  if (supabase) {
+    try {
+      var res = await supabase.from('crm_data').select('data').eq('key','main').single();
+      if (res.data && res.data.data && res.data.data.length > 0) return res.data.data;
+    } catch(e) { console.warn('Cloud load failed:', e); }
+  }
   try {
     var ls = localStorage.getItem('crm_data');
     if (ls) { var parsed = JSON.parse(ls); if (parsed.length > 0) return parsed; }
   } catch(e) {}
-  if (!supabase) return null;
-  try {
-    var res = await supabase.from('crm_data').select('data').eq('key','main').single();
-    if (res.data && res.data.data && res.data.data.length > 0) return res.data.data;
-  } catch(e) { console.warn('Cloud load failed:', e); }
+  if (typeof SEED_DATA !== 'undefined' && SEED_DATA && SEED_DATA.length > 0) return SEED_DATA;
   return null;
 }
 function saveData() {
