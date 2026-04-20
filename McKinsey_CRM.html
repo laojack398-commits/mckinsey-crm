@@ -449,6 +449,7 @@ body.dark #loginOverlay>div{background:var(--card)!important;border-color:var(--
       <div class="nav-item admin-only" onclick="exportData()"><span>📤</span><span>导出完整数据</span></div>
       <div class="nav-item admin-only" onclick="document.getElementById('fileImport').click()"><span>📥</span><span>导入数据</span></div>
       <div class="nav-item admin-only" onclick="resetData()"><span>🔄</span><span>重置数据</span></div>
+      <div class="nav-item" data-v="trash" onclick="switchView('trash')" id="navTrash"><span>🗑️</span><span>回收站</span></div>
     </div>
     <div style="flex:1"></div>
     <div style="padding:16px 20px;border-top:1px solid rgba(255,255,255,.06);font-size:10px;color:rgba(255,255,255,.2);letter-spacing:1px">© 2026 McKINSEY CRM</div>
@@ -470,6 +471,7 @@ body.dark #loginOverlay>div{background:var(--card)!important;border-color:var(--
       <div id="vKanban" class="hidden"></div>
       <div id="vFollowups" class="hidden"></div>
       <div id="vReports" class="hidden"></div>
+      <div id="vTrash" class="hidden"></div><div id="vTrash" class="hidden" style="padding:24px></div>
     </div>
   </div>
 </div>
@@ -647,12 +649,12 @@ function switchView(v) {
   document.querySelectorAll('.nav-item[data-v]').forEach(function(n){
     n.classList.toggle('active', n.dataset.v === v);
   });
-  ['vDash','vTable','vKanban','vFollowups','vReports'].forEach(function(id){
+  ['vDash','vTable','vKanban','vFollowups','vReports','vTrash'].forEach(function(id){
     document.getElementById(id).classList.add('hidden');
   });
-  var map = {dashboard:'vDash', table:'vTable', kanban:'vKanban', followups:'vFollowups', reports:'vReports'};
+  var map = {dashboard:'vDash', table:'vTable', kanban:'vKanban', followups:'vFollowups', reports:'vReports', trash:'vTrash'};
   document.getElementById(map[v]).classList.remove('hidden');
-  var titles = {dashboard:'仪表盘', table:'客户列表', kanban:'看板视图', followups:'跟进记录', reports:'数据分析报表'};
+  var titles = {dashboard:'仪表盘', table:'客户列表', kanban:'看板视图', followups:'跟进记录', reports:'数据分析报表', trash:'回收站'};
   document.getElementById('pageTitle').textContent = 'McKinsey CRM — ' + titles[v];
   render();
 }
@@ -662,8 +664,132 @@ function render() {
   else if (curView === 'kanban') renderKanban();
   else if (curView === 'followups') renderFollowups();
   else if (curView === 'reports') renderReports();
+  else if (curView === 'trash') renderTrash();
 }
 
+
+/* ============ TRASH BIN ============ */
+function renderTrash() {
+  var el = document.getElementById('vTrash');
+  var trash = D.filter(function(r){ return r._deleted; });
+  var thirtyDays = 30 * 24 * 60 * 60 * 1000;
+  var now = Date.now();
+  var purgeCount = 0;
+  trash.forEach(function(r){
+    if (r._deletedAt && (now - new Date(r._deletedAt).getTime()) > thirtyDays) purgeCount++;
+  });
+  var h = '<div style="margin-bottom:20px">';
+  h += '<div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap">';
+  h += '<div style="font-size:20px;font-weight:700;color:var(--t1)">🗑️ 回收站</div>';
+  h += '<span style="background:var(--bg2);padding:4px 12px;border-radius:var(--rx);font-size:12px;color:var(--t2)">' + trash.length + ' 项</span>';
+  if (purgeCount > 0) {
+    h += '<button onclick="purgeOldTrash()" style="background:var(--ro);color:#fff;border:none;padding:6px 14px;border-radius:var(--rx);font-size:12px;cursor:pointer">🗑️ 清理过期 (' + purgeCount + '项超30天)</button>';
+  }
+  h += '</div>';
+  h += '<div style="font-size:12px;color:var(--t3);margin-top:8px">已删除的客户将保留30天，30天后可永久删除。恢复后回到原状态。</div>';
+  h += '</div>';
+
+  if (trash.length === 0) {
+    h += '<div style="text-align:center;padding:60px;color:var(--t3)"><div style="font-size:48px;margin-bottom:12px">🍃</div><div>回收站是空的</div></div>';
+  } else {
+    h += '<div style="display:flex;flex-direction:column;gap:8px">';
+    trash.sort(function(a,b){ return (b._deletedAt||'').localeCompare(a._deletedAt||''); }).forEach(function(r){
+      var deletedDate = r._deletedAt ? r._deletedAt.slice(0,16).replace('T',' ') : '未知';
+      var daysLeft = 30;
+      if (r._deletedAt) {
+        var elapsed = (now - new Date(r._deletedAt).getTime()) / (24*60*60*1000);
+        daysLeft = Math.max(0, Math.floor(30 - elapsed));
+      }
+      var isExpired = daysLeft <= 0;
+      h += '<div style="background:var(--card);border:1px solid ' + (isExpired ? 'var(--ro)' : 'var(--border)') + ';border-radius:12px;padding:16px 20px;display:flex;align-items:center;gap:16px;' + (isExpired ? 'opacity:0.6' : '') + '">';
+      h += '<div style="flex:1;min-width:0">';
+      h += '<div style="font-weight:600;color:var(--t1);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">' + esc(r.company || '(未命名)') + '</div>';
+      h += '<div style="font-size:12px;color:var(--t3);margin-top:4px">' + esc(r.name || '') + (r.industry ? ' · ' + esc(r.industry) : '') + ' · ' + esc(SM[r.status] ? SM[r.status].l : r.status) + '</div>';
+      h += '<div style="font-size:11px;color:var(--t3);margin-top:2px">删除于 ' + deletedDate + (isExpired ? ' · <span style="color:var(--ro);font-weight:600">已过期</span>' : ' · 剩余 ' + daysLeft + ' 天') + '</div>';
+      h += '</div>';
+      h += '<div style="display:flex;gap:8px;flex-shrink:0">';
+      h += '<button onclick="restoreCustomer(' + r.id + ')" style="background:var(--bl);color:#fff;border:none;padding:8px 16px;border-radius:var(--rx);font-size:12px;cursor:pointer;font-weight:600">↩️ 恢复</button>';
+      h += '<button onclick="permanentDelete(' + r.id + ')" style="background:transparent;border:1px solid var(--ro);color:var(--ro);padding:8px 16px;border-radius:var(--rx);font-size:12px;cursor:pointer">彻底删除</button>';
+      h += '</div></div>';
+    });
+    h += '</div>';
+  }
+  el.innerHTML = h;
+  // Update nav badge
+  updateTrashBadge();
+}
+
+function restoreCustomer(id) {
+  if (!confirm('确认恢复此客户？')) return;
+  var r = D.find(function(x){ return x.id === id; });
+  if (r) {
+    delete r._deleted;
+    delete r._deletedAt;
+  }
+  saveData();
+  toast('✅ 已恢复');
+  renderTrash();
+}
+
+function permanentDelete(id) {
+  var r = D.find(function(x){ return x.id === id; });
+  var name = r ? (r.company || '(未命名)') : '';
+  if (!confirm('⚠️ 永久删除「' + name + '」？此操作不可恢复！')) return;
+  D = D.filter(function(x){ return x.id !== id; });
+  saveData();
+  toast('🗑️ 已永久删除');
+  renderTrash();
+  updateTrashBadge();
+}
+
+function purgeOldTrash() {
+  var thirtyDays = 30 * 24 * 60 * 60 * 1000;
+  var now = Date.now();
+  var toPurge = D.filter(function(r){
+    return r._deleted && r._deletedAt && (now - new Date(r._deletedAt).getTime()) > thirtyDays;
+  });
+  if (toPurge.length === 0) { toast('没有过期项目'); return; }
+  if (!confirm('确认永久删除 ' + toPurge.length + ' 项过期客户？')) return;
+  var ids = toPurge.map(function(r){ return r.id; });
+  D = D.filter(function(r){ return ids.indexOf(r.id) < 0; });
+  saveData();
+  toast('🗑️ 已清理 ' + toPurge.length + ' 项');
+  renderTrash();
+  updateTrashBadge();
+}
+
+function updateTrashBadge() {
+  var count = D.filter(function(r){ return r._deleted; }).length;
+  var nav = document.getElementById('navTrash');
+  if (!nav) return;
+  var badge = nav.querySelector('.trash-badge');
+  if (count > 0) {
+    if (!badge) {
+      badge = document.createElement('span');
+      badge.className = 'trash-badge';
+      badge.style.cssText = 'background:var(--ro);color:#fff;font-size:10px;padding:1px 6px;border-radius:10px;margin-left:auto';
+      nav.appendChild(badge);
+    }
+    badge.textContent = count;
+  } else if (badge) {
+    badge.remove();
+  }
+}
+
+function deleteCustomer(id) {
+  if (!isAdmin) { toast('🔒 只读模式，无法删除'); return; }
+  if (!confirm('⚠️ 确定删除此客户？将移入回收站，30天内可恢复。')) return;
+  var r = D.find(function(x){ return x.id === id; });
+  if (r) {
+    r._deleted = true;
+    r._deletedAt = new Date().toISOString();
+  }
+  saveData();
+  closeModal();
+  toast('🗑️ 已移入回收站（30天内可恢复）');
+  render();
+  updateTrashBadge();
+}
 /* ============ DASHBOARD ============ */
 function renderDash() {
   var el = document.getElementById('vDash');
@@ -1378,20 +1504,6 @@ function delFollowup(id, idx) {
   render();
 }
 
-function deleteCustomer(id) {
-  if (!isAdmin) { toast('🔒 只读模式，无法删除'); return; }
-  if (!confirm('⚠️ 确定删除此客户？将移入回收站，30天内可恢复。')) return;
-  var r = D.find(function(x){ return x.id === id; });
-  if (r) {
-    r._deleted = true;
-    r._deletedAt = new Date().toISOString();
-  }
-  saveData();
-  closeModal();
-  toast('🗑️ 已移入回收站（30天内可恢复）');
-  render();
-}
-
 function addCustomer() {
   if (!isAdmin) { toast('🔒 只读模式，无法新增'); return; }
   var maxId = D.reduce(function(m,x){ return Math.max(m,x.id); }, 0);
@@ -1814,6 +1926,7 @@ function sparklineHtml(values, color) {
   }
   document.getElementById('themeBtn').textContent = document.body.classList.contains('dark') ? '☀️' : '🌙';
   switchView('dashboard');
+  updateTrashBadge();
   // Show daily summary popup (B1.4)
   setTimeout(showDailySummary, 500);
 })();
