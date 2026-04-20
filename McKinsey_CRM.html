@@ -1408,8 +1408,8 @@ function renderModal(r) {
     right += '<div class="fu-method-btn'+active+'" data-m="'+m[0]+'" onclick="pickFuMethod(this)" title="'+m[0]+'">'+m[1]+'</div>';
   });
   right += '</div>';
-  right += '<input type="text" id="fuContent" placeholder="输入跟进内容..." onkeydown="if(event.key===\'Enter\')sendFollowup()">';
-  right += '<div class="fu-send" onclick="sendFollowup()">➤</div>';
+  right += '<select id="fuAction" style="width:100%;padding:8px 10px;border:1px solid var(--border);border-radius:var(--rx);background:var(--bg);color:var(--t1);font-size:13px;margin-bottom:6px"><option value="">⏳ 待处理</option><option value="已回电">📞 已回电</option><option value="已发邮件">📧 已发邮件</option><option value="已报价">💰 已报价</option><option value="已签约">✅ 已签约</option><option value="已拒绝">❌ 已拒绝</option><option value="已转交">↔️ 已转交</option><option value="暂无进展">⏸️ 暂无进展</option><option value="待二次跟进">🔄 待二次跟进</option></select>';
+  right += '<input type="text" id="fuContent" placeholder="输入跟进内容..." onkeydown="if(event.key===\'Enter\')sendFollowup()">';  right += '<div class="fu-send" onclick="sendFollowup()">➤</div>';
   right += '</div>';
   }
 
@@ -1943,7 +1943,8 @@ function sparklineHtml(values, color) {
       s.status = migrateStatus(s.status);
       if (!existingIds[s.id]) { D.push(s); existingIds[s.id] = true; }
     });
-    console.log('[init] Merged ' + SEED_DATA.length + ' SEED entries, added new ones');
+    console.log('[init] SEED merged, new entries saved');
+    saveData();
   }
   } else {
     D = JSON.parse(JSON.stringify(SEED)).map(function(r){ r.status = migrateStatus(r.status); return r; });
@@ -1954,16 +1955,7 @@ function sparklineHtml(values, color) {
   }
   document.getElementById('themeBtn').textContent = document.body.classList.contains('dark') ? '☀️' : '🌙';
   
-  // Merge new SEED_DATA entries into loaded data
-  if (typeof SEED_DATA !== 'undefined' && SEED_DATA.length > 0) {
-    var existingIds = {};
-    D.forEach(function(r){ existingIds[r.id] = true; });
-    SEED_DATA.forEach(function(s){
-      s.status = migrateStatus(s.status);
-      if (!existingIds[s.id]) { D.push(s); existingIds[s.id] = true; }
-    });
-    if (D.length > 0) localStorage.setItem('crm_data', JSON.stringify(D));
-  }
+  // SEED merge handled above
 switchView('dashboard');
   updateTrashBadge();
   // Show daily summary popup (B1.4)
