@@ -1230,29 +1230,29 @@ function renderFollowups() {
   if (!window._fuPage) window._fuPage = 1;
   if (window._fuPage > totalPages) window._fuPage = totalPages;
   var page = window._fuPage;
-  var start = (page - 1) * pageSize;
-  var end = Math.min(start + pageSize, fu.length);
-  var pageFu = fu.slice(start, end);
-  var h = '<div class="card"><div class="card-hd"><h3>📝 全部跟进记录</h3><span style="font-size:11px;color:var(--t3)">' + fu.length + ' 条 · 第 ' + page + '/' + totalPages + ' 页</span></div>';
+  var startI = (page - 1) * pageSize;
+  var endI = Math.min(startI + pageSize, fu.length);
+  var pageFu = fu.slice(startI, endI);
+
+  var h = '<div class="card"><div class="card-hd"><h3>\U0001F4DD 全部跟进记录</h3><span style="font-size:11px;color:var(--t3)">' + fu.length + ' 条</span></div>';
   h += '<div class="card-bd" style="max-height:calc(100vh - 260px);overflow-y:auto">';
-  if (!fu.length) h += '<div class="empty-state"><div class="es-icon">📭</div><p>暂无跟进记录</p></div>';
+  if (!fu.length) h += '<div class="empty-state"><div class="es-icon">\U0001F4ED</div><p>暂无跟进记录</p></div>';
   pageFu.forEach(function(f) {
     h += '<div class="tl-item" style="cursor:pointer" onclick="openDetail(' + f.id + ')">';
     h += tlDot(f.method);
-    h += '<div class="tl-body"><div class="tl-date">' + esc(f.date) + ' — <b>' + esc(f.name) + '</b> · ' + esc(f.company) + '</div>';
+    h += '<div class="tl-body"><div class="tl-date">' + esc(f.date) + ' \u2014 <b>' + esc(f.name) + '</b> \u00b7 ' + esc(f.company) + '</div>';
     h += '<div class="tl-content">' + esc(f.content) + '</div>';
-    if (f.action) h += '<div class="tl-action">→ ' + esc(f.action) + '</div>';
+    if (f.action) h += '<div class="tl-action">\u2192 ' + esc(f.action) + '</div>';
     h += '</div></div>';
   });
   h += '</div>';
   if (totalPages > 1) {
-    h += '<div style="display:flex;justify-content:center;align-items:center;gap:6px;padding:12px;border-top:1px solid var(--border)">';
-    h += '<button onclick="window._fuPage=1;renderFollowups()" style="padding:6px 12px;border:1px solid var(--border);border-radius:var(--rx);background:var(--bg);cursor:pointer;font-size:12px;color:var(--t1)"' + (page <= 1 ? ' disabled' : '') + '>⏮ 首页</button>';
-    h += '<button onclick="window._fuPage=' + (page - 1) + ';renderFollowups()" style="padding:6px 12px;border:1px solid var(--border);border-radius:var(--rx);background:var(--bg);cursor:pointer;font-size:12px;color:var(--t1)"' + (page <= 1 ? ' disabled' : '') + '>◀ 上一页</button>';
-    h += '<span style="font-size:12px;color:var(--t2);padding:0 8px">' + page + '/' + totalPages + '</span>';
-    h += '<button onclick="window._fuPage=' + (page + 1) + ';renderFollowups()" style="padding:6px 12px;border:1px solid var(--border);border-radius:var(--rx);background:var(--bg);cursor:pointer;font-size:12px;color:var(--t1)"' + (page >= totalPages ? ' disabled' : '') + '>下一页 ▶</button>';
-    h += '<button onclick="window._fuPage=' + totalPages + ';renderFollowups()" style="padding:6px 12px;border:1px solid var(--border);border-radius:var(--rx);background:var(--bg);cursor:pointer;font-size:12px;color:var(--t1)"' + (page >= totalPages ? ' disabled' : '') + '>末页 ⏭</button>';
-    h += '</div>';
+    h += '<div class="pager"><span>第 ' + page + '/' + totalPages + ' 页</span><div class="pager-btns">';
+    h += '<button onclick="window._fuPage=1;renderFollowups()" ' + (page <= 1 ? 'disabled' : '') + '>首页</button>';
+    h += '<button onclick="window._fuPage=' + (page - 1) + ';renderFollowups()" ' + (page <= 1 ? 'disabled' : '') + '>上一页</button>';
+    h += '<button onclick="window._fuPage=' + (page + 1) + ';renderFollowups()" ' + (page >= totalPages ? 'disabled' : '') + '>下一页</button>';
+    h += '<button onclick="window._fuPage=' + totalPages + ';renderFollowups()" ' + (page >= totalPages ? 'disabled' : '') + '>末页</button>';
+    h += '</div></div>';
   }
   h += '</div>';
   el.innerHTML = h;
