@@ -559,17 +559,17 @@ function doLogin() {
 
 /* ---- Data (Cloud) ---- */
 async function loadData() {
-  // Priority: 1. Supabase cloud 2. localStorage 3. SEED_DATA
+  // Priority: 1. localStorage (always fresh) 2. Supabase cloud 3. SEED_DATA
+  try {
+    var ls = localStorage.getItem('crm_data');
+    if (ls) { var parsed = JSON.parse(ls); if (parsed.length > 0) return parsed; }
+  } catch(e) {}
   if (supabase) {
     try {
       var res = await supabase.from('crm_data').select('*').order('id');
       if (res.data && res.data.length > 0) return res.data;
     } catch(e) { console.warn('Cloud load failed:', e); }
   }
-  try {
-    var ls = localStorage.getItem('crm_data');
-    if (ls) { var parsed = JSON.parse(ls); if (parsed.length > 0) return parsed; }
-  } catch(e) {}
   if (typeof SEED_DATA !== 'undefined' && SEED_DATA && SEED_DATA.length > 0) return SEED_DATA;
   return null;
 }
@@ -611,6 +611,7 @@ function esc(s) {
 function filtered() {
   var q = (document.getElementById('globalSearch').value || '').toLowerCase();
   var list = D.filter(function(r) {
+    if (r._deleted) return false;
     if (!q) return true;
     var hay = (r.company+r.name+r.industry+r.email+r.region+r.title+r.phone+r.wechat+r.need).toLowerCase();
     return hay.indexOf(q) >= 0;
@@ -671,7 +672,7 @@ function renderDash() {
   var counts = {};
   var keys = Object.keys(SM);
   keys.forEach(function(k){ counts[k] = 0; });
-  D.forEach(function(r){ if(counts[r.status]!==undefined) counts[r.status]++; });
+  D.forEach(function(r){ if(r._deleted) return; if(counts[r.status]!==undefined) counts[r.status]++; });
 
   var pipelineVal = 0;
   D.forEach(function(r){ pipelineVal += (r.prob||0); });
@@ -1163,12 +1164,8 @@ function renderModal(r) {
   h += '<h2>'+esc(r.company||'(未命名)')+'</h2>';
   h += '<div style="font-size:12px;color:var(--t2)">'+esc(r.industry)+(r.description?' · '+esc(r.description):'')+'</div>';
   h += '<div class="modal-head-btns">';
-  if (ro) {
-    h += '<span style="font-size:11px;color:var(--t3);background:var(--bg2);padding:4px 10px;border-radius:var(--rx)">🔒 只读模式</span>';
-  } else {
     h += '<button class="btn-primary" onclick="saveDetail()">💾 保存</button>';
     h += '<button class="btn-danger" onclick="deleteCustomer('+r.id+')">🗑️ 删除</button>';
-  }
   h += '</div>';
 
   document.getElementById('modalHead').innerHTML = h;
@@ -1383,11 +1380,15 @@ function delFollowup(id, idx) {
 
 function deleteCustomer(id) {
   if (!isAdmin) { toast('🔒 只读模式，无法删除'); return; }
-  if (!confirm('⚠️ 确定删除此客户？此操作不可恢复。')) return;
-  D = D.filter(function(x){ return x.id !== id; });
+  if (!confirm('⚠️ 确定删除此客户？将移入回收站，30天内可恢复。')) return;
+  var r = D.find(function(x){ return x.id === id; });
+  if (r) {
+    r._deleted = true;
+    r._deletedAt = new Date().toISOString();
+  }
   saveData();
   closeModal();
-  toast('🗑️ 已删除');
+  toast('🗑️ 已移入回收站（30天内可恢复）');
   render();
 }
 
@@ -1546,7 +1547,7 @@ function renderFunnel() {
   var total = D.length || 1;
   var counts = {};
   stages.forEach(function(k){ counts[k] = 0; });
-  D.forEach(function(r){ if(counts[r.status]!==undefined) counts[r.status]++; });
+  D.forEach(function(r){ if(r._deleted) return; if(counts[r.status]!==undefined) counts[r.status]++; });
   var h = '<div class="funnel">';
   stages.forEach(function(k, i){
     var pct = Math.round(counts[k]/total*100);
