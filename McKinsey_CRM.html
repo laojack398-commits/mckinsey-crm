@@ -1932,6 +1932,13 @@ function sparklineHtml(values, color) {
 (async function(){
   checkAuth();
   document.getElementById('vDash').innerHTML = '<div style="text-align:center;padding:60px;color:var(--t3)"><div style="font-size:32px;margin-bottom:12px">⏳</div><div>正在从云端加载数据...</div></div>';
+  // Force reset old cached data to ensure new leads & features load correctly
+  var __v = 7; // bump this when SEED_DATA or structure changes significantly
+  if (localStorage.getItem('crm_ver') !== String(__v)) {
+    console.log('[init] Version mismatch, resetting cache...');
+    localStorage.removeItem('crm_data');
+    localStorage.setItem('crm_ver', String(__v));
+  }
   var cloudData = await loadData();
   if (cloudData) {
     D = cloudData.map(function(r){ r.status = migrateStatus(r.status); return r; });
