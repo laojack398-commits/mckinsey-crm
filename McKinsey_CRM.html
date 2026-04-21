@@ -579,6 +579,12 @@ async function loadData() {
 function saveData() {
   if (_saving) return;
   _saving = true;
+  // 1. Always write localStorage first (guaranteed success, local persistence)
+  try {
+    localStorage.setItem('crm_data', JSON.stringify(D));
+    console.log('[saveData] localStorage written, count:', D.length);
+  } catch(e) { console.warn('localStorage write failed:', e); }
+  // 2. Then sync to Supabase cloud
   (async function() {
     try {
   // Remove extra internal fields that aren't table columns
@@ -591,7 +597,8 @@ function saveData() {
   });
   await supabase.from('crm_data').delete().neq('id', 0);
   if (clean.length > 0) await supabase.from('crm_data').insert(clean);
-} catch(e) { console.warn('Save failed:', e); }
+  console.log('[saveData] Supabase synced, count:', clean.length);
+} catch(e) { console.warn('Supabase save failed:', e); }
     _saving = false;
   })();
 }
@@ -1453,11 +1460,19 @@ function saveDetail() {
       r[k] = nv;
     }
   });
-  // Status change
+  // Status change — auto-fix prob for terminal states
   var ns = document.getElementById('e_status').value;
   if (ns !== r.status) {
     r.changelog.push({ts:tsStr, _ts:tsNum, field:'状态', oldVal:SM[r.status]?SM[r.status].l:r.status, newVal:SM[ns]?SM[ns].l:ns, by:'admin'});
     r.status = ns;
+    // Auto-set prob: won→100%, lost/closed→0%
+    if (ns === 'won' && r.prob !== 100) {
+      r.changelog.push({ts:tsStr, _ts:tsNum, field:'概率(自动)', oldVal:r.prob+'%', newVal:'100%', by:'system'});
+      r.prob = 100;
+    } else if ((ns === 'lost' || ns === 'closed') && r.prob !== 0) {
+      r.changelog.push({ts:tsStr, _ts:tsNum, field:'概率(自动)', oldVal:r.prob+'%', newVal:'0%', by:'system'});
+      r.prob = 0;
+    }
   }
   // Rating change
   var activeDot = document.querySelector('.rating-dot.on');
@@ -1933,7 +1948,7 @@ function sparklineHtml(values, color) {
   checkAuth();
   document.getElementById('vDash').innerHTML = '<div style="text-align:center;padding:60px;color:var(--t3)"><div style="font-size:32px;margin-bottom:12px">⏳</div><div>正在从云端加载数据...</div></div>';
   // Force reset old cached data to ensure new leads & features load correctly
-  var __v = 8; // bump this when SEED_DATA or structure changes significantly
+  var __v = 9; // bump this when SEED_DATA or structure changes significantly
   if (localStorage.getItem('crm_ver') !== String(__v)) {
     console.log('[init] Version mismatch, resetting cache...');
     localStorage.removeItem('crm_data');
