@@ -1188,7 +1188,7 @@ function drawChinaMap() {
       });
     });
   });
-  var goldItem = {itemStyle:{borderColor:'#d4af37', borderWidth:3, shadowBlur:10, shadowColor:'rgba(212,175,55,0.6)'}, label:{show:true, fontSize:9, fontWeight:'bold'}};
+  var goldItem = {itemStyle:{borderColor:'#b8860b', borderWidth:1.5}, label:{show:true, fontSize:9, fontWeight:'bold'}};
   var mapData = Object.keys(provData).map(function(k){ return Object.assign({name:k, value:provData[k]}, goldItem); });
   var maxVal = Math.max.apply(null, mapData.map(function(x){return x.value;})) || 1;
   var sorted = mapData.slice().sort(function(a,b){return b.value-a.value;}).slice(0,10);
@@ -1244,13 +1244,15 @@ function drawWorldMap() {
   var t = _mapTheme();
   var chart = echarts.init(el);
   window._cOS = chart;
-  var countryNames = {
-    'Singapore':'Singapore', 'Japan':'Japan', 'Malaysia':'Malaysia', 'Thailand':'Thailand',
-    'Taiwan':'Taiwan', 'S. Korea':'South Korea', 'Hong Kong':'Hong Kong', 'Switzerland':'Switzerland',
-    'India':'India', 'Finland':'Finland', 'USA':'United States of America', 'UK':'United Kingdom',
-    'France':'France', 'Germany':'Germany', 'Indonesia':'Indonesia', 'Vietnam':'Vietnam',
-    'Philippines':'Philippines', 'Australia':'Australia', 'Netherlands':'Netherlands', 'Spain':'Spain',
-    'UAE':'United Arab Emirates', 'Russia':'Russia', 'Italy':'Italy', 'Canada':'Canada'
+  var countryCoords = {
+    'Singapore':[103.8,1.35], 'Japan':[138.2,36.2], 'Malaysia':[110.0,4.2],
+    'Thailand':[100.5,13.8], 'Taiwan':[121.0,23.7], 'S. Korea':[127.8,36.5],
+    'Hong Kong':[114.2,22.3], 'Switzerland':[7.4,46.8], 'India':[78.0,22.5],
+    'Finland':[25.7,61.9], 'USA':[-98.5,39.8], 'UK':[-1.3,51.5],
+    'France':[2.3,46.6], 'Germany':[10.4,51.2], 'Indonesia':[118.8,-2.5],
+    'Vietnam':[108.3,14.1], 'Philippines':[122.0,12.9], 'Australia':[133.8,-25.3],
+    'Netherlands':[5.3,52.1], 'Spain':[-3.7,40.4], 'UAE':[53.8,23.4],
+    'Russia':[37.6,55.8], 'Italy':[12.5,41.9], 'Canada':[-106.3,56.1]
   };
   var kwMap = {
     'Singapore':['Singapore','新加坡'], 'Japan':['Japan','日本'], 'Malaysia':['Malaysia','马来西亚'],
@@ -1271,31 +1273,36 @@ function drawWorldMap() {
       });
     });
   });
-  var goldItem = {itemStyle:{borderColor:'#d4af37', borderWidth:3, shadowBlur:10, shadowColor:'rgba(212,175,55,0.6)'}, label:{show:true, fontSize:9, fontWeight:'bold'}};
-  var mapData = Object.keys(osData).map(function(k){ return Object.assign({name:countryNames[k]||k, value:osData[k]}, goldItem); }).sort(function(a,b){return b.value-a.value;});
-  var maxVal = Math.max.apply(null, mapData.map(function(x){return x.value;})) || 1;
-  var sorted = mapData.slice(0,10);
+  var sorted = Object.keys(osData).map(function(k){return [k, osData[k]];}).sort(function(a,b){return b[1]-a[1];});
+  var scatterData = [];
+  sorted.forEach(function(item){
+    var coords = countryCoords[item[0]];
+    if(coords) scatterData.push({name:item[0], value:[coords[0],coords[1],item[1]]});
+  });
   chart.setOption({
     tooltip:{ trigger:'item', backgroundColor:'rgba(0,0,0,0.88)', borderColor:'#d4af37', borderWidth:1, textStyle:{color:'#fff',fontSize:12},
-      formatter:function(p){ return '<b style="color:#fbbf24">'+p.name+'</b><br/>客户覆盖: <span style="font-size:16px;font-weight:bold">'+p.value+'</span> 家'; }
+      formatter:function(p){ return '<b style="color:#fbbf24">'+p.name+'</b><br/>客户覆盖: <span style="font-size:16px;font-weight:bold">'+p.value[2]+'</span> 家'; }
     },
-    visualMap:{ type:'continuous', min:0, max:maxVal, left:10, top:'center', itemWidth:14, itemHeight:120,
-      text:['覆盖 '+maxVal,'0'], textStyle:{color:t.textSub,fontSize:10},
-      inRange:{color:['#bfdbfe','#3b82f6','#1e40af','#1e3a5f']}, calculable:true
+    geo:{
+      map:'world', roam:true, silent:true,
+      itemStyle:{ areaColor:t.noData, borderColor:t.borderColor, borderWidth:0.3 },
+      emphasis:{ disabled:true }
     },
     series:[{
-      type:'map', map:'world', roam:true,
-      label:{show:true, fontSize:7, color:t.textSub},
-      emphasis:{label:{show:true, fontSize:11, fontWeight:'bold', color:'#fff'},
-        itemStyle:{areaColor:'#f59e0b', shadowBlur:20, shadowColor:'rgba(212,175,55,0.5)'}},
-      data: mapData,
-      itemStyle:{ borderColor:t.borderColor, borderWidth:0.5, areaColor:t.noData }
+      type:'scatter', coordinateSystem:'geo',
+      symbolSize:function(val){ return Math.max(12, val[2]*6); },
+      data: scatterData,
+      itemStyle:{ color:'#3b82f6', shadowBlur:8, shadowColor:'rgba(59,130,246,0.5)', borderColor:'#fff', borderWidth:1 },
+      emphasis:{ itemStyle:{ color:'#f59e0b', shadowBlur:16, shadowColor:'rgba(245,158,11,0.6)', borderColor:'#d4af37', borderWidth:1.5 },
+        label:{show:true, formatter:'{b}', fontSize:11, fontWeight:'bold', color:'#1e3a5f',
+          textBorderColor:'#fff', textBorderWidth:2, position:'right' } },
+      label:{ show:true, formatter:function(p){ return p.value[2]>=2 ? p.name : ''; }, fontSize:10, fontWeight:'bold', color:t.text,
+        textBorderColor:t.dark?'#161b22':'#fff', textBorderWidth:1.5, position:'right' }
     }]
   });
   window.addEventListener('resize', function(){ chart.resize(); });
   drawWorldBar(sorted, t);
 }
-
 function drawWorldBar(sorted, t) {
   var el = document.getElementById('chartOverseasBar');
   if (!el) return;
