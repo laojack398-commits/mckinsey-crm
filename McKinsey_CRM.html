@@ -492,6 +492,7 @@ body.dark #loginOverlay>div{background:var(--card)!important;border-color:var(--
 <div class="toast" id="toast"></div>
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/echarts@5.5.0/dist/echarts.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
 window.onerror = function(msg, u, line, col, err) { console.error('[CRM Error]', msg, 'Line:', line); };;
@@ -953,8 +954,8 @@ function renderDash() {
   h += '<div class="card"><div class="card-hd"><h3>📊 评级分布</h3></div><div class="card-bd"><div class="chart-wrap"><canvas id="chartRating"></canvas></div></div></div>';
   h += '</div>';
   h += '<div class="grid-2">';
-  h += '<div class="card"><div class="card-hd"><h3>🗺️ 国内区域分布</h3></div><div class="card-bd"><div class="chart-wrap"><canvas id="chartRegionCN"></canvas></div></div></div>';
-  h += '<div class="card"><div class="card-hd"><h3>🌍 出海目标国分布</h3></div><div class="card-bd"><div class="chart-wrap"><canvas id="chartOverseas"></canvas></div></div></div>';
+  h += '<div class="card"><div class="card-hd"><h3>🗺️ 国内区域分布</h3><span style="font-size:10px;color:var(--t3)">热力地图 · hover查看详情</span></div><div class="card-bd"><div id="chartRegionCN" style="width:100%;height:400px"></div></div></div>';
+  h += '<div class="card"><div class="card-hd"><h3>🌍 出海目标国分布</h3><span style="font-size:10px;color:var(--t3)">全球地图 · 客户覆盖</span></div><div class="card-bd"><div id="chartOverseas" style="width:100%;height:400px"></div></div></div>';
   h += '</div>';
 
   el.innerHTML = h;
@@ -1117,87 +1118,177 @@ function drawCharts() {
     });
   }
 
-  // Domestic region distribution
-  var regionMap = {
-    '华东/江浙沪': ['华东','上海','江苏','浙江','南京','杭州','苏州','江浙沪'],
-    '华南/广东': ['华南','广东','深圳','广州'],
-    '华北/北京': ['华北','北京','天津','河北'],
-    '华中': ['华中','武汉','湖南','湖北','河南'],
-    '西南': ['西南','四川','成都','重庆','云南'],
-    '东北': ['东北','辽宁','吉林','黑龙江','沈阳'],
-    '西北': ['西北','陕西','西安'],
-    '港澳台': ['香港','台湾','澳门']
+  // ===== ECharts China Map & World Map =====
+  initGeoCharts();
+}
+
+function initGeoCharts() {
+  if (typeof echarts === 'undefined') return;
+  // Load China GeoJSON then render both maps
+  fetch('https://geo.datav.aliyun.com/areas_v3/bound/100000_full.json')
+    .then(function(r){ return r.json(); })
+    .then(function(chinaJson){
+      echarts.registerMap('china', chinaJson);
+      drawChinaMap();
+      drawWorldMap();
+    })
+    .catch(function(e){
+      console.warn('China map load failed:', e);
+      drawChinaFallback();
+      drawWorldMap();
+    });
+}
+
+function drawChinaMap() {
+  var el = document.getElementById('chartRegionCN');
+  if (!el) return;
+  var chart = echarts.init(el, null, {renderer:'canvas'});
+  window._cCN = chart;
+  // Province mapping: company keywords → province name
+  var provMap = {
+    '上海':['上海','Shanghai','浦东','虹桥'],
+    '北京':['北京','Beijing','中关村','朝阳','海淀'],
+    '广东':['广东','深圳','Shenzhen','广州','Guangzhou','东莞','佛山','惠州'],
+    '江苏':['江苏','苏州','Suzhou','南京','Nanjing','无锡','Wuxi','常州'],
+    '浙江':['浙江','杭州','Hangzhou','宁波','Ningbo','温州','嘉兴','绍兴'],
+    '山东':['山东','济南','青岛','Qingdao','烟台'],
+    '福建':['福建','福州','厦门','Amoy','泉州'],
+    '四川':['四川','成都','Chengdu'],
+    '湖北':['湖北','武汉','Wuhan'],
+    '湖南':['湖南','长沙','株洲'],
+    '河南':['河南','郑州'],
+    '河北':['河北','石家庄'],
+    '天津':['天津','Tianjin'],
+    '重庆':['重庆','Chongqing'],
+    '辽宁':['辽宁','沈阳','Shenyang','大连','Dalian'],
+    '吉林':['吉林','长春'],
+    '黑龙江':['黑龙江','哈尔滨','Harbin'],
+    '陕西':['陕西','西安','Xi\'an'],
+    '安徽':['安徽','合肥','Hefei','芜湖'],
+    '江西':['江西','南昌','Nanchang'],
+    '云南':['云南','昆明','Kunming'],
+    '贵州':['贵州','贵阳','Guiyang'],
+    '广西':['广西','南宁','Nanning','桂林','柳州'],
+    '海南':['海南','海口','Haikou','三亚','Sanya'],
+    '山西':['山西','太原','Taiyuan'],
+    '内蒙古':['内蒙古','呼和浩特','包头'],
+    '甘肃':['甘肃','兰州','Lanzhou'],
+    '新疆':['新疆','乌鲁木齐','Urumqi'],
+    '香港':['香港','Hong Kong','HK'],
+    '台湾':['台湾','Taiwan','台北','Taipei'],
+    '澳门':['澳门','Macau','Macao']
+  };
+  var provData = {};
+  D.forEach(function(r){
+    if(r._deleted) return;
+    var text = ((r.region||'')+' '+(r.company||'')+' '+(r.description||'')).toLowerCase();
+    Object.keys(provMap).forEach(function(prov){
+      provMap[prov].forEach(function(kw){
+        if(text.indexOf(kw.toLowerCase()) >= 0){ provData[prov]=(provData[prov]||0)+1; }
+      });
+    });
+  });
+  var mapData = Object.keys(provData).map(function(k){ return {name:k, value:provData[k]}; });
+  var maxVal = Math.max.apply(null, mapData.map(function(x){return x.value;})) || 1;
+  var option = {
+    tooltip: { trigger:'item', formatter:function(p){ return p.name+'<br/>客户数: <b>'+p.value+'</b>'; }},
+    visualMap: { min:0, max:maxVal, left:'left', top:'bottom', text:['高','低'], calculable:true, inRange:{color:['#e0e7ff','#818cf8','#4f46e5','#3730a3']} },
+    series: [{
+      type:'map', map:'china', roam:true,
+      label:{show:true, fontSize:8, color:'#555'},
+      emphasis:{label:{show:true, fontSize:12, fontWeight:'bold', color:'#fff'}, itemStyle:{areaColor:'#f59e0b'}},
+      data: mapData,
+      itemStyle:{ borderColor:'#fff', borderWidth:0.5 }
+    }]
+  };
+  chart.setOption(option);
+  window.addEventListener('resize', function(){ chart.resize(); });
+}
+
+function drawWorldMap() {
+  var el = document.getElementById('chartOverseas');
+  if (!el) return;
+  var chart = echarts.init(el, null, {renderer:'canvas'});
+  window._cOS = chart;
+  var countryNames = {
+    'Singapore':'Singapore', 'Japan':'Japan', 'Malaysia':'Malaysia', 'Thailand':'Thailand',
+    'Taiwan':'Taiwan', 'S. Korea':'South Korea', 'Hong Kong':'Hong Kong', 'Switzerland':'Switzerland',
+    'India':'India', 'Finland':'Finland', 'USA':'United States of America', 'UK':'United Kingdom',
+    'France':'France', 'Germany':'Germany', 'Indonesia':'Indonesia', 'Vietnam':'Vietnam',
+    'Philippines':'Philippines', 'Australia':'Australia', 'Canada':'Canada', 'Brazil':'Brazil',
+    'Mexico':'Mexico', 'Spain':'Spain', 'Netherlands':'Netherlands', 'Italy':'Italy',
+    'UAE':'United Arab Emirates', 'Russia':'Russia', 'Turkey':'Turkey'
+  };
+  var kwMap = {
+    'Singapore':['Singapore','新加坡'], 'Japan':['Japan','日本'], 'Malaysia':['Malaysia','马来西亚'],
+    'Thailand':['Thailand','泰国'], 'Taiwan':['Taiwan','台湾'], 'S. Korea':['South Korea','韩国'],
+    'Hong Kong':['Hong Kong','香港'], 'Switzerland':['Switzerland','瑞士'], 'India':['India','印度'],
+    'Finland':['Finland','芬兰'], 'USA':['USA','United States','美国'], 'UK':['UK','United Kingdom','英国'],
+    'France':['France','法国'], 'Germany':['Germany','德国'], 'Indonesia':['Indonesia','印尼','印度尼西亚'],
+    'Vietnam':['Vietnam','越南'], 'Philippines':['Philippines','菲律宾'], 'Australia':['Australia','澳大利亚'],
+    'Netherlands':['Netherlands','荷兰'], 'Spain':['Spain','西班牙'], 'UAE':['Dubai','迪拜']
+  };
+  var osData = {};
+  D.forEach(function(r){
+    if(r._deleted) return;
+    var text = ((r.region||'')+' '+(r.description||'')+' '+(r.note||'')).toLowerCase();
+    Object.keys(kwMap).forEach(function(k){
+      kwMap[k].forEach(function(kw){
+        if(text.indexOf(kw.toLowerCase()) >= 0){ osData[k]=(osData[k]||0)+1; }
+      });
+    });
+  });
+  var mapData = Object.keys(osData).map(function(k){
+    return {name: countryNames[k]||k, value: osData[k]};
+  }).sort(function(a,b){return b.value-a.value;});
+  var maxVal = Math.max.apply(null, mapData.map(function(x){return x.value;})) || 1;
+  var option = {
+    tooltip: { trigger:'item', formatter:function(p){ return p.name+'<br/>客户覆盖: <b>'+p.value+'</b>'; }},
+    visualMap: { min:0, max:maxVal, left:'left', top:'bottom', text:['多','少'], calculable:true, inRange:{color:['#dbeafe','#3b82f6','#1e40af','#1e3a5f']} },
+    series: [{
+      type:'map', map:'world', roam:true,
+      label:{show:false},
+      emphasis:{label:{show:true, fontSize:10, fontWeight:'bold', color:'#fff'}, itemStyle:{areaColor:'#f59e0b'}},
+      data: mapData,
+      itemStyle:{ borderColor:'rgba(255,255,255,0.5)', borderWidth:0.5 }
+    }]
+  };
+  chart.setOption(option);
+  window.addEventListener('resize', function(){ chart.resize(); });
+}
+
+function drawChinaFallback() {
+  // If China GeoJSON fails to load, use a bar chart as fallback
+  var el = document.getElementById('chartRegionCN');
+  if (!el) return;
+  var provMap = {
+    '华东/江浙沪':['上海','江苏','浙江','南京','杭州','苏州'], '华南/广东':['广东','深圳','广州'],
+    '华北/北京':['北京','天津','河北'], '华中':['武汉','湖南','湖北','河南'],
+    '西南':['四川','成都','重庆','云南'], '东北':['辽宁','吉林','黑龙江','沈阳'],
+    '西北':['陕西','西安'], '港澳台':['香港','台湾','澳门']
   };
   var cnRegion = {};
   D.forEach(function(r){
     if(r._deleted) return;
-    var reg = (r.region||'') + ' ' + (r.company||'');
+    var reg = (r.region||'')+' '+(r.company||'');
     var matched = false;
-    Object.keys(regionMap).forEach(function(k){
-      regionMap[k].forEach(function(kw){
-        if(reg.indexOf(kw) >= 0 && !matched){ cnRegion[k]=(cnRegion[k]||0)+1; matched=true; }
-      });
+    Object.keys(provMap).forEach(function(k){
+      provMap[k].forEach(function(kw){ if(reg.indexOf(kw)>=0&&!matched){cnRegion[k]=(cnRegion[k]||0)+1;matched=true;} });
     });
-    if(!matched && reg.indexOf('中国') >= 0) cnRegion['其他地区']=(cnRegion['其他地区']||0)+1;
+    if(!matched&&reg.indexOf('中国')>=0) cnRegion['其他']=(cnRegion['其他']||0)+1;
   });
-  var cnArr = Object.keys(cnRegion).map(function(k){return [k,cnRegion[k]];}).sort(function(a,b){return b[1]-a[1];});
-  var e3 = document.getElementById('chartRegionCN');
-  if (e3 && cnArr.length) {
-    if (window._cCN) window._cCN.destroy();
-    window._cCN = new Chart(e3, {
-      type: 'doughnut',
-      data: {
-        labels: cnArr.map(function(x){return x[0];}),
-        datasets: [{data: cnArr.map(function(x){return x[1];}), backgroundColor: ['#388bfd','#3fb950','#a371f7','#d29922','#39d2c0','#f85149','#ec4899','#6366f1','#2a3448'], borderWidth: 0}]
-      },
-      options: {responsive:true, maintainAspectRatio:false, cutout:'60%', plugins:{legend:{position:'right', labels:{color:'#8b949e', font:{size:10}, padding:6, usePointStyle:true}}}}
-    });
-  }
-
-  // Overseas destination country distribution
-  var countryMap = {
-    'Singapore': ['Singapore','新加坡'],
-    'Japan': ['Japan','日本'],
-    'Malaysia': ['Malaysia','马来西亚'],
-    'Thailand': ['Thailand','泰国'],
-    'Taiwan': ['Taiwan','台湾'],
-    'S. Korea': ['South Korea','韩国'],
-    'Hong Kong': ['Hong Kong','香港'],
-    'Switzerland': ['Switzerland','瑞士'],
-    'India': ['India','印度'],
-    'Finland': ['Finland','芬兰'],
-    'USA': ['USA','United States','美国'],
-    'UK': ['UK','United Kingdom','英国'],
-    'France': ['France','法国'],
-    'Germany': ['Germany','德国'],
-    'Indonesia': ['Indonesia','印尼','印度尼西亚'],
-    'Vietnam': ['Vietnam','越南'],
-    'Philippines': ['Philippines','菲律宾'],
-    'UAE/Dubai': ['Dubai','迪拜']
-  };
-  var overseas = {};
-  D.forEach(function(r){
-    if(r._deleted) return;
-    var reg = (r.region||'') + ' ' + (r.description||'') + ' ' + (r.note||'');
-    Object.keys(countryMap).forEach(function(k){
-      countryMap[k].forEach(function(kw){
-        if(reg.indexOf(kw) >= 0){ overseas[k]=(overseas[k]||0)+1; }
-      });
-    });
+  var arr = Object.keys(cnRegion).map(function(k){return[k,cnRegion[k]];}).sort(function(a,b){return b[1]-a[1];});
+  var chart = echarts.init(el, null, {renderer:'canvas'});
+  window._cCN = chart;
+  chart.setOption({
+    tooltip:{trigger:'axis',axisPointer:{type:'shadow'}},
+    series:[{type:'bar',data:arr.map(function(x){return x[1];}),itemStyle:{borderRadius:[4,4,0,0]}}],
+    xAxis:{type:'category',data:arr.map(function(x){return x[0];}),axisLabel:{fontSize:10,color:'#8b949e'}},
+    yAxis:{type:'value',splitLine:{lineStyle:{color:'rgba(33,41,58,.3)'},axisLabel:{color:'#8b949e'}}},
+    grid:{left:80,right:20,top:10,bottom:30}
   });
-  var osArr = Object.keys(overseas).map(function(k){return [k,overseas[k]];}).sort(function(a,b){return b[1]-a[1];}).slice(0,10);
-  var e4 = document.getElementById('chartOverseas');
-  if (e4 && osArr.length) {
-    if (window._cOS) window._cOS.destroy();
-    window._cOS = new Chart(e4, {
-      type: 'bar',
-      data: {
-        labels: osArr.map(function(x){return x[0];}),
-        datasets: [{data: osArr.map(function(x){return x[1];}), backgroundColor: ['#388bfd','#3fb950','#a371f7','#d29922','#39d2c0','#f85149','#ec4899','#6366f1','#8b949e','#484f58'], borderWidth: 0, borderRadius: 6, barPercentage: .6}]
-      },
-      options: {responsive:true, maintainAspectRatio:false, indexAxis:'y', scales:{x:{grid:{color:'rgba(33,41,58,.5)'},ticks:{color:'#8b949e'}},y:{grid:{display:false},ticks:{color:'#8b949e',font:{size:11}}}}, plugins:{legend:{display:false}}}
-    });
-  }
+  window.addEventListener('resize',function(){chart.resize();});
+}
 }
 
 function filterByStatus(s) {
@@ -2021,7 +2112,7 @@ function sparklineHtml(values, color) {
   checkAuth();
   document.getElementById('vDash').innerHTML = '<div style="text-align:center;padding:60px;color:var(--t3)"><div style="font-size:32px;margin-bottom:12px">⏳</div><div>正在从云端加载数据...</div></div>';
   // Force reset old cached data to ensure new leads & features load correctly
-  var __v = 10; // bump this when SEED_DATA or structure changes significantly
+  var __v = 11; // bump this when SEED_DATA or structure changes significantly
   if (localStorage.getItem('crm_ver') !== String(__v)) {
     console.log('[init] Version mismatch, resetting cache...');
     localStorage.removeItem('crm_data');
