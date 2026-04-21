@@ -1124,18 +1124,26 @@ function drawCharts() {
 
 function initGeoCharts() {
   if (typeof echarts === 'undefined') return;
-  // Load China GeoJSON then render both maps
-  fetch('https://geo.datav.aliyun.com/areas_v3/bound/100000_full.json')
-    .then(function(r){ return r.json(); })
+  // Load China + World GeoJSON independently, fallback to bar chart if fails
+  fetch('https://unpkg.com/echarts@4.9.0/map/json/china.json')
+    .then(function(r){ if(!r.ok) throw new Error('HTTP '+r.status); return r.json(); })
     .then(function(chinaJson){
       echarts.registerMap('china', chinaJson);
       drawChinaMap();
+    })
+    .catch(function(e){
+      console.warn('China map load failed, using fallback:', e);
+      drawChinaFallback();
+    });
+  fetch('https://unpkg.com/echarts@4.9.0/map/json/world.json')
+    .then(function(r){ if(!r.ok) throw new Error('HTTP '+r.status); return r.json(); })
+    .then(function(worldJson){
+      echarts.registerMap('world', worldJson);
       drawWorldMap();
     })
     .catch(function(e){
-      console.warn('China map load failed:', e);
-      drawChinaFallback();
-      drawWorldMap();
+      console.warn('World map load failed, using fallback:', e);
+      drawWorldFallback();
     });
 }
 
@@ -1286,6 +1294,38 @@ function drawChinaFallback() {
     xAxis:{type:'category',data:arr.map(function(x){return x[0];}),axisLabel:{fontSize:10,color:'#8b949e'}},
     yAxis:{type:'value',splitLine:{lineStyle:{color:'rgba(33,41,58,.3)'},axisLabel:{color:'#8b949e'}}},
     grid:{left:80,right:20,top:10,bottom:30}
+  });
+  window.addEventListener('resize',function(){chart.resize();});
+}
+
+function drawWorldFallback() {
+  var el = document.getElementById('chartOverseas');
+  if (!el) return;
+  var kwMap = {
+    'Singapore':['Singapore','新加坡'], 'Japan':['Japan','日本'], 'Malaysia':['Malaysia','马来西亚'],
+    'Thailand':['Thailand','泰国'], 'Taiwan':['Taiwan','台湾'], 'S. Korea':['South Korea','韩国'],
+    'Hong Kong':['Hong Kong','香港'], 'Switzerland':['Switzerland','瑞士'], 'India':['India','印度'],
+    'Finland':['Finland','芬兰'], 'USA':['USA','United States','美国'], 'UK':['UK','United Kingdom','英国'],
+    'France':['France','法国'], 'Germany':['Germany','德国'], 'Indonesia':['Indonesia','印尼','印度尼西亚'],
+    'Vietnam':['Vietnam','越南'], 'Philippines':['Philippines','菲律宾'], 'Australia':['Australia','澳大利亚']
+  };
+  var osData = {};
+  D.forEach(function(r){
+    if(r._deleted) return;
+    var text = ((r.region||'')+' '+(r.description||'')+' '+(r.note||'')).toLowerCase();
+    Object.keys(kwMap).forEach(function(k){
+      kwMap[k].forEach(function(kw){ if(text.indexOf(kw.toLowerCase())>=0){osData[k]=(osData[k]||0)+1;} });
+    });
+  });
+  var arr = Object.keys(osData).map(function(k){return[k,osData[k]];}).sort(function(a,b){return b[1]-a[1];});
+  var chart = echarts.init(el, null, {renderer:'canvas'});
+  window._cOS = chart;
+  chart.setOption({
+    tooltip:{trigger:'axis',axisPointer:{type:'shadow'}},
+    series:[{type:'bar',data:arr.map(function(x){return x[1];}),itemStyle:{borderRadius:[4,4,0,0]},color:'#3b82f6'}],
+    xAxis:{type:'category',data:arr.map(function(x){return x[0];}),axisLabel:{fontSize:10,color:'#8b949e',rotate:30}},
+    yAxis:{type:'value',splitLine:{lineStyle:{color:'rgba(33,41,58,.3)'}}},
+    grid:{left:50,right:20,top:10,bottom:60}
   });
   window.addEventListener('resize',function(){chart.resize();});
 }
