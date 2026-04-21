@@ -1188,7 +1188,8 @@ function drawChinaMap() {
       });
     });
   });
-  var mapData = Object.keys(provData).map(function(k){ return {name:k, value:provData[k]}; });
+  var goldItem = {itemStyle:{borderColor:'#d4af37', borderWidth:2.5, shadowBlur:4, shadowColor:'rgba(212,175,55,0.3)'}};
+  var mapData = Object.keys(provData).map(function(k){ return Object.assign({name:k, value:provData[k]}, goldItem); });
   var maxVal = Math.max.apply(null, mapData.map(function(x){return x.value;})) || 1;
   var sorted = mapData.slice().sort(function(a,b){return b.value-a.value;}).slice(0,10);
   chart.setOption({
@@ -1205,7 +1206,7 @@ function drawChinaMap() {
       emphasis:{label:{show:true, fontSize:12, fontWeight:'bold', color:'#fff'},
         itemStyle:{areaColor:'#f59e0b', shadowBlur:20, shadowColor:'rgba(212,175,55,0.5)'}},
       data: mapData,
-      itemStyle:{ borderColor:function(p){ return p.value > 0 ? t.goldBorder : t.borderColor; }, borderWidth: function(p){ return p.value > 0 ? 1.5 : 0.6; }, areaColor:t.noData }
+      itemStyle:{ borderColor:t.borderColor, borderWidth:0.6, areaColor:t.noData }
     }]
   });
   window.addEventListener('resize', function(){ chart.resize(); });
@@ -1231,8 +1232,8 @@ function drawChinaBar(sorted, t) {
       axisLabel:{color:t.text, fontSize:11}
     },
     series:[{type:'bar', data:values, barWidth:14, itemStyle:{borderRadius:[0,4,4,0],
-      color:new echarts.graphic.LinearGradient(0,0,1,0,[{offset:0,color:t.barColor},{offset:1,color:t.highColor}])
-    }, label:{show:true, position:'right', color:t.barColor, fontSize:11, fontWeight:'bold', formatter:'{c}'}}]
+      color:new echarts.graphic.LinearGradient(0,0,1,0,[{offset:0,color:'#60a5fa'},{offset:1,color:'#1e40af'}])
+    }, label:{show:true, position:'right', color:'#1e40af', fontSize:11, fontWeight:'bold', formatter:'{c}'}}]
   });
   window.addEventListener('resize', function(){ chart.resize(); });
 }
@@ -1270,7 +1271,8 @@ function drawWorldMap() {
       });
     });
   });
-  var mapData = Object.keys(osData).map(function(k){ return {name:countryNames[k]||k, value:osData[k]}; }).sort(function(a,b){return b.value-a.value;});
+  var goldItem = {itemStyle:{borderColor:'#d4af37', borderWidth:2.5, shadowBlur:4, shadowColor:'rgba(212,175,55,0.3)'}};
+  var mapData = Object.keys(osData).map(function(k){ return Object.assign({name:countryNames[k]||k, value:osData[k]}, goldItem); }).sort(function(a,b){return b.value-a.value;});
   var maxVal = Math.max.apply(null, mapData.map(function(x){return x.value;})) || 1;
   var sorted = mapData.slice(0,10);
   chart.setOption({
@@ -1283,11 +1285,11 @@ function drawWorldMap() {
     },
     series:[{
       type:'map', map:'world', roam:true,
-      label:{show:false},
+      label:{show:true, fontSize:7, color:t.textSub},
       emphasis:{label:{show:true, fontSize:11, fontWeight:'bold', color:'#fff'},
         itemStyle:{areaColor:'#f59e0b', shadowBlur:20, shadowColor:'rgba(212,175,55,0.5)'}},
       data: mapData,
-      itemStyle:{ borderColor:function(p){ return p.value > 0 ? t.goldBorder : t.borderColor; }, borderWidth: function(p){ return p.value > 0 ? 1.5 : 0.5; }, areaColor:t.noData }
+      itemStyle:{ borderColor:t.borderColor, borderWidth:0.5, areaColor:t.noData }
     }]
   });
   window.addEventListener('resize', function(){ chart.resize(); });
@@ -1313,8 +1315,8 @@ function drawWorldBar(sorted, t) {
       axisLabel:{color:t.text, fontSize:10}
     },
     series:[{type:'bar', data:values, barWidth:14, itemStyle:{borderRadius:[0,4,4,0],
-      color:new echarts.graphic.LinearGradient(0,0,1,0,[{offset:0,color:'#3b82f6'},{offset:1,color:'#1e3a5f'}])
-    }, label:{show:true, position:'right', color:'#2563eb', fontSize:11, fontWeight:'bold', formatter:'{c}'}}]
+      color:new echarts.graphic.LinearGradient(0,0,1,0,[{offset:0,color:'#60a5fa'},{offset:1,color:'#1e3a5f'}])
+    }, label:{show:true, position:'right', color:'#1e3a5f', fontSize:11, fontWeight:'bold', formatter:'{c}'}}]
   });
   window.addEventListener('resize', function(){ chart.resize(); });
 }
@@ -1348,7 +1350,7 @@ function drawChinaFallback() {
     xAxis:{type:'value', splitLine:{lineStyle:{color:t.borderColor}}, axisLabel:{color:t.textSub}},
     yAxis:{type:'category', data:arr.map(function(x){return x[0];}), axisLabel:{color:t.text,fontSize:11}},
     series:[{type:'bar', data:arr.map(function(x){return x[1];}), barWidth:22, itemStyle:{borderRadius:[0,6,6,0],
-      color:new echarts.graphic.LinearGradient(0,0,1,0,[{offset:0,color:t.barColor},{offset:1,color:t.highColor}])
+      color:new echarts.graphic.LinearGradient(0,0,1,0,[{offset:0,color:'#60a5fa'},{offset:1,color:'#1e40af'}])
     }, label:{show:true, position:'right', color:t.barColor, fontWeight:'bold', formatter:'{c}'}}]
   });
   window.addEventListener('resize',function(){chart.resize();});
@@ -1383,7 +1385,7 @@ function drawWorldFallback() {
     xAxis:{type:'value', splitLine:{lineStyle:{color:t.borderColor}}, axisLabel:{color:t.textSub}},
     yAxis:{type:'category', data:arr.map(function(x){return x[0];}), axisLabel:{color:t.text,fontSize:10}},
     series:[{type:'bar', data:arr.map(function(x){return x[1];}), barWidth:22, itemStyle:{borderRadius:[0,6,6,0],
-      color:new echarts.graphic.LinearGradient(0,0,1,0,[{offset:0,color:'#3b82f6'},{offset:1,color:'#1e3a5f'}])
+      color:new echarts.graphic.LinearGradient(0,0,1,0,[{offset:0,color:'#60a5fa'},{offset:1,color:'#1e3a5f'}])
     }, label:{show:true, position:'right', color:'#2563eb', fontWeight:'bold', formatter:'{c}'}}]
   });
   window.addEventListener('resize',function(){chart.resize();});
