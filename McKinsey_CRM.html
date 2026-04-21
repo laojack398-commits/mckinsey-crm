@@ -1188,7 +1188,7 @@ function drawChinaMap() {
       });
     });
   });
-  var goldItem = {itemStyle:{borderColor:'#d4af37', borderWidth:2.5, shadowBlur:4, shadowColor:'rgba(212,175,55,0.3)'}};
+  var goldItem = {itemStyle:{borderColor:'#d4af37', borderWidth:3, shadowBlur:10, shadowColor:'rgba(212,175,55,0.6)'}, label:{show:true, fontSize:9, fontWeight:'bold'}};
   var mapData = Object.keys(provData).map(function(k){ return Object.assign({name:k, value:provData[k]}, goldItem); });
   var maxVal = Math.max.apply(null, mapData.map(function(x){return x.value;})) || 1;
   var sorted = mapData.slice().sort(function(a,b){return b.value-a.value;}).slice(0,10);
@@ -1202,7 +1202,7 @@ function drawChinaMap() {
     },
     series:[{
       type:'map', map:'china', roam:true,
-      label:{show:true, fontSize:8, color:t.text},
+      label:{show:false},
       emphasis:{label:{show:true, fontSize:12, fontWeight:'bold', color:'#fff'},
         itemStyle:{areaColor:'#f59e0b', shadowBlur:20, shadowColor:'rgba(212,175,55,0.5)'}},
       data: mapData,
@@ -1271,7 +1271,7 @@ function drawWorldMap() {
       });
     });
   });
-  var goldItem = {itemStyle:{borderColor:'#d4af37', borderWidth:2.5, shadowBlur:4, shadowColor:'rgba(212,175,55,0.3)'}};
+  var goldItem = {itemStyle:{borderColor:'#d4af37', borderWidth:3, shadowBlur:10, shadowColor:'rgba(212,175,55,0.6)'}, label:{show:true, fontSize:9, fontWeight:'bold'}};
   var mapData = Object.keys(osData).map(function(k){ return Object.assign({name:countryNames[k]||k, value:osData[k]}, goldItem); }).sort(function(a,b){return b.value-a.value;});
   var maxVal = Math.max.apply(null, mapData.map(function(x){return x.value;})) || 1;
   var sorted = mapData.slice(0,10);
