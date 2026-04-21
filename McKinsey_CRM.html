@@ -169,7 +169,8 @@ tr{cursor:pointer;transition:background .1s}
 .k-card .kc-tags{display:flex;gap:4px;flex-wrap:wrap}
 
 /* ===== TIMELINE ===== */
-.tl-item{display:flex;gap:12px;padding:12px 0;border-bottom:1px solid var(--border)}
+.tl-item{display:flex;gap:12px;padding:12px;border-radius:var(--rx);border-bottom:1px solid var(--border);cursor:pointer;transition:background .15s,box-shadow .15s}
+.tl-item:hover{background:var(--bl-g);box-shadow:0 1px 4px rgba(79,70,229,.08)}
 .tl-item:last-child{border-bottom:none}
 .tl-dot{width:34px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0}
 .tl-dot.dc-email{background:var(--bl-g)}.tl-dot.dc-call{background:var(--gr-g)}.tl-dot.dc-wechat{background:var(--cy-g)}.tl-dot.dc-visit{background:var(--pu-g)}.tl-dot.dc-other{background:#f3f4f6}
@@ -889,7 +890,7 @@ function renderDash() {
   var todos = getTodayTodos(today);
   h += '<div class="card todo-card">';
   h += '<div class="card-hd"><h3>📋 今日待办</h3><span class="todo-count" style="font-size:11px;color:var(--t3)">'+todos.length+' 项</span></div>';
-  h += '<div class="card-bd">';
+  h += '<div class="card-bd" style="max-height:280px;overflow-y:auto">';
   if (todos.length === 0) {
     h += '<div style="text-align:center;padding:16px;color:var(--gr);font-size:13px">✅ 今日无需跟进</div>';
   } else {
@@ -909,7 +910,7 @@ function renderDash() {
   if (alerts.length > 0) {
     h += '<div class="card alert-card">';
     h += '<div class="card-hd"><h3>⚠️ 需关注</h3><span class="alert-badge-total">'+alerts.length+'</span></div>';
-    h += '<div class="card-bd">';
+    h += '<div class="card-bd" style="max-height:200px;overflow-y:auto">';
     alerts.forEach(function(a){
       h += '<div class="alert-item" onclick="openDetail('+a.id+')">';
       h += '<span class="alert-icon">'+a.icon+'</span>';
@@ -951,20 +952,10 @@ function renderDash() {
   h += '<div class="card"><div class="card-hd"><h3>📈 行业分布</h3></div><div class="card-bd"><div class="chart-wrap"><canvas id="chartIndustry"></canvas></div></div></div>';
   h += '<div class="card"><div class="card-hd"><h3>📊 评级分布</h3></div><div class="card-bd"><div class="chart-wrap"><canvas id="chartRating"></canvas></div></div></div>';
   h += '</div>';
-
-  // Recent followups
-  h += '<div class="card"><div class="card-hd"><h3>📝 最近跟进</h3><span style="font-size:11px;color:var(--t3)">点击查看详情</span></div><div class="card-bd" style="max-height:300px;overflow-y:auto">';
-  var fu = getAllFollowups().slice(0, 12);
-  if (!fu.length) h += '<div class="empty-state"><div class="es-icon">📭</div><p>暂无跟进记录</p></div>';
-  fu.forEach(function(f){
-    h += '<div class="tl-item" style="cursor:pointer" onclick="openDetail('+f.id+')">';
-    h += tlDot(f.method);
-    h += '<div class="tl-body"><div class="tl-date">'+esc(f.date)+' — <b>'+esc(f.name)+'</b> · '+esc(f.company)+'</div>';
-    h += '<div class="tl-content">'+esc(f.content)+'</div>';
-    if (f.action) h += '<div class="tl-action">→ '+esc(f.action)+'</div>';
-    h += '</div></div>';
-  });
-  h += '</div></div>';
+  h += '<div class="grid-2">';
+  h += '<div class="card"><div class="card-hd"><h3>🗺️ 国内区域分布</h3></div><div class="card-bd"><div class="chart-wrap"><canvas id="chartRegionCN"></canvas></div></div></div>';
+  h += '<div class="card"><div class="card-hd"><h3>🌍 出海目标国分布</h3></div><div class="card-bd"><div class="chart-wrap"><canvas id="chartOverseas"></canvas></div></div></div>';
+  h += '</div>';
 
   el.innerHTML = h;
   setTimeout(drawCharts, 150);
@@ -1121,6 +1112,88 @@ function drawCharts() {
       data: {
         labels: ['A级 战略','B级 重点','C级 一般'],
         datasets: [{data:[rt.A,rt.B,rt.C], backgroundColor:['#f85149','#d29922','#484f58'], borderWidth:0, borderRadius:6, barPercentage:.5}]
+      },
+      options: {responsive:true, maintainAspectRatio:false, indexAxis:'y', scales:{x:{grid:{color:'rgba(33,41,58,.5)'},ticks:{color:'#8b949e'}},y:{grid:{display:false},ticks:{color:'#8b949e',font:{size:11}}}}, plugins:{legend:{display:false}}}
+    });
+  }
+
+  // Domestic region distribution
+  var regionMap = {
+    '华东/江浙沪': ['华东','上海','江苏','浙江','南京','杭州','苏州','江浙沪'],
+    '华南/广东': ['华南','广东','深圳','广州'],
+    '华北/北京': ['华北','北京','天津','河北'],
+    '华中': ['华中','武汉','湖南','湖北','河南'],
+    '西南': ['西南','四川','成都','重庆','云南'],
+    '东北': ['东北','辽宁','吉林','黑龙江','沈阳'],
+    '西北': ['西北','陕西','西安'],
+    '港澳台': ['香港','台湾','澳门']
+  };
+  var cnRegion = {};
+  D.forEach(function(r){
+    if(r._deleted) return;
+    var reg = (r.region||'') + ' ' + (r.company||'');
+    var matched = false;
+    Object.keys(regionMap).forEach(function(k){
+      regionMap[k].forEach(function(kw){
+        if(reg.indexOf(kw) >= 0 && !matched){ cnRegion[k]=(cnRegion[k]||0)+1; matched=true; }
+      });
+    });
+    if(!matched && reg.indexOf('中国') >= 0) cnRegion['其他地区']=(cnRegion['其他地区']||0)+1;
+  });
+  var cnArr = Object.keys(cnRegion).map(function(k){return [k,cnRegion[k]];}).sort(function(a,b){return b[1]-a[1];});
+  var e3 = document.getElementById('chartRegionCN');
+  if (e3 && cnArr.length) {
+    if (window._cCN) window._cCN.destroy();
+    window._cCN = new Chart(e3, {
+      type: 'doughnut',
+      data: {
+        labels: cnArr.map(function(x){return x[0];}),
+        datasets: [{data: cnArr.map(function(x){return x[1];}), backgroundColor: ['#388bfd','#3fb950','#a371f7','#d29922','#39d2c0','#f85149','#ec4899','#6366f1','#2a3448'], borderWidth: 0}]
+      },
+      options: {responsive:true, maintainAspectRatio:false, cutout:'60%', plugins:{legend:{position:'right', labels:{color:'#8b949e', font:{size:10}, padding:6, usePointStyle:true}}}}
+    });
+  }
+
+  // Overseas destination country distribution
+  var countryMap = {
+    'Singapore': ['Singapore','新加坡'],
+    'Japan': ['Japan','日本'],
+    'Malaysia': ['Malaysia','马来西亚'],
+    'Thailand': ['Thailand','泰国'],
+    'Taiwan': ['Taiwan','台湾'],
+    'S. Korea': ['South Korea','韩国'],
+    'Hong Kong': ['Hong Kong','香港'],
+    'Switzerland': ['Switzerland','瑞士'],
+    'India': ['India','印度'],
+    'Finland': ['Finland','芬兰'],
+    'USA': ['USA','United States','美国'],
+    'UK': ['UK','United Kingdom','英国'],
+    'France': ['France','法国'],
+    'Germany': ['Germany','德国'],
+    'Indonesia': ['Indonesia','印尼','印度尼西亚'],
+    'Vietnam': ['Vietnam','越南'],
+    'Philippines': ['Philippines','菲律宾'],
+    'UAE/Dubai': ['Dubai','迪拜']
+  };
+  var overseas = {};
+  D.forEach(function(r){
+    if(r._deleted) return;
+    var reg = (r.region||'') + ' ' + (r.description||'') + ' ' + (r.note||'');
+    Object.keys(countryMap).forEach(function(k){
+      countryMap[k].forEach(function(kw){
+        if(reg.indexOf(kw) >= 0){ overseas[k]=(overseas[k]||0)+1; }
+      });
+    });
+  });
+  var osArr = Object.keys(overseas).map(function(k){return [k,overseas[k]];}).sort(function(a,b){return b[1]-a[1];}).slice(0,10);
+  var e4 = document.getElementById('chartOverseas');
+  if (e4 && osArr.length) {
+    if (window._cOS) window._cOS.destroy();
+    window._cOS = new Chart(e4, {
+      type: 'bar',
+      data: {
+        labels: osArr.map(function(x){return x[0];}),
+        datasets: [{data: osArr.map(function(x){return x[1];}), backgroundColor: ['#388bfd','#3fb950','#a371f7','#d29922','#39d2c0','#f85149','#ec4899','#6366f1','#8b949e','#484f58'], borderWidth: 0, borderRadius: 6, barPercentage: .6}]
       },
       options: {responsive:true, maintainAspectRatio:false, indexAxis:'y', scales:{x:{grid:{color:'rgba(33,41,58,.5)'},ticks:{color:'#8b949e'}},y:{grid:{display:false},ticks:{color:'#8b949e',font:{size:11}}}}, plugins:{legend:{display:false}}}
     });
@@ -1948,7 +2021,7 @@ function sparklineHtml(values, color) {
   checkAuth();
   document.getElementById('vDash').innerHTML = '<div style="text-align:center;padding:60px;color:var(--t3)"><div style="font-size:32px;margin-bottom:12px">⏳</div><div>正在从云端加载数据...</div></div>';
   // Force reset old cached data to ensure new leads & features load correctly
-  var __v = 9; // bump this when SEED_DATA or structure changes significantly
+  var __v = 10; // bump this when SEED_DATA or structure changes significantly
   if (localStorage.getItem('crm_ver') !== String(__v)) {
     console.log('[init] Version mismatch, resetting cache...');
     localStorage.removeItem('crm_data');
